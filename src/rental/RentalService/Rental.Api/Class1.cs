@@ -1,4 +1,4 @@
-﻿namespace Account.Api
+﻿namespace Rental.Api
 {
     public class Class1
     {
