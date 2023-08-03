@@ -10,10 +10,8 @@ namespace Domain
 	public class Contact
 	{
 		public Guid Id { get; set; }
-		public string Name { get; set; }
 		public string Address { get; set; }
-		public Guid UserId { get; set; }
 
-		public ApplicationUser User { get; set; }
-	}
+        public ICollection<ApplicationUser> Users { get; set; }
+    }
 }
