@@ -13,8 +13,9 @@ namespace Infrastructure.Data.Configuration
 	{
 		public void Configure(EntityTypeBuilder<Organization> builder)
 		{
-			builder.HasOne(o => o.Owner).WithOne();
-			builder.HasKey(o => o.OwnerId);
+			builder.HasKey(o => o.Id);
+			builder.HasOne(o => o.Owner).WithOne().HasForeignKey<Organization>(s=>s.OwnerId);
+			
 		}
 	}
 }
