@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-	public class UserOrganization
+	public class Organization
 	{
 		public Guid Id { get; set; }
 		public string Name { get; set; }
 		public string Address { get; set; }
 		public string Info { get; set; }
-
-		public ApplicationUser user { get; set; }
+		public Guid OwnerId { get; set; }
+		public ApplicationUser Owner { get; set; }
 	}
 }

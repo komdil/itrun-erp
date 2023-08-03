@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace Infrastructure
 {
-	public class ApplicationUser
+	public class ApplicationUser : IdentityUser
 	{
 		public Guid Id { get; set; }
 		public string UserName { get; set; }
 		public string Email { get; set; }
-		public Guid OrganizationId { get; set; }
-		public UserOrganization Organization { get; set; }
+		public Organization Organization { get; set; }
 	}
 }
