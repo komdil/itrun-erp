@@ -17,8 +17,31 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore ./src/**/*.sln
+      run: dotnet restore
+      working-directory: ./src/account
     - name: Build
-      run: dotnet build --no-restore ./src/**/*.sln
+      run: dotnet build --no-restore
+      working-directory: ./src/account
     - name: Test
-      run: dotnet test --no-build --verbosity normal ./src/**/*.sln
+      run: dotnet test --no-build --verbosity normal
+      working-directory: ./src/account
+    
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./src/rental
+    - name: Build
+      run: dotnet build --no-restore
+      working-directory: ./src/rental
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+      working-directory: ./src/rental
+
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./src/warehouse
+    - name: Build
+      run: dotnet build --no-restore
+      working-directory: ./src/warehouse
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+      working-directory: ./src/warehouse
