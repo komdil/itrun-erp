@@ -10,9 +10,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./src/account
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
@@ -20,8 +17,8 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore ./src/**/*.sln
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore ./src/**/*.sln
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal ./src/**/*.sln
