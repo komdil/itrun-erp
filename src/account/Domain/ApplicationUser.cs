@@ -6,11 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure
+namespace Domain
 {
 	public class ApplicationUser : IdentityUser<Guid>
 	{
-	
 		public Organization Organization { get; set; }
 
 		public Guid? PrimaryContactId { get; set; }
