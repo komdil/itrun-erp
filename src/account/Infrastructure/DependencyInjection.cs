@@ -19,7 +19,7 @@ namespace Infrastructure
 
             services
                 .AddIdentityCore<ApplicationUser>()
-                .AddRoles<IdentityRole>()
+                .AddRoles<IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             return services;
