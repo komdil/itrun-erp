@@ -53,7 +53,7 @@ namespace Account.Api.Controllers
                 PrimaryContact = contact,
             };
             organization.Owner = user;
-            contact.Users.Add(user);
+            //contact.Users.Add(user);
 
             // Save to DB new organization
 
