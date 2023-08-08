@@ -18,7 +18,6 @@ namespace Account.Api.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;
         private readonly IConfiguration _configuration;
-        private ApplicationDbContext _context;
 
         public authController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<Guid>> roleManager, IConfiguration configuration)
         {
@@ -53,7 +52,6 @@ namespace Account.Api.Controllers
                 PrimaryContact = contact,
             };
             organization.Owner = user;
-            //contact.Users.Add(user);
 
             // Save to DB new organization
 
@@ -111,7 +109,5 @@ namespace Account.Api.Controllers
             }
             return Unauthorized();
         }
-
-        
     }
 }
