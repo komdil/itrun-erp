@@ -16,8 +16,6 @@ namespace Infrastructure
             {
                 options.UseSqlServer(connectionString);
             });
-
-
             return services;
         }
     }
