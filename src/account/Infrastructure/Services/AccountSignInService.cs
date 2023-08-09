@@ -24,7 +24,7 @@ namespace Infrastructure.Services
             _configuration = configuration;
         }
 
-        public async Task<AccountSigninResponse> SignInAsync(AccountSigninRequest model)
+        public async Task<AccountSigninResponse> SignInAsync(AccountSignInRequest model)
         {
             var user = await _userManager.FindByNameAsync(model.Username);
             if (user != null &&

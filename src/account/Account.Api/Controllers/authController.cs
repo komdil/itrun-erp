@@ -25,7 +25,15 @@ namespace Account.Api.Controllers
             var response = await _accountSignUpService.SignUpAsync(model);
             if (response.Success)
             {
-                return Ok(response);
+                // return Ok(response);
+                AccountSignInRequest accountSignInRequest = new AccountSignInRequest()
+                {
+                    Username= model.Username,
+                    Password= model.Password
+                };
+
+                var signInResult = await SignIn(accountSignInRequest);
+                return Ok(signInResult);
             }
             else
             {
@@ -34,7 +42,7 @@ namespace Account.Api.Controllers
         }
 
         [HttpPost("sign-in")]
-        public async Task<IActionResult> SignIn([FromBody] AccountSigninRequest model)
+        public async Task<IActionResult> SignIn([FromBody] AccountSignInRequest model)
         {
             var response = await _accountSignInService.SignInAsync(model);
             if (response.Success)

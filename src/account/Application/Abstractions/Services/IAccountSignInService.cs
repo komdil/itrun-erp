@@ -5,6 +5,6 @@ namespace Application.Abstractions.Services
 {
     public interface IAccountSignInService
     {
-        Task<AccountSigninResponse> SignInAsync(AccountSigninRequest model);
+        Task<AccountSigninResponse> SignInAsync(AccountSignInRequest model);
     }
 }

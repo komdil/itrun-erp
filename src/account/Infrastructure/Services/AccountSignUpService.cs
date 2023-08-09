@@ -55,9 +55,7 @@ namespace Infrastructure.Services
             return new AccountSignUpResponse()
             {
                 Success = true,
-                Message = "User successfully created",
-                Username= model.Username,
-                Password= model.Password
+                Message = "User successfully created"
             };
         }
     }

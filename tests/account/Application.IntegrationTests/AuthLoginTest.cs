@@ -36,7 +36,7 @@ namespace Application.IntegrationTests
         public async Task Login_ShouldGivAccessToken_WhenUserNameAndPasswordAreCorrect()
         {
             // Arrange
-            AccountSigninRequest request = new() { Username = _userName, Password = _password };
+            AccountSignInRequest request = new() { Username = _userName, Password = _password };
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
             // Act
@@ -51,7 +51,7 @@ namespace Application.IntegrationTests
         public async Task Login_ShouldGiveUnauthorized_WhenUserNameAndPasswordAreNotCorrect()
         {
             // Arrange
-            AccountSigninRequest request = new() { Username = _userName, Password = "123ASd@_D!@#$" };
+            AccountSignInRequest request = new() { Username = _userName, Password = "123ASd@_D!@#$" };
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
             // Act
