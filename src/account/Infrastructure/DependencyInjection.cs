@@ -1,5 +1,7 @@
-﻿using Domain;
+﻿using Application.Abstractions.Services;
+using Domain;
 using Infrastructure.Data;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -25,6 +27,9 @@ namespace Infrastructure
                 .AddIdentityCore<ApplicationUser>()
                 .AddRoles<IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddScoped<IAccountSignUpService, AccountSignUpService>();
+            services.AddScoped<IAccountSignInService, AccountSignInService>();
 
             return services;
         }

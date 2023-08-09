@@ -36,14 +36,14 @@ namespace Application.IntegrationTests
         public async Task Login_ShouldGivAccessToken_WhenUserNameAndPasswordAreCorrect()
         {
             // Arrange
-            AccountLoginRequest request = new() { Username = _userName, Password = _password };
+            AccountSigninRequest request = new() { Username = _userName, Password = _password };
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
             // Act
             HttpResponseMessage result = await _httpClient.PostAsync("auth/sign-in", content);
 
             // Assert
-            var loginResponse = await result.Content.ReadFromJsonAsync<AccountLoginResponse>();
+            var loginResponse = await result.Content.ReadFromJsonAsync<AccountSigninResponse>();
             result.EnsureSuccessStatusCode();
             Assert.That(loginResponse?.Token, Is.Not.Empty.And.Not.Null);
         }
@@ -51,7 +51,7 @@ namespace Application.IntegrationTests
         public async Task Login_ShouldGiveUnauthorized_WhenUserNameAndPasswordAreNotCorrect()
         {
             // Arrange
-            AccountLoginRequest request = new() { Username = _userName, Password = "123ASd@_D!@#$" };
+            AccountSigninRequest request = new() { Username = _userName, Password = "123ASd@_D!@#$" };
             var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
             // Act
