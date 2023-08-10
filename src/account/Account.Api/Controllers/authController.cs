@@ -8,12 +8,12 @@ namespace Account.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class authController : ControllerBase
+    public class AuthController : ControllerBase
     {
         private IAccountSignUpService _accountSignUpService;
         private IAccountSignInService _accountSignInService;
 
-        public authController(IAccountSignUpService accountSignUpService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<Guid>> roleManager, IConfiguration configuration, IAccountSignInService accountSignInService)
+        public AuthController(IAccountSignUpService accountSignUpService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<Guid>> roleManager, IConfiguration configuration, IAccountSignInService accountSignInService)
         {
             _accountSignUpService = accountSignUpService;
             _accountSignInService = accountSignInService;
@@ -28,8 +28,8 @@ namespace Account.Api.Controllers
                 // return Ok(response);
                 AccountSignInRequest accountSignInRequest = new AccountSignInRequest()
                 {
-                    Username= model.Username,
-                    Password= model.Password
+                    Username = model.Username,
+                    Password = model.Password
                 };
 
                 var signInResult = await SignIn(accountSignInRequest);
@@ -52,7 +52,7 @@ namespace Account.Api.Controllers
             else
             {
                 return Unauthorized();
-            }            
+            }
         }
     }
 }

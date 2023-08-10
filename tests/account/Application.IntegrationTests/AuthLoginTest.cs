@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using System.Text;
-using System.Threading.Tasks;
 using Contracts.Requests.Auth;
 using Contracts.Response.Auth;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Account.Api;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
 using Domain;
-using Infrastructure.Data;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 
@@ -30,7 +22,7 @@ namespace Application.IntegrationTests
             var factory = new CustomWebApplicationFactory();
             _scopeFactory = factory.Services.GetRequiredService<IServiceScopeFactory>();
             _httpClient = factory.CreateClient();
-            await AddUserToDb(_userName, _password);
+            await AddUserToDbAsync(_userName, _password);
         }
         [Test]
         public async Task Login_ShouldGivAccessToken_WhenUserNameAndPasswordAreCorrect()
@@ -61,7 +53,7 @@ namespace Application.IntegrationTests
             Assert.That(result.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
 
-        async Task AddUserToDb(string userName, string password)
+        async Task AddUserToDbAsync(string userName, string password)
         {
             using var scope = _scopeFactory.CreateScope();
 
