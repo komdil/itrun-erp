@@ -21,7 +21,7 @@ namespace Account.Api
             {
                 context.Response.Clear();
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsJsonAsync(ex);
+                await context.Response.WriteAsJsonAsync(new {Errors= ex.Message});
             }
         }
     }
