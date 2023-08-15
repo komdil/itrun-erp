@@ -9,15 +9,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.IntergrationTes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure.UnitTests", "..\..\tests\warehouse\Infrastructure.UnitTests\Infrastructure.UnitTests.csproj", "{4FC02E0E-9E54-43C6-A1BC-552444FA2CF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{6643601C-AEA8-4403-BE51-D6F0AE325F98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{6643601C-AEA8-4403-BE51-D6F0AE325F98}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{3687328B-BB56-49F2-A23B-FF8136584489}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{58F801C9-7430-473E-B9D5-7CA5F5F149DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.UnitTests", "..\..\tests\warehouse\Domain.UnitTests\Domain.UnitTests.csproj", "{9C7F4299-F8BC-403D-B7CD-9AB589D368E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain.UnitTests", "..\..\tests\warehouse\Domain.UnitTests\Domain.UnitTests.csproj", "{9C7F4299-F8BC-403D-B7CD-9AB589D368E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.Api", "Warehouse.Api\Warehouse.Api.csproj", "{70A77386-058D-4B96-A023-331C97FCBC04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Warehouse.Api", "Warehouse.Api\Warehouse.Api.csproj", "{70A77386-058D-4B96-A023-331C97FCBC04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{B6F81910-7F89-4EFE-93F6-F30DC2ED15C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{70A77386-058D-4B96-A023-331C97FCBC04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70A77386-058D-4B96-A023-331C97FCBC04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70A77386-058D-4B96-A023-331C97FCBC04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6F81910-7F89-4EFE-93F6-F30DC2ED15C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6F81910-7F89-4EFE-93F6-F30DC2ED15C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6F81910-7F89-4EFE-93F6-F30DC2ED15C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6F81910-7F89-4EFE-93F6-F30DC2ED15C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data
 {
@@ -8,5 +9,7 @@ namespace Infrastructure.Data
         {
 
         }
+
+        public DbSet <WareHouse> WareHouses { get; set; }
     }
 }
