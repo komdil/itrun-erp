@@ -35,7 +35,7 @@ namespace Infrastructure.Services
                 var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.PrimarySid, user.Id.ToString()),
                 };
 
                 foreach (var userRole in userRoles)
