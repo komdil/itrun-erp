@@ -12,7 +12,7 @@ namespace Application.Admin
     {
         public AssignRoleCommandValidator()
         {
-            this.RuleFor(s => s.Role)
+            RuleFor(s => s.Role)
                 .Must(s => s != "Admin")
                 .WithMessage("Role should not be an admin");
         }
