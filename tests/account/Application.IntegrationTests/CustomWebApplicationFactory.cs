@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Application.IntegrationTests
 {
@@ -11,15 +8,24 @@ namespace Application.IntegrationTests
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+            var inMemoryConfiguration = GetInMemoryConfiguration();
             builder.ConfigureAppConfiguration(configurationBuilder =>
             {
                 var integrationConfig = new ConfigurationBuilder()
-                    .AddJsonFile("appsettings.Development.Test.json")
+                    .AddInMemoryCollection(inMemoryConfiguration)
                     .AddEnvironmentVariables()
                     .Build();
-
                 configurationBuilder.AddConfiguration(integrationConfig);
             });
+        }
+
+        IDictionary<string, string> GetInMemoryConfiguration()
+        {
+            Dictionary<string, string> inMemoryConfiguraton = new Dictionary<string, string>
+            {
+                { "UseInMemoryDatabase", "true" },
+            };
+            return inMemoryConfiguraton;
         }
     }
 }

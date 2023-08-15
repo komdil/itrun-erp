@@ -24,6 +24,7 @@ namespace Application.IntegrationTests
         private const string _password = "ABc12345678@J$@!1";
         private HttpClient _httpClient;
         private IServiceScopeFactory _scopeFactory;
+
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
         {
@@ -32,6 +33,7 @@ namespace Application.IntegrationTests
             _httpClient = factory.CreateClient();
             await AddUserToDb(_userName, _password);
         }
+
         [Test]
         public async Task Login_ShouldGivAccessToken_WhenUserNameAndPasswordAreCorrect()
         {
@@ -47,6 +49,7 @@ namespace Application.IntegrationTests
             result.EnsureSuccessStatusCode();
             Assert.That(loginResponse?.Token, Is.Not.Empty.And.Not.Null);
         }
+
         [Test]
         public async Task Login_ShouldGiveUnauthorized_WhenUserNameAndPasswordAreNotCorrect()
         {
