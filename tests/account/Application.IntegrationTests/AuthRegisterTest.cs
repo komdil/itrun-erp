@@ -29,6 +29,7 @@ namespace Application.IntegrationTests
             var factory = new CustomWebApplicationFactory();
             _scopeFactory = factory.Services.GetRequiredService<IServiceScopeFactory>();
             _httpClient = factory.CreateClient();
+            await AddUserToDb(_userName, _password);
         }
 
         [TestCase("TestUserForRegister", "ABc12345678@J$@!1", "TestOrganization1")]
@@ -55,6 +56,46 @@ namespace Application.IntegrationTests
             loginResult.EnsureSuccessStatusCode();
             loginResponse.Should().NotBeNull();
             loginResponse.Token.Should().NotBeNullOrEmpty();
+        }
+
+        [TestCase(_userName, _password, _organization)]
+        public async Task RegisterUser_ShouldGiveBadRequest_WhenUserAlreadyWxists(string username, string password, string organization)
+        {
+            // Arrange
+            AccountSignUpRequest request = new() { Username = username, Password = password, OrganizationName = organization };
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+
+            // Act
+            HttpResponseMessage result = await _httpClient.PostAsync("auth/sign-up", content);
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+
+        async Task AddUserToDb(string userName, string password)
+        {
+            using var scope = _scopeFactory.CreateScope();
+
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+
+            var addNewRoleResult = await roleManager.CreateAsync(new IdentityRole<Guid>
+            {
+                Name = _userRole
+            });
+            addNewRoleResult.Succeeded.Should().BeTrue();
+
+            var user = new ApplicationUser
+            {
+                Id = _userId,
+                UserName = userName,
+            };
+
+            IdentityResult result = await userManager.CreateAsync(user, password);
+            result.Succeeded.Should().BeTrue();
+
+            var assignRoleToUserResult = await userManager.AddToRoleAsync(user, _userRole);
+            assignRoleToUserResult.Succeeded.Should().BeTrue();
         }
     }
 }
