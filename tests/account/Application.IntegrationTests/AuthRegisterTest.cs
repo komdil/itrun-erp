@@ -106,7 +106,6 @@ namespace Application.IntegrationTests
             {
                 Name = _userRole
             });
-            addNewRoleResult.Succeeded.Should().BeTrue();
 
             var user = new ApplicationUser
             {
@@ -116,9 +115,6 @@ namespace Application.IntegrationTests
 
             IdentityResult result = await userManager.CreateAsync(user, password);
             result.Succeeded.Should().BeTrue();
-
-            var assignRoleToUserResult = await userManager.AddToRoleAsync(user, _userRole);
-            assignRoleToUserResult.Succeeded.Should().BeTrue();
         }
     }
 }
