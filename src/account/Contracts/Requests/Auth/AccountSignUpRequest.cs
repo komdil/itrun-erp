@@ -2,7 +2,7 @@
 
 namespace Contracts.Requests.Auth
 {
-    public class AccountSignUpRequest
+    public record AccountSignUpRequest
     {
         [Required]
         public string Username { get; set; }
