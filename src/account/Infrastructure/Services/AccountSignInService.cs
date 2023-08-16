@@ -24,7 +24,7 @@ namespace Infrastructure.Services
             _configuration = configuration;
         }
 
-        public async Task<AccountSigninResponse> SignInAsync(AccountSignInRequest model)
+        public async Task<AccountSignInResponse> SignInAsync(AccountSignInRequest model)
         {
             var user = await _userManager.FindByNameAsync(model.Username);
             if (user != null &&
@@ -53,14 +53,14 @@ namespace Infrastructure.Services
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                     );
 
-                return new AccountSigninResponse()
+                return new AccountSignInResponse()
                 {
                     Success = true,
                     Token = new JwtSecurityTokenHandler().WriteToken(token),
                 };
             }
 
-            return new AccountSigninResponse() { Success = false };
+            return new AccountSignInResponse() { Success = false };
         }
     }
 }

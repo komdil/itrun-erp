@@ -20,12 +20,11 @@ namespace Account.Api.Controllers
         }
 
         [HttpPost("sign-up")]
-        public async Task<IActionResult> SingUp([FromBody] AccountSignUpRequest model)
+        public async Task<IActionResult> SignUp([FromBody] AccountSignUpRequest model)
         {
             var response = await _accountSignUpService.SignUpAsync(model);
             if (response.Success)
             {
-                // return Ok(response);
                 AccountSignInRequest accountSignInRequest = new AccountSignInRequest()
                 {
                     Username= model.Username,

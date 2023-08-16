@@ -42,7 +42,7 @@ namespace Application.IntegrationTests
             HttpResponseMessage result = await _httpClient.PostAsync("auth/sign-in", content);
 
             // Assert
-            var loginResponse = await result.Content.ReadFromJsonAsync<AccountSigninResponse>();
+            var loginResponse = await result.Content.ReadFromJsonAsync<AccountSignInResponse>();
             result.EnsureSuccessStatusCode();
             loginResponse.Should().NotBeNull();
             loginResponse.Token.Should().NotBeNullOrEmpty();
@@ -73,7 +73,7 @@ namespace Application.IntegrationTests
             HttpResponseMessage result = await _httpClient.PostAsync("auth/sign-in", content);
 
             // Assert
-            var loginResponse = await result.Content.ReadFromJsonAsync<AccountSigninResponse>();
+            var loginResponse = await result.Content.ReadFromJsonAsync<AccountSignInResponse>();
             var tokenHandler = new JwtSecurityTokenHandler();
             Assert.DoesNotThrow(() => { tokenHandler.ReadJwtToken(loginResponse.Token); });
         }
@@ -89,7 +89,7 @@ namespace Application.IntegrationTests
             HttpResponseMessage result = await _httpClient.PostAsync("auth/sign-in", content);
 
             // Assert
-            var loginResponse = await result.Content.ReadFromJsonAsync<AccountSigninResponse>();
+            var loginResponse = await result.Content.ReadFromJsonAsync<AccountSignInResponse>();
             var tokenHandler = new JwtSecurityTokenHandler();
             var jwt = tokenHandler.ReadJwtToken(loginResponse.Token);
 
@@ -113,7 +113,7 @@ namespace Application.IntegrationTests
             HttpResponseMessage result = await _httpClient.PostAsync("auth/sign-in", content);
 
             // Assert
-            var loginResponse = await result.Content.ReadFromJsonAsync<AccountSigninResponse>();
+            var loginResponse = await result.Content.ReadFromJsonAsync<AccountSignInResponse>();
             var tokenHandler = new JwtSecurityTokenHandler();
             var jwt = tokenHandler.ReadJwtToken(loginResponse.Token);
 
