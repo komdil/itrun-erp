@@ -9,13 +9,12 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using FluentAssertions;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace Application.IntegrationTests
 {
     public class AuthRegisterTest
     {
-        private const string _userName = "TestUserForRegister";
+        private const string _userName = "TestUserForReg";
         private const string _password = "ABc12345678@J$@!1";
         private const string _organization = "TestOrganization";
         private static readonly Guid _userId = Guid.NewGuid();
@@ -70,6 +69,30 @@ namespace Application.IntegrationTests
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+
+        [TestCase("TestUserForRegisterAndAccessToken", "ABc12345678@J$@!1", "TestOrganization1")]
+        [TestCase("TestUserForRegisterAndAccessTokenCheck", "ABc12345678@J$@!1", "TestOrganization1")]
+        [TestCase("TestUserForRegisterAndAccessTokenCheckIsValid", "ABc12345678@J$@!1", "TestOrganization1")]
+        public async Task AccessTokenAfterRegister_ShouldGiveValidToken(string username, string password, string organization)
+        {
+            // Arrange
+            AccountSignUpRequest request = new() { Username = username, Password = password, OrganizationName = organization };
+            AccountSignInRequest accountSignInRequest = new() { Username = request.Username, Password = request.Password };
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+            var signInContent = new StringContent(JsonConvert.SerializeObject(accountSignInRequest), Encoding.UTF8, "application/json");
+
+            // Act
+            HttpResponseMessage registerResult = await _httpClient.PostAsync("auth/sign-up", content);
+            HttpResponseMessage loginResult = await _httpClient.PostAsync("auth/sign-in", signInContent);
+
+            // Assert
+            var registerResponse = await registerResult.Content.ReadFromJsonAsync<AccountSignUpResponse>();
+            registerResult.EnsureSuccessStatusCode();
+
+            var loginResponse = await loginResult.Content.ReadFromJsonAsync<AccountSignInResponse>();
+            var tokenHandler = new JwtSecurityTokenHandler();
+            Assert.DoesNotThrow(() => { tokenHandler.ReadJwtToken(loginResponse.Token); });
         }
 
         async Task AddUserToDb(string userName, string password)
