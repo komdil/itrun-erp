@@ -1,5 +1,7 @@
-﻿using Domain;
+﻿using Application.Abstractions.Services;
+using Domain;
 using Infrastructure.Data;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,13 +16,19 @@ namespace Infrastructure
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(connectionString);
+                if (configuration["UseInMemoryDatabase"] == "true")
+                    options.UseInMemoryDatabase("testDb");
+                else
+                    options.UseSqlServer(connectionString);
             });
 
             services
                 .AddIdentityCore<ApplicationUser>()
-                .AddRoles<IdentityRole>()
+                .AddRoles<IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddScoped<IAccountSignUpService, AccountSignUpService>();
+            services.AddScoped<IAccountSignInService, AccountSignInService>();
 
             return services;
         }

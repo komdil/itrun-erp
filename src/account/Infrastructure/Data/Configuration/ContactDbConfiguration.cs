@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Data.Configuration
 {
-	public class ContactDbConfiguration : IEntityTypeConfiguration<Contact>
-	{
-		public void Configure(EntityTypeBuilder<Contact> builder)
-		{
-			builder.HasKey(c => c.Id);
+    public class ContactDbConfiguration : IEntityTypeConfiguration<Contact>
+    {
+        public void Configure(EntityTypeBuilder<Contact> builder)
+        {
+            builder.HasKey(c => c.Id);
 
-			builder.HasMany(c => c.Users)
-				.WithOne(u => u.PrimaryContact)
-				.HasForeignKey(u => u.PrimaryContactId);
-		}
-	}
+            builder.HasMany(c => c.Users)
+                .WithOne(u => u.PrimaryContact)
+                .HasForeignKey(u => u.PrimaryContactId);
+        }
+    }
 
 }
