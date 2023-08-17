@@ -6,14 +6,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Domain.Entities;
 
 namespace Infrastructure.Data
 {
-	public class ApplicationDbContext : DbContext
-	{
-		public ApplicationDbContext(DbContextOptions options) : base(options)
-		{
+    public class ApplicationDbContext : DbContext
+    {
+        public ApplicationDbContext(DbContextOptions options) : base(options)
+        {
 
-		}
-	}
+        }
+
+        public DbSet<Building> Buildings { get; set; }
+    }
 }
