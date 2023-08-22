@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 
 namespace Contracts.Warehouse
 {
-    public record CreateWarehouseRequest
+    public record CreateWarehouseRequest : IRequest<CreateWarehouseResponse>
     {
         public string Name { get; set; }
         public string Details { get; set; }
-
         public string Location { get; set; }
     }
 }
