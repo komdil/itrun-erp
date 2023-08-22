@@ -11,5 +11,11 @@ namespace Account.Api.Controllers
         {
             return await Mediator.Send(command);
         }
+
+        [HttpPut]
+        public async Task<bool> Put([FromBody] UpdateRoleCommand command)
+        {
+            return await Mediator.Send(command);
+        }
     }
 }
