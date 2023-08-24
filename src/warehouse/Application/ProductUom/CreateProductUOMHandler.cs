@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces;
+using AutoMapper;
 using Contracts.ProductUOM;
 using Contracts.Warehouse;
 using Domain.Entities;
@@ -14,26 +15,19 @@ namespace Application.ProductUom
     public class CreateProductUOMHandler : IRequestHandler<CreateProductUOMRequest, CreateProductUOMResponse>
     {
         IApplicationDbContext _context;
-        public CreateProductUOMHandler(IApplicationDbContext context)
+        IMapper _mapper;
+        public CreateProductUOMHandler(IApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         public async Task<CreateProductUOMResponse> Handle(CreateProductUOMRequest request, CancellationToken cancellationToken)
         {
 
-            var productUOM = new ProductUOM()
-            {
-                Name = request.Name,
-                Abbreviation = request.Abbreviation,
-                Details = request.Details,
-                Id = Guid.NewGuid(),
-            };
+            var productUOM = _mapper.Map<ProductUOM>(request);
             _context.ProductUOMs.Add(productUOM);
             await _context.SaveChangesAsync();
-            return new CreateProductUOMResponse
-            {
-               
-            };
+            return _mapper.Map<CreateProductUOMResponse>(productUOM);
         }
     }
 }

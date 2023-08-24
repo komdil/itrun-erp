@@ -8,6 +8,9 @@ namespace Contracts.ProductUOM
 {
     public record CreateProductUOMResponse
     {
+        public string Name { get; set; }
+        public string Details { get; set; }
+        public string Location { get; set; }
         public string Slug { get; init; }
     }
 }

@@ -1,5 +1,6 @@
 using Application;
 using Infrastructure;
+using Warehouse.Api.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(opt =>
+    opt.Filters.Add<ApiValidationFilterAttribute>()
+);
 
 
 

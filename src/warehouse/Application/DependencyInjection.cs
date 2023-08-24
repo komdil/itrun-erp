@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 using System.Reflection;
+using FluentValidation;
+using Application.Behaviors;
 
 namespace Application
 {
@@ -16,7 +18,9 @@ namespace Application
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             services.AddMediatR(op => op.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPiplineBehavior<,>));
             services.AddAutoMapper(typeof(DependencyInjection).Assembly);
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             return services;
         }
     }
