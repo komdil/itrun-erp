@@ -11,5 +11,12 @@ namespace Warehouse.Api.Controllers
             var response = await Sender.Send(request);
             return Created($"products/{response}", response);
         }
+
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] UpdateProductRequest request)
+        {
+            await Sender.Send(request);
+            return NoContent();
+        }
     }
 }
