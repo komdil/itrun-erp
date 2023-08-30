@@ -18,5 +18,13 @@ namespace Warehouse.Api.Controllers
             await Sender.Send(request);
             return NoContent();
         }
+
+        [HttpDelete("{slug}")]
+        public async Task<IActionResult> Delete(string slug)
+        {
+            var request = new DeleteProductRequest(slug);
+            await Sender.Send(request);
+            return NoContent();
+        }
     }
 }

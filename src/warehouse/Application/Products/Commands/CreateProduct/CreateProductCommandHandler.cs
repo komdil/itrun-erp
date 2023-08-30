@@ -34,7 +34,7 @@ namespace Application.Products.Commands.CreateProduct
                 Id = Guid.NewGuid()
             };
 
-            _dbContext.Products.Add(product);
+            await _dbContext.Products.AddAsync(product);
             await _dbContext.SaveChangesAsync(cancellationToken);
             
             return product.Name;

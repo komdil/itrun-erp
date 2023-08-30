@@ -14,6 +14,12 @@ namespace Warehouse.Api.Filters
                 context.Result = new BadRequestObjectResult(exception.ErrorResponse);
                 return;
             }
+            else if (context.Exception is NotFoundException notFoundException)
+            {
+                context.ExceptionHandled = true;
+                context.Result = new BadRequestObjectResult($"{notFoundException.Message}");
+                return;
+            }
 
             base.OnException(context);
         }

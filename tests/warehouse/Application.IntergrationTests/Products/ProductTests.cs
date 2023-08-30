@@ -120,12 +120,15 @@ namespace Application.IntergrationTests.Products
             // Assert
             updateProductRequestResult.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-            ErrorResponse errorResponse = await updateProductRequestResult.Content.ReadFromJsonAsync<ErrorResponse>();
-            errorResponse.Errors.Count.Should().Be(1);
+            var messageContent = await updateProductRequestResult.Content.ReadAsStringAsync();
+            messageContent.Should().Be($"Entity \"{updateProductRequest.Name}\" not found.");
+            //ex.Message.Should().Be($"Entity \"{updateProductRequest.Name}\" not found.");
+            //ErrorResponse errorResponse = await updateProductRequestResult.Content.ReadFromJsonAsync<ErrorResponse>();
+            //errorResponse.Errors.Count.Should().Be(1);
 
-            var error = errorResponse.Errors[0];
-            error.PropertyName.Should().Be(updateProductRequest.Name);
-            error.Message.Should().Be($"Entity \"{updateProductRequest.Name}\" not found.");
+            //var error = errorResponse.Errors[0];
+            //error.PropertyName.Should().Be(updateProductRequest.Name);
+            //error.Message.Should().Be($"Entity \"{updateProductRequest.Name}\" not found.");
         }
 
         [Test]
@@ -174,12 +177,14 @@ namespace Application.IntergrationTests.Products
             // Assert
             deleteProductRequestResult.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-            ErrorResponse errorResponse = await deleteProductRequestResult.Content.ReadFromJsonAsync<ErrorResponse>();
-            errorResponse.Errors.Count.Should().Be(1);
+            var messageContent = await deleteProductRequestResult.Content.ReadAsStringAsync();
+            messageContent.Should().Be($"Entity \"{deleteProductRequest.Slug}\" not found.");
+            //ErrorResponse errorResponse = await deleteProductRequestResult.Content.ReadFromJsonAsync<ErrorResponse>();
+            //errorResponse.Errors.Count.Should().Be(1);
 
-            var error = errorResponse.Errors[0];
-            error.PropertyName.Should().Be(deleteProductRequest.Slug);
-            error.Message.Should().Be($"Entity \"{deleteProductRequest.Slug}\" not found.");
+            //var error = errorResponse.Errors[0];
+            //error.PropertyName.Should().Be(deleteProductRequest.Slug);
+            //error.Message.Should().Be($"Entity \"{deleteProductRequest.Slug}\" not found.");
         }
 
         [Test]

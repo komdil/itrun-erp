@@ -21,9 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Product\Commands\DeleteProduct\" />
-    <Folder Include="Product\Queries\GetProductList\" />
-    <Folder Include="Product\Queries\GetProductDetails\" />
+    <Folder Include="Products\Queries\GetProductList\" />
+    <Folder Include="Products\Queries\GetProductDetails\" />
   </ItemGroup>
 
 </Project>
