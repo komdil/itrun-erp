@@ -4,6 +4,7 @@ using Contracts.ProductUOM;
 using Domain.Entities;
 using FluentAssertions;
 using FluentAssertions.Primitives;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using System.Net;
 using System.Net.Http.Json;
 using System.Xml.Linq;
@@ -138,8 +139,8 @@ namespace Application.IntergrationTests.Products
             CreateProductUOMRequest productUomRequest = new() { Name = "Kilo", Abbreviation = "KG", Details = "Test" };
             CreateProductRequest productRequest = new()
             {
-                Name = "Apple",
-                Category = "fruit",
+                Name = "Banana",
+                Category = "fruit2",
                 Description = "fruit from Central Asia",
                 Manufacturer = "TajFruitCompany",
                 Price = 100,
@@ -191,11 +192,52 @@ namespace Application.IntergrationTests.Products
         public async Task GetProducts_ShouldGiveProducts()
         {
             // Arrange
-            GetProductListQueryRequest getProductsList = new() { Category = string.Empty, Manufacturer = string.Empty, ProductUomId = Guid.Empty };
+            CreateProductUOMRequest productUomRequest = new() { Name = "Kilo", Abbreviation = "KG", Details = "Test" };
+            CreateProductRequest productRequest = new()
+            {
+                Name = "Apple",
+                Category = "fruit",
+                Description = "fruit from Central Asia",
+                Manufacturer = "TajFruitCompany",
+                Price = 100,
+                Quantity = 16,
+                ProductUom = productUomRequest.Name
+            };
+            HttpResponseMessage prodUomRequestResult = await _httpClient.PostAsJsonAsync("productuoms", productUomRequest);
+            HttpResponseMessage prodRequestResult = await _httpClient.PostAsJsonAsync("products", productRequest);
+            
+            GetProductListQueryRequest getProductsList = new() { Category = productRequest.Category, Manufacturer = string.Empty };
 
             // Act
             HttpResponseMessage getProductListResult = await _httpClient
-                                    .GetAsync($"products?Company={getProductsList.Category}&Manyfacturer={getProductsList.Manufacturer}");
+                                    .GetAsync($"products?Category={getProductsList.Category}&Manufacturer={getProductsList.Manufacturer}");
+            // Assert
+            var content = getProductListResult.Content.ReadAsStringAsync();
+            getProductListResult.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Test]
+        public async Task GetProducts_ShouldGiveProduct_WhenIdIsValid()
+        {
+            // Arrange
+            CreateProductUOMRequest productUomRequest = new() { Name = "Kilo", Abbreviation = "KG", Details = "Test" };
+            CreateProductRequest productRequest = new()
+            {
+                Name = "Apple",
+                Category = "fruit",
+                Description = "fruit from Central Asia",
+                Manufacturer = "TajFruitCompany",
+                Price = 100,
+                Quantity = 16,
+                ProductUom = productUomRequest.Name
+            };
+            HttpResponseMessage prodUomRequestResult = await _httpClient.PostAsJsonAsync("productuoms", productUomRequest);
+            HttpResponseMessage prodRequestResult = await _httpClient.PostAsJsonAsync("products", productRequest);
+            var validProduct = await GetEntity<Product>(prod => prod.Name == productRequest.Name);
+
+            // Act
+            HttpResponseMessage getProductListResult = await _httpClient
+                                    .GetAsync($"Products/id?id={validProduct.Id}");
             // Assert
             getProductListResult.StatusCode.Should().Be(HttpStatusCode.OK);
         }

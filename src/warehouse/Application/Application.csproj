@@ -20,9 +20,4 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Products\Queries\GetProductList\" />
-    <Folder Include="Products\Queries\GetProductDetails\" />
-  </ItemGroup>
-
 </Project>

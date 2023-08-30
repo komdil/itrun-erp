@@ -2,9 +2,8 @@
 
 namespace Contracts.Product
 {
-    public record GetProductListQueryRequest : IRequest<GetProductListQueryResponse>
+    public record GetProductListQueryRequest : IRequest<ProductListResponse>
     {
-        public Guid ProductUomId { get; set; }
         public string Category { get; set; }
         public string Manufacturer { get; set; }
     }

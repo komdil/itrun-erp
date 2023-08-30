@@ -1,9 +1,6 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces;
-using Application.Products.Commands.UpdateProduct;
-using AutoMapper;
 using Contracts.Product;
-using Domain.Entities;
 using MediatR;
 
 namespace Application.Products.Commands.DeleteProduct
