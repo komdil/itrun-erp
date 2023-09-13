@@ -14,7 +14,6 @@ namespace Application.Products.Commands.DeleteProduct
         public async Task Handle(DeleteProductRequest request, CancellationToken cancellationToken)
         {
             var product = _dbContext.Products.FirstOrDefault(prod => prod.Name == request.Slug);
-                //.FindAsync(new object[] { productNameToDelete }, cancellationToken);
 
             if (product == null)
             {

@@ -22,6 +22,10 @@ namespace Application.Products.Commands.UpdateProduct
         public async Task Handle(UpdateProductRequest request, CancellationToken cancellationToken)
         {
             var productUom = await _dbContext.ProductUOMs.FirstOrDefaultAsync(pUom => pUom.Name == request.ProductUom);
+            if (productUom == null)
+            {
+                throw new NotFoundException(request.ProductUom);
+            }
 
             var product = await _dbContext.Products.FirstOrDefaultAsync(prod => prod.Id == request.Id);
 
@@ -30,13 +34,8 @@ namespace Application.Products.Commands.UpdateProduct
                 throw new NotFoundException(request.Name);
             }
 
-            product.Name = request.Name;
+            product = _mapper.Map<Product>(request);
             product.Uom = productUom;
-            product.Manufacturer = request.Manufacturer;
-            product.Category = request.Category;
-            product.Description = request.Description;
-            product.Quantity = request.Quantity;
-            product.Price = request.Price;
 
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
