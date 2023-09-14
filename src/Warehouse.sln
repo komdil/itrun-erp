@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Warehouse.Api", "warehouse\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "warehouse\Domain\Domain.csproj", "{6A60EDFE-C7BA-4B7A-B3FA-82B9475B4CF1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TabBlazor.Templates.Wasm", "Warehouse.Client\TabBlazor.Templates.Wasm.csproj", "{4E4D2343-48C1-4FCD-8070-56EB8F695AF4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Warehouse.Client", "Warehouse.Client\Warehouse.Client.csproj", "{4E4D2343-48C1-4FCD-8070-56EB8F695AF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
