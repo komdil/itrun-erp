@@ -12,4 +12,8 @@
     <PackageReference Include="TabBlazor" Version="0.5.3-alpha" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\warehouse\Contracts\Contracts.csproj" />
+  </ItemGroup>
+
 </Project>

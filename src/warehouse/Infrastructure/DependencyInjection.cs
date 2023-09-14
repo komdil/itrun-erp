@@ -14,10 +14,7 @@ namespace Infrastructure
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
             {
-                if (configuration["UseInMemoryDatabase"] == "true")
-                    options.UseInMemoryDatabase("testDb");
-                else
-                    options.UseSqlServer(connectionString);
+                options.UseInMemoryDatabase("testDb");
             });
             return services;
         }
