@@ -1,0 +1,65 @@
+﻿@using Contracts.Product;
+@inject HttpClient MyHttpClient
+<Badge class="mt-2 mb-2" BackgroundColor="TablerColor.Primary">I'm a Badge</Badge>
+
+<ItemSelect Label="Select Product" SelectedValue=selectedCategory Items="products.DistinctBy(s=>s.Category).Select(s=>s.Category)" TItem="string" TValue="string" SelectedTextExpression="e=>e" SelectedValueChanged="@OnSelected" onselect="@OnSelected">
+    <ListTemplate>@context</ListTemplate>
+</ItemSelect>
+
+<div class="mt-2">
+    @if (isLoaded)
+    {
+        <Table Item="GetProductListQueryResponse" Items=products>
+            <HeaderTemplate>
+                <h3>Products</h3>
+            </HeaderTemplate>
+            <ChildContent>
+                <Column Item="GetProductListQueryResponse" Property="e=>e.Name" Sortable />
+                <Column Item="GetProductListQueryResponse" Property="e=>e.Category" Title="Category" Sortable Searchable />
+                <Column Item="GetProductListQueryResponse" Property="e=>e.Manufacturer" Sortable Searchable />
+                <Column Item="GetProductListQueryResponse" Property="e=>e.ProductUom" Sortable />
+
+            </ChildContent>
+        </Table>
+    }
+    else
+    {
+        <Progress Color="TablerColor.Blue" Indeterminate />
+    }
+</div>
+
+@code {
+    private List<GetProductListQueryResponse> products = new();
+    private bool isLoaded = false;
+    private string selectedCategory;
+    protected override async Task OnInitializedAsync()
+    {
+        await PopulateCustomers();
+    }
+
+    private async Task PopulateCustomers()
+    {
+        isLoaded = false;
+        //var productsFromApi = await MyHttpClient
+        //        .GetFromJsonAsync<ProductListResponse>($"https://localhost:7163/Products?Category={selectedCategory}");
+        products = new List<GetProductListQueryResponse>
+        {
+
+        new GetProductListQueryResponse
+        {
+            Category="test",
+            Name="test",
+            Manufacturer="test",
+            ProductUom="test"
+        }
+        };
+        isLoaded = true;
+    }
+    private void OnSelected()
+    {
+        if (selectedCategory != "")
+        {
+            PopulateCustomers();
+        }
+    }
+}
