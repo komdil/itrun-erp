@@ -9,3 +9,5 @@ namespace Contracts.Warehouse
         public string Location { get; set; }
     }
 }
+
+
