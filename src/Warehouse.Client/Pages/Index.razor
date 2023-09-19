@@ -1,13 +1,9 @@
 ﻿@page "/"
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization;
 @using Warehouse.Client.Products
 
-<PagePretitle>
-    TabBlazor
-    <Icon class="align-text-top" Elements="@Icons.Heart"
-          TextColor="TablerColor.Red" Size="12" Filled />
-</PagePretitle>
-<TabBlazor.PageTitle>
-    Home
-</TabBlazor.PageTitle>
+
+
 
 <ProductComponents />

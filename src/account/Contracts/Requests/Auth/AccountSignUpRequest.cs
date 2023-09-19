@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Contracts.Requests.Auth
+namespace Account.Contracts.Requests.Auth
 {
     public record AccountSignUpRequest
     {

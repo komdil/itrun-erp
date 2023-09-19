@@ -1,6 +1,9 @@
 ﻿@using Contracts.Product;
 @inject HttpClient MyHttpClient
-<Badge class="mt-2 mb-2" BackgroundColor="TablerColor.Primary">I'm a Badge</Badge>
+
+<TabBlazor.PageTitle>
+    Products
+</TabBlazor.PageTitle>
 
 <ItemSelect Label="Select Product" SelectedValue=selectedCategory Items="products.DistinctBy(s=>s.Category).Select(s=>s.Category)" TItem="string" TValue="string" SelectedTextExpression="e=>e" SelectedValueChanged="@OnSelected" onselect="@OnSelected">
     <ListTemplate>@context</ListTemplate>

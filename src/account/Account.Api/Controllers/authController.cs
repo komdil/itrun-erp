@@ -1,5 +1,5 @@
 ﻿using Application.Abstractions.Services;
-using Contracts.Requests.Auth;
+using Account.Contracts.Requests.Auth;
 using Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

@@ -1,4 +1,4 @@
-﻿namespace Contracts.Response.Auth
+﻿namespace Account.Contracts.Response.Auth
 {
     public record AccountSignUpResponse
     {

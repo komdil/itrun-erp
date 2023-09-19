@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Account.Api", "account\Acco
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "account\Application\Application.csproj", "{4A086754-CBE7-4E1F-82DB-9708864AD43B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "account\Contracts\Contracts.csproj", "{38AE8BC8-D49B-414D-89C8-4105CB9EC8CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Account.Contracts", "account\Contracts\Account.Contracts.csproj", "{38AE8BC8-D49B-414D-89C8-4105CB9EC8CD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "account\Domain\Domain.csproj", "{45E0772C-78C8-4E02-A8EF-EC3882D113C5}"
 EndProject

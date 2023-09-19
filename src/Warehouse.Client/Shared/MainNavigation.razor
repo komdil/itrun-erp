@@ -1,15 +1,48 @@
-﻿<Navbar Direction=NavbarDirection.Vertical Background=NavbarBackground.Dark>
-    
-      <a href="#" class="navbar-brand navbar-brand-autodark">
+﻿@using Account.Contracts.Requests.Auth;
+@inject AuthenticationStateProvider provider;
+
+<Navbar Direction=NavbarDirection.Vertical Background=NavbarBackground.Dark>
+    <a href="#" class="navbar-brand navbar-brand-autodark">
         <img src="img/TabBlazorLogoWhite.png" alt="Tabler" class="navbar-brand-image me-2">
         <h2 class="text-muted">My Warehouse</h2>
     </a>
-    
     <NavbarMenu>
-        <NavbarMenuItem Href="" Text="Home">
+        <AuthorizeView>
+            <Authorized>
+                <NavbarMenuItem Href="" Text="Home">
+                    <MenuItemIcon>
+                        <Icon class="icon" Elements="@Icons.Home" />
+                    </MenuItemIcon>
+                </NavbarMenuItem>
+                <NavbarMenuItem Href="#" Text="Log out" @onclick="Logout">
+                    <MenuItemIcon>
+                        <Icon class="icon" Elements="@Icons.Login" />
+                    </MenuItemIcon>
+                </NavbarMenuItem>
+            </Authorized>
+            <NotAuthorized>
+                <NavbarMenuItem Href="/login" Text="Log in">
+                    <MenuItemIcon>
+                        <Icon class="icon" Elements="@Icons.Login" />
+                    </MenuItemIcon>
+                </NavbarMenuItem>
+
+            </NotAuthorized>
+
+        </AuthorizeView>
+        <NavbarMenuItem Href="/claims-principle-data" Text="Claims">
             <MenuItemIcon>
-                <Icon class="icon" Elements="@Icons.Home" />
+                <Icon class="icon" Elements="@Icons.Login" />
             </MenuItemIcon>
         </NavbarMenuItem>
-</NavbarMenu>
+    </NavbarMenu>
 </Navbar>
+@code
+{
+    private async Task Logout()
+    {
+        WarehouseAuthStateProvider.IsAuthenticated = false;
+        //get and store token
+        await provider.GetAuthenticationStateAsync();
+    }
+}

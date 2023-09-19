@@ -1,5 +1,5 @@
-﻿using Contracts.Requests.Auth;
-using Contracts.Response.Auth;
+﻿using Account.Contracts.Requests.Auth;
+using Account.Contracts.Response.Auth;
 
 namespace Application.Abstractions.Services
 {
