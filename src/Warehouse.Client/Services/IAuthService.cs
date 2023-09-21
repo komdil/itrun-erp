@@ -4,6 +4,8 @@ namespace Warehouse.Client.Services
 {
     public interface IAuthService
     {
-        Task LoginAsync(AccountSignInRequest accountSignInRequest);
+        public const string TokenLocalStorageKey = "TokenLocalStorageKey";
+        Task<bool> LoginAsync(AccountSignInRequest accountSignInRequest);
+        Task LogoutAsync();
     }
 }

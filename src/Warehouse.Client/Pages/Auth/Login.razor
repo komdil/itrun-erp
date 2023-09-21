@@ -2,6 +2,7 @@
 @using Account.Contracts.Requests.Auth;
 @inject IAuthService authService;
 
+<br />
 <h3>Login</h3>
 
 <EditForm Model="@LoginRequest" OnValidSubmit="HandleValidSubmit">
@@ -21,12 +22,21 @@
         Login
     </button>
 </EditForm>
+<br />
+@if (LoginIsNotValid)
+{
+    <Alert BackgroundColor="TablerColor.Danger" Title="Login" Dismissible>
+        <div class="text-muted">UserName or Password is incorrect!</div>
+    </Alert>
+}
 
 @code {
     private AccountSignInRequest LoginRequest { get; } = new AccountSignInRequest();
-
+    private bool LoginIsNotValid = false;
     private async Task HandleValidSubmit()
     {
-        await authService.LoginAsync(LoginRequest);
+        LoginIsNotValid = false;
+        var success = await authService.LoginAsync(LoginRequest);
+        LoginIsNotValid = !success;
     }
 }

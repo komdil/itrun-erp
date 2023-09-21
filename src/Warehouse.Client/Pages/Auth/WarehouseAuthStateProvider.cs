@@ -1,19 +1,26 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text.Json;
+using Warehouse.Client.Services;
 
-namespace Warehouse.Client.Auth
+namespace Warehouse.Client.Pages.Auth
 {
     public class WarehouseAuthStateProvider : AuthenticationStateProvider
     {
-        public static bool IsAuthenticated { get; set; }
-        public override Task<AuthenticationState> GetAuthenticationStateAsync()
+        private ILocalStorageService _localStorageService;
+        public WarehouseAuthStateProvider(ILocalStorageService localStorageService)
+        {
+            _localStorageService = localStorageService;
+        }
+
+        public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             ClaimsPrincipal user;
-            if (IsAuthenticated)
+            string token = await _localStorageService.GetItemAsync<string>(IAuthService.TokenLocalStorageKey);
+            if (!string.IsNullOrEmpty(token))
             {
-                string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3ByaW1hcnlzaWQiOiI2YTU1MWQ4ZS04ZWQ1LTQ3NTUtYTA3ZC1hYTUzNDdkNzljYjYiLCJleHAiOjE2OTUxNTE1MTIsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjYxOTU1IiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDIwMCJ9.g4L6j8e6PsYttpf7kfAu-3ibluS01MBb9GwyGL1YPOs";
                 var claims = ParseClaimsFromJwt(token);
                 var identity = new ClaimsIdentity(claims, "jwt");
                 user = new ClaimsPrincipal(identity);
@@ -22,11 +29,9 @@ namespace Warehouse.Client.Auth
             {
                 user = new ClaimsPrincipal();
             }
-
             var state = new AuthenticationState(user);
-            var result = Task.FromResult(state);
-            NotifyAuthenticationStateChanged(result);
-            return result;
+            NotifyAuthenticationStateChanged(Task.FromResult(state));
+            return state;
         }
 
         public static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
