@@ -27,8 +27,7 @@ namespace Infrastructure
                 .AddRoles<IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddScoped<IAccountSignUpService, AccountSignUpService>();
-            services.AddScoped<IAccountSignInService, AccountSignInService>();
+            services.AddScoped<IAccountService, AccountService>();
 
             return services;
         }
