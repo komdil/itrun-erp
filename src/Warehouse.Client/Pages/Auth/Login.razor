@@ -5,29 +5,38 @@
 <br />
 <h3>Login</h3>
 
-<EditForm Model="@LoginRequest" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <div class="form-group">
-        <label>Username</label>
-        <InputText @bind-Value="LoginRequest.Username" class="form-control" />
-        <ValidationMessage For="@(() => LoginRequest.Username)" />
-    </div>
-    <div class="form-group">
-        <label>Password</label>
-        <InputText @bind-Value="LoginRequest.Password" type="password" class="form-control" />
-        <ValidationMessage For="@(() => LoginRequest.Password)" />
-    </div>
-    <br />
-    <button class="btn btn-primary">
-        Login
-    </button>
-</EditForm>
+<AuthorizeView>
+    <NotAuthorized>
+        <EditForm Model="@LoginRequest" OnValidSubmit="HandleValidSubmit" Context="_login">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Username</label>
+                <InputText @bind-Value="LoginRequest.Username" class="form-control" />
+                <ValidationMessage For="@(() => LoginRequest.Username)" />
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <InputText @bind-Value="LoginRequest.Password" type="password" class="form-control" />
+                <ValidationMessage For="@(() => LoginRequest.Password)" />
+            </div>
+            <br />
+            <button class="btn btn-primary">
+                Login
+            </button>
+        </EditForm>
+    </NotAuthorized>
+    <Authorized>
+        <p>You already signed in. Back to <a href="/">Home</a></p>
+    </Authorized>
+</AuthorizeView>
+
+
 <br />
 @if (LoginIsNotValid)
 {
     <Alert BackgroundColor="TablerColor.Danger" Title="Login" Dismissible>
-        <div class="text-muted">UserName or Password is incorrect!</div>
-    </Alert>
+     <div class="text-muted">UserName or Password is incorrect!</div>
+ </Alert>
 }
 
 @code {
