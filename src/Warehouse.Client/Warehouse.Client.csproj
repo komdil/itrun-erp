@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\account\Contracts\Account.Contracts.csproj" />
+    <ProjectReference Include="..\account\Account.Contracts\Account.Contracts.csproj" />
     <ProjectReference Include="..\warehouse\Contracts\Contracts.csproj" />
   </ItemGroup>
 
