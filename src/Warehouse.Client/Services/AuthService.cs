@@ -3,13 +3,12 @@ using Account.Contracts.Response.Auth;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Json;
-using Warehouse.Client.Pages.Auth;
 
 namespace Warehouse.Client.Services
 {
     public class AuthService : IAuthService
     {
-        const string loginAddress = "https://localhost:7012/Auth/sign-in";
+        const string loginAddress = "https://localhost:7012/Auth";
 
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly HttpClient _httpClient;
@@ -25,7 +24,7 @@ namespace Warehouse.Client.Services
 
         public async Task<bool> LoginAsync(AccountSignInRequest accountSignInRequest)
         {
-            var response = await _httpClient.PostAsJsonAsync(loginAddress, accountSignInRequest);
+            var response = await _httpClient.PostAsJsonAsync($"{loginAddress}/sign-in", accountSignInRequest);
             if (response.IsSuccessStatusCode)
             {
                 var tokenResponse = await response.Content.ReadFromJsonAsync<AccountSignInResponse>();
@@ -43,6 +42,18 @@ namespace Warehouse.Client.Services
         {
             await _localStorageService.RemoveItemAsync(IAuthService.TokenLocalStorageKey);
             await _authenticationStateProvider.GetAuthenticationStateAsync();
+        }
+
+        public async Task<AccountSignUpResponse> SignUpAsync(AccountSignUpRequest accountSignUpRequest)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"{loginAddress}/sign-up", accountSignUpRequest);
+            var tokenResponse = await response.Content.ReadFromJsonAsync<AccountSignUpResponse>();
+            if (response.IsSuccessStatusCode)
+            {
+                await _localStorageService.SetItemAsync(IAuthService.TokenLocalStorageKey, tokenResponse.Token);
+                await _authenticationStateProvider.GetAuthenticationStateAsync();
+            }
+            return tokenResponse;
         }
     }
 }
