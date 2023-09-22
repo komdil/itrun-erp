@@ -1,4 +1,4 @@
-﻿using Contracts.Exceptions;
+﻿using Warehouse.Contracts.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

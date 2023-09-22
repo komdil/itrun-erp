@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Contracts.Exceptions
+namespace Warehouse.Contracts.Exceptions
 {
     public record ErrorResponse
     {

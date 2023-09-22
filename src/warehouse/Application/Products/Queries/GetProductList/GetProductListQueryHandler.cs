@@ -2,7 +2,7 @@
 using Application.Common.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Contracts.Product;
+using Warehouse.Contracts.Product;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

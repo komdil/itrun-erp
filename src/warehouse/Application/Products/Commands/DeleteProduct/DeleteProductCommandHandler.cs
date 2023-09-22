@@ -1,6 +1,6 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces;
-using Contracts.Product;
+using Warehouse.Contracts.Product;
 using MediatR;
 
 namespace Application.Products.Commands.DeleteProduct

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Contracts.Warehouse
+namespace Warehouse.Contracts.Warehouse
 {
     public record CreateWarehouseResponse
     {

@@ -1,4 +1,4 @@
-﻿namespace Contracts.Product
+﻿namespace Warehouse.Contracts.Product
 {
     public record ProductListResponse
     {

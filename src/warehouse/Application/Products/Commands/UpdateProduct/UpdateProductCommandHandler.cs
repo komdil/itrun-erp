@@ -1,7 +1,7 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using AutoMapper;
-using Contracts.Product;
+using Warehouse.Contracts.Product;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

@@ -1,4 +1,4 @@
-﻿using Contracts.Product;
+﻿using Warehouse.Contracts.Product;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Warehouse.Api.Controllers

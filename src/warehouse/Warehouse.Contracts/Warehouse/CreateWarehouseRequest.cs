@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Contracts.Warehouse
+namespace Warehouse.Contracts.Warehouse
 {
     public record CreateWarehouseRequest : IRequest<CreateWarehouseResponse>
     {

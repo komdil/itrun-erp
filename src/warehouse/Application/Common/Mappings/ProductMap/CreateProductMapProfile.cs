@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Contracts.Product;
+using Warehouse.Contracts.Product;
 using Domain.Entities;
 
 namespace Application.Common.Mappings.ProductMap

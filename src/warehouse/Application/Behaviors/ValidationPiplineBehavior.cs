@@ -1,5 +1,5 @@
 ﻿using Application.Common.Exceptions;
-using Contracts.Exceptions;
+using Warehouse.Contracts.Exceptions;
 using FluentValidation;
 using MediatR;
 using System;

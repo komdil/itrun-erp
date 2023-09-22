@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Contracts.ProductUOM;
+using Warehouse.Contracts.ProductUOM;
 using Domain.Entities;
 using System;
 using System.Collections.Generic;

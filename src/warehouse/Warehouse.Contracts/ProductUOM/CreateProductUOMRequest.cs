@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Contracts.ProductUOM
+namespace Warehouse.Contracts.ProductUOM
 {
     public record CreateProductUOMRequest : IRequest<CreateProductUOMResponse>
     {

@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Contracts.Product
+namespace Warehouse.Contracts.Product
 {
     public record GetProductListQueryRequest : IRequest<ProductListResponse>
     {
