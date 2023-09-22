@@ -1,14 +1,14 @@
-﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces;
+﻿using Application.Common.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Warehouse.Contracts.Product;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Domain.Entities;
 
 namespace Application.Products.Queries.GetProductList
 {
-    public class GetProductListQueryHandler : IRequestHandler<GetProductListQueryRequest, ProductListResponse>
+    public class GetProductListQueryHandler : IRequestHandler<GetProductsQuery, List<SingleProductResponse>>
     {
         IApplicationDbContext _dbContext;
         IMapper _mapper;
@@ -19,38 +19,17 @@ namespace Application.Products.Queries.GetProductList
             _mapper = mapper;
         }
 
-        public async Task<ProductListResponse> Handle(GetProductListQueryRequest request, CancellationToken cancellationToken)
+        public async Task<List<SingleProductResponse>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
         {
-            List<GetProductListQueryResponse> productQuery = null;
+            IQueryable<Product> productQuery = _dbContext.Products;
 
-            if (!string.IsNullOrWhiteSpace(request.Manufacturer) && !string.IsNullOrWhiteSpace(request.Category))
-            {
-                productQuery = await _dbContext.Products
-                    .Where(product => product.Manufacturer == request.Manufacturer && product.Category == request.Category)
-                    .ProjectTo<GetProductListQueryResponse>(_mapper.ConfigurationProvider)
-                    .ToListAsync(cancellationToken);
-            }
-            else if (!string.IsNullOrWhiteSpace(request.Manufacturer) && string.IsNullOrWhiteSpace(request.Category))
-            {
-                productQuery = await _dbContext.Products
-                    .Where(product => product.Manufacturer == request.Manufacturer)
-                    .ProjectTo<GetProductListQueryResponse>(_mapper.ConfigurationProvider)
-                    .ToListAsync(cancellationToken);
-            }
-            else if (string.IsNullOrWhiteSpace(request.Manufacturer) && !string.IsNullOrWhiteSpace(request.Category))
-            {
-                productQuery = await _dbContext.Products
-                    .Where(product => product.Category == request.Category)
-                    .ProjectTo<GetProductListQueryResponse>(_mapper.ConfigurationProvider)
-                    .ToListAsync(cancellationToken);
-            }
+            if (!string.IsNullOrWhiteSpace(request.Manufacturer))
+                productQuery = productQuery.Where(p => p.Manufacturer == request.Manufacturer);
 
-            if (productQuery == null)
-            {
-                throw new NotFoundException("BadRequest");
-            }
+            if (!string.IsNullOrWhiteSpace(request.Category))
+                productQuery = productQuery.Where(p => p.Category == request.Category);
 
-            return new ProductListResponse { ProductsList = productQuery };
+            return await productQuery.ProjectTo<SingleProductResponse>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
         }
     }
 }

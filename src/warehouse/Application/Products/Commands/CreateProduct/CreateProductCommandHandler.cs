@@ -4,10 +4,11 @@ using AutoMapper;
 using Warehouse.Contracts.Product;
 using Domain.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Products.Commands.CreateProduct
 {
-    public class CreateProductCommandHandler : IRequestHandler<CreateProductRequest, string>
+    public class CreateProductCommandHandler : IRequestHandler<CreateProductRequest, SingleProductResponse>
     {
         IApplicationDbContext _dbContext;
         IMapper _mapper;
@@ -18,21 +19,19 @@ namespace Application.Products.Commands.CreateProduct
             _mapper = mapper;
         }
 
-        public async Task<string> Handle(CreateProductRequest request, CancellationToken cancellationToken)
+        public async Task<SingleProductResponse> Handle(CreateProductRequest request, CancellationToken cancellationToken)
         {
-            var productUom = _dbContext.ProductUOMs.FirstOrDefault(pUom => pUom.Name == request.ProductUom);
+            var productUom = await _dbContext.ProductUOMs.FirstOrDefaultAsync(pUom => pUom.Name == request.ProductUom, cancellationToken: cancellationToken);
             if (productUom == null)
-            {
-                throw new NotFoundException(request.ProductUom);
-            }
+                throw new ValidationFailedException(request.ProductUom);
 
             var product = _mapper.Map<Product>(request);
             product.Uom = productUom;
 
-            await _dbContext.Products.AddAsync(product);
+            await _dbContext.Products.AddAsync(product, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
-            
-            return product.Name;
+
+            return _mapper.Map<SingleProductResponse>(product);
         }
     }
 }

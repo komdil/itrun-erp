@@ -2,7 +2,7 @@
 
 namespace Warehouse.Contracts.Product
 {
-    public record GetProductDetailsQueryRequest : IRequest<GetProductDetailsQueryResponse>
+    public record GetSingleProductQuery : IRequest<SingleProductResponse>
     {
         public Guid ProductId { get; set; }
     }

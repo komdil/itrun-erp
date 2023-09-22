@@ -2,6 +2,7 @@
 using Application.Common.Interfaces;
 using Warehouse.Contracts.Product;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Products.Commands.DeleteProduct
 {
@@ -13,12 +14,10 @@ namespace Application.Products.Commands.DeleteProduct
 
         public async Task Handle(DeleteProductRequest request, CancellationToken cancellationToken)
         {
-            var product = _dbContext.Products.FirstOrDefault(prod => prod.Name == request.Slug);
+            var product = await _dbContext.Products.FirstOrDefaultAsync(prod => prod.Name == request.Slug, cancellationToken);
 
             if (product == null)
-            {
-                throw new NotFoundException(request.Slug);
-            }
+                throw new NotFoundException();
 
             _dbContext.Products.Remove(product);
             await _dbContext.SaveChangesAsync(cancellationToken);

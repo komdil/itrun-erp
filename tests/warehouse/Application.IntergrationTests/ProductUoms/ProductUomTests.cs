@@ -1,6 +1,6 @@
-﻿using Contracts.Exceptions;
-using Contracts.ProductUOM;
-using Contracts.Warehouse;
+﻿using Warehouse.Contracts.Exceptions;
+using Warehouse.Contracts.ProductUOM;
+using Warehouse.Contracts.Warehouse;
 using Domain.Entities;
 using FluentAssertions;
 using Newtonsoft.Json;

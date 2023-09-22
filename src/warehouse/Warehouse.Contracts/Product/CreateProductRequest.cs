@@ -2,7 +2,7 @@
 
 namespace Warehouse.Contracts.Product
 {
-    public record CreateProductRequest : IRequest<string>
+    public record CreateProductRequest : IRequest<SingleProductResponse>
     {
         public string Name { get; set; }
         public string ProductUom { get; set; }

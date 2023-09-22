@@ -1,6 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Application.IntegrationTests;
-using Contracts.Warehouse;
+using Warehouse.Contracts.Warehouse;
 using Domain.Entities;
 using FluentAssertions;
 using Newtonsoft.Json;
