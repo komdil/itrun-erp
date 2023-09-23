@@ -16,6 +16,10 @@ namespace Warehouse.Api.Controllers
 			{
 				return BadRequest(ModelState);
 			}
+			var saleProduct = new SaleProduct
+			{
+				
+			};
 
 			_sales.Add(sale);
 			return Ok();
