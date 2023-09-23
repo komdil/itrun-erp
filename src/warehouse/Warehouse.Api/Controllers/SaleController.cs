@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Warehouse.Api.Controllers
 {
@@ -18,6 +19,12 @@ namespace Warehouse.Api.Controllers
 			}
 
 			_sales.Add(sale);
+			return Ok();
+		}
+		[HttpGet]
+		[Route("api/sales/{id}")]
+		public IActionResult GetSale(int id)
+		{
 			return Ok();
 		}
 	}
