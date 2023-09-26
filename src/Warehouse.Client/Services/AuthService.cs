@@ -9,23 +9,22 @@ namespace Warehouse.Client.Services
 {
     public class AuthService : IAuthService
     {
-        const string loginAddress = "https://localhost:7012/Auth/sign-in";
-
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly HttpClient _httpClient;
-        private ILocalStorageService _localStorageService;
-
+        private readonly ILocalStorageService _localStorageService;
+        private readonly IConfiguration _configuration;
         public AuthService(AuthenticationStateProvider authenticationStateProvider,
-            HttpClient httpClient, ILocalStorageService localStorageService)
+            HttpClient httpClient, ILocalStorageService localStorageService, IConfiguration configuration)
         {
             _authenticationStateProvider = authenticationStateProvider;
             _httpClient = httpClient;
             _localStorageService = localStorageService;
+            _configuration = configuration;
         }
 
         public async Task<bool> LoginAsync(AccountSignInRequest accountSignInRequest)
         {
-            var response = await _httpClient.PostAsJsonAsync(loginAddress, accountSignInRequest);
+            var response = await _httpClient.PostAsJsonAsync($"{_configuration["AccountServiceUrl"]}/sign-in", accountSignInRequest);
             if (response.IsSuccessStatusCode)
             {
                 var tokenResponse = await response.Content.ReadFromJsonAsync<AccountSignInResponse>();
@@ -43,6 +42,18 @@ namespace Warehouse.Client.Services
         {
             await _localStorageService.RemoveItemAsync(IAuthService.TokenLocalStorageKey);
             await _authenticationStateProvider.GetAuthenticationStateAsync();
+        }
+
+        public async Task<AccountSignUpResponse> SignUpAsync(AccountSignUpRequest accountSignUpRequest)
+        {
+            var response = await _httpClient.PostAsJsonAsync($"{_configuration["AccountServiceUrl"]}/sign-up", accountSignUpRequest);
+            var tokenResponse = await response.Content.ReadFromJsonAsync<AccountSignUpResponse>();
+            if (response.IsSuccessStatusCode)
+            {
+                await _localStorageService.SetItemAsync(IAuthService.TokenLocalStorageKey, tokenResponse.Token);
+                await _authenticationStateProvider.GetAuthenticationStateAsync();
+            }
+            return tokenResponse;
         }
     }
 }
