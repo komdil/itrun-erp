@@ -1,53 +1,6 @@
 ﻿@page "/"
 @attribute [Authorize]
-@using Microsoft.AspNetCore.Authorization;
-@using TabBlazor.Services;
-
-
-
-<Button @onclick="ShowConfirmModal" BackgroundColor="TablerColor.Primary">Show Confirm</Button>
-<div class=mb-3>@message</div>
-
-
-<Button @onclick="ShowInfoModal" BackgroundColor="TablerColor.Primary">Show Info</Button>
 
 @code {
-    @inject IModalService ModalService
-    private string message;
-
-
-    protected async Task ShowConfirmModal()
-    {
-        message = string.Empty;
-        var result = await ModalService.ShowDialogAsync(new TabBlazor.Components.Modals.DialogOptions
-            {
-                MainText = "Are you sure?",
-                SubText = "Please note this can not be undone",
-                StatusColor = TablerColor.Danger
-            });
-
-        if (result)
-        {
-            message = "Ok to continue";
-        }
-        else
-        {
-            message = "Do not continue";
-        }
-    }
-
-    protected async Task ShowInfoModal()
-    {
-
-        await ModalService.ShowDialogAsync(new TabBlazor.Components.Modals.DialogOptions
-            {
-                MainText = "You have a new message",
-                SubText = "Check your inbox for more information",
-                CancelText = "",
-                StatusColor = TablerColor.Primary
-            });
-
-
-    }
-
+   
 }

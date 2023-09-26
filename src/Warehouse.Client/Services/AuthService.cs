@@ -3,7 +3,6 @@ using Account.Contracts.Response.Auth;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Json;
-using Warehouse.Client.Pages.Auth;
 
 namespace Warehouse.Client.Services
 {
