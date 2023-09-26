@@ -1,5 +1,6 @@
 ﻿@page "/login"
 @using Account.Contracts.Requests.Auth;
+@using Warehouse.Client.Services.Auth;
 @inject IAuthService authService;
 
 <br />
@@ -19,6 +20,12 @@
                 <InputText @bind-Value="LoginRequest.Password" type="password" class="form-control" />
                 <ValidationMessage For="@(() => LoginRequest.Password)" />
             </div>
+
+            @if (isLogging)
+            {
+                <br />
+                <Progress Color="TablerColor.Blue" Indeterminate />
+            }
             <br />
             <button class="btn btn-primary">
                 Login
@@ -35,17 +42,22 @@
 @if (LoginIsNotValid)
 {
     <Alert BackgroundColor="TablerColor.Danger" Title="Login" Dismissible>
-     <div class="text-muted">UserName or Password is incorrect!</div>
+     <div class="text-muted">@errorMessage</div>
  </Alert>
 }
 
 @code {
     private AccountSignInRequest LoginRequest { get; } = new AccountSignInRequest();
     private bool LoginIsNotValid = false;
+    private string errorMessage;
+    private bool isLogging = false;
     private async Task HandleValidSubmit()
     {
         LoginIsNotValid = false;
-        var success = await authService.LoginAsync(LoginRequest);
-        LoginIsNotValid = !success;
+        isLogging = true;
+        var response = await authService.LoginAsync(LoginRequest);
+        LoginIsNotValid = !response.Success;
+        errorMessage = response.Error;
+        isLogging = false;
     }
 }

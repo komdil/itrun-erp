@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Text.Json;
-using Warehouse.Client.Services;
+using Warehouse.Client.Services.Auth;
 
 namespace Warehouse.Client.Pages.Auth
 {
