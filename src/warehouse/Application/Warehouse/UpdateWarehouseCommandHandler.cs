@@ -34,7 +34,7 @@ namespace Application.Warehouse
             warehouse.Location = request.Location;
 
             await _context.SaveChangesAsync(cancellationToken);
-            return _mapper.Map<SingleWarehouseResponse>(request);
+            return _mapper.Map<SingleWarehouseResponse>(warehouse);
         }
     }
 }

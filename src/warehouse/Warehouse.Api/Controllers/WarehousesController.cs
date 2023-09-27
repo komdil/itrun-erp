@@ -1,6 +1,5 @@
 ﻿using Warehouse.Contracts.Warehouse;
 using Microsoft.AspNetCore.Mvc;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Warehouse.Api.Controllers
 {
@@ -12,7 +11,7 @@ namespace Warehouse.Api.Controllers
             return await Sender.Send(query);
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         public async Task<SingleWarehouseResponse> Get(Guid id)
         {
             var query = new GetSingleWarehouseQuery()
@@ -22,14 +21,14 @@ namespace Warehouse.Api.Controllers
             return await Sender.Send(query);
         }
 
-        [HttpPut("id")]
+        [HttpPut("{id}")]
         public async Task<SingleWarehouseResponse> Put(Guid id, [FromBody] UpdateWarehouseRequest updateWarehouseRequest)
         {
             updateWarehouseRequest.Id = id;
             return await Sender.Send(updateWarehouseRequest);
         }
 
-        [HttpDelete("id")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var deleteRequest = new DeleteWarehouseRequest()

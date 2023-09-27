@@ -45,15 +45,15 @@ namespace Application.IntergrationTests.Warehouses
         }
 
         [Test]
-        [Ignore("Failing")]
         public async Task GetSingleWarehouse_ShouldReturnWarehouseFromDb()
         {
             // Arrange
             await CreateWarehouses(1);
             var warehouseFromDb = GetEntities<WareHouse>().First();
 
+            string url = $"warehouses/{warehouseFromDb.Id}";
             // Act
-            var wareHouse = await _httpClient.GetFromJsonAsync<SingleWarehouseResponse>($"warehouses/{warehouseFromDb.Id}");
+            var wareHouse = await _httpClient.GetFromJsonAsync<SingleWarehouseResponse>(url);
 
             wareHouse.Should().NotBeNull();
             wareHouse.Name.Should().Be(warehouseFromDb.Name);
@@ -62,8 +62,7 @@ namespace Application.IntergrationTests.Warehouses
         }
 
         [Test]
-        [Ignore("Failing")]
-        public async Task UpdateWarehouse_ShoudUpdateDb()
+        public async Task UpdateWarehouse_ShouldUpdateDb()
         {
             // Arrange
             await CreateWarehouses(1);
@@ -80,9 +79,8 @@ namespace Application.IntergrationTests.Warehouses
             updatedWareHouse.Name.Should().Be(request.Name);
         }
 
-        [Ignore("Failing")]
         [Test]
-        public async Task DeleteWarehouse_ShoudDeleteFromDb()
+        public async Task DeleteWarehouse_ShouldDeleteFromDb()
         {
             // Arrange
             await CreateWarehouses(1);
