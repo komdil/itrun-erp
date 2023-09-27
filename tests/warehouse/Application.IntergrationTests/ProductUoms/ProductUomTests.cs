@@ -50,5 +50,51 @@ namespace Application.IntergrationTests.ProductUoms
             error.Message.Should().Be("'Name' must not be empty.");
         }
 
+            [Test]
+            public async Task DeleteProduct_ShouldReturnException_WhenUrlIsInvalid()
+            {
+                // Arrange
+                DeleteProductRequest DeleteProductUomRequest = new("-");
+
+                // Act
+                HttpResponseMessage result = await _httpClient.DeleteAsync($"productuom/{DeleteProductUomRequest.Slug}");
+
+                // Assert
+                result.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            }
+
+            [Test]
+            public async Task UpdateProduct_ShouldReturnSuccess()
+            {
+                // Arrange
+                CreateProductUOMRequest productUomRequest = new() { Name = "Kilo", Abbreviation = "KG", Details = "Test" };
+             
+
+                HttpResponseMessage prodUomRequestResult = await _httpClient.PostAsJsonAsync("productuoms", productUomRequest);
+
+                var validProduct = await GetEntity<ProductUOM>(prod => prod.Name == productUomRequest.Name);
+
+                UpdateProductUomRequest updateProductUomRequest = new()
+                {
+                    Id = validProduct.Id,
+                    Name = "Apple",
+                    Abbreviation = "G",
+                    Details = "Test"
+                };
+
+                // Act
+                HttpResponseMessage updateProductUomRequestResult = await _httpClient.PutAsJsonAsync("products", updateProductUomRequest);
+
+                // Assert
+                updateProductUomRequestResult.StatusCode.Should().Be(HttpStatusCode.OK);
+
+                var updatedProductUom = await GetEntity<ProductUOM>(prod =>
+                                   prod.Id == updateProductUomRequest.Id &&
+                                   prod.Name == updateProductUomRequest.Name &&
+                                   prod.Abbreviation == updateProductUomRequest.Abbreviation&&
+                                   prod.Details == updateProductUomRequest.Details);
+                updatedProductUom.Should().NotBeNull();
+            }
+
+        }
     }
-}

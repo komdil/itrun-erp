@@ -20,6 +20,8 @@ namespace Application.Common.Mappings
             CreateMap<ProductUOM, CreateProductUOMResponse>()
                 .ForMember(prodUomResponse => prodUomResponse.Slug,
                 opt => opt.MapFrom(p =>p.Abbreviation));
+
+            CreateMap<UpdateProductUomRequest, ProductUom>();
         }
     }
 }
