@@ -1,5 +1,5 @@
 ﻿using Application.Common.Interfaces;
-using Contracts.Warehouse;
+using Warehouse.Contracts.Warehouse;
 using Domain.Entities;
 using MediatR;
 using System;

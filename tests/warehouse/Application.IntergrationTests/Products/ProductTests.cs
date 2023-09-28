@@ -1,6 +1,6 @@
-﻿using Contracts.Exceptions;
-using Contracts.Product;
-using Contracts.ProductUOM;
+﻿using Warehouse.Contracts.Exceptions;
+using Warehouse.Contracts.Product;
+using Warehouse.Contracts.ProductUOM;
 using Domain.Entities;
 using FluentAssertions;
 using FluentAssertions.Primitives;
@@ -84,7 +84,7 @@ namespace Application.IntergrationTests.Products
             HttpResponseMessage updateProductRequestResult = await _httpClient.PutAsJsonAsync("products", updateProductRequest);
 
             // Assert
-            updateProductRequestResult.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            updateProductRequestResult.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var updatedProduct = await GetEntity<Product>(prod =>
                                prod.Id == updateProductRequest.Id &&
@@ -102,7 +102,6 @@ namespace Application.IntergrationTests.Products
         public async Task UpdateProduct_ShouldReturnException_WhenProductNotFound()
         {
             // Arrange
-            CreateProductUOMRequest productUomRequest = new() { Name = "Kilo", Abbreviation = "KG", Details = "Test" };
             UpdateProductRequest updateProductRequest = new()
             {
                 Id = Guid.NewGuid(),
@@ -112,24 +111,14 @@ namespace Application.IntergrationTests.Products
                 Manufacturer = "TajFruitCompany",
                 Price = 100,
                 Quantity = 16,
-                ProductUom = productUomRequest.Name
+                ProductUom = "kilo"
             };
 
             // Act
             HttpResponseMessage updateProductRequestResult = await _httpClient.PutAsJsonAsync("products", updateProductRequest);
 
             // Assert
-            updateProductRequestResult.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-            var messageContent = await updateProductRequestResult.Content.ReadAsStringAsync();
-            messageContent.Should().Be($"Entity \"{updateProductRequest.Name}\" not found.");
-            //ex.Message.Should().Be($"Entity \"{updateProductRequest.Name}\" not found.");
-            //ErrorResponse errorResponse = await updateProductRequestResult.Content.ReadFromJsonAsync<ErrorResponse>();
-            //errorResponse.Errors.Count.Should().Be(1);
-
-            //var error = errorResponse.Errors[0];
-            //error.PropertyName.Should().Be(updateProductRequest.Name);
-            //error.Message.Should().Be($"Entity \"{updateProductRequest.Name}\" not found.");
+            updateProductRequestResult.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
         [Test]
@@ -176,16 +165,7 @@ namespace Application.IntergrationTests.Products
             HttpResponseMessage deleteProductRequestResult = await _httpClient.DeleteAsync($"products/{deleteProductRequest.Slug}");
 
             // Assert
-            deleteProductRequestResult.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-            var messageContent = await deleteProductRequestResult.Content.ReadAsStringAsync();
-            messageContent.Should().Be($"Entity \"{deleteProductRequest.Slug}\" not found.");
-            //ErrorResponse errorResponse = await deleteProductRequestResult.Content.ReadFromJsonAsync<ErrorResponse>();
-            //errorResponse.Errors.Count.Should().Be(1);
-
-            //var error = errorResponse.Errors[0];
-            //error.PropertyName.Should().Be(deleteProductRequest.Slug);
-            //error.Message.Should().Be($"Entity \"{deleteProductRequest.Slug}\" not found.");
+            deleteProductRequestResult.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
         [Test]
@@ -205,8 +185,8 @@ namespace Application.IntergrationTests.Products
             };
             HttpResponseMessage prodUomRequestResult = await _httpClient.PostAsJsonAsync("productuoms", productUomRequest);
             HttpResponseMessage prodRequestResult = await _httpClient.PostAsJsonAsync("products", productRequest);
-            
-            GetProductListQueryRequest getProductsList = new() { Category = productRequest.Category, Manufacturer = string.Empty };
+
+            GetProductsQuery getProductsList = new() { Category = productRequest.Category, Manufacturer = string.Empty };
 
             // Act
             HttpResponseMessage getProductListResult = await _httpClient
@@ -237,7 +217,7 @@ namespace Application.IntergrationTests.Products
 
             // Act
             HttpResponseMessage getProductListResult = await _httpClient
-                                    .GetAsync($"Products/id?id={validProduct.Id}");
+                                    .GetAsync($"Products/{validProduct.Id}");
             // Assert
             getProductListResult.StatusCode.Should().Be(HttpStatusCode.OK);
         }

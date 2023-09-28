@@ -1,4 +1,4 @@
-﻿using Contracts.Product;
+﻿using Warehouse.Contracts.Product;
 using FluentValidation;
 
 namespace Application.Products.Commands.UpdateProduct

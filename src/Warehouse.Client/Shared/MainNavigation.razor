@@ -1,20 +1,58 @@
 ﻿@using Account.Contracts.Requests.Auth;
-@inject AuthenticationStateProvider provider;
+@using TabBlazor.Services;
+@using Warehouse.Client.Services.Auth;
+@inject IAuthService authService;
+@inject ILocalStorageService localStorage;
 
-<Navbar Direction=NavbarDirection.Vertical Background=NavbarBackground.Dark>
+<Navbar Direction=@SettingsState.NavbarDirection Background=NavbarBackground.Dark>
     <a href="#" class="navbar-brand navbar-brand-autodark">
         <img src="img/TabBlazorLogoWhite.png" alt="Tabler" class="navbar-brand-image me-2">
-        <h2 class="text-muted">My Warehouse</h2>
+        <h2 class="text-muted">Smart Warehouse</h2>
     </a>
     <NavbarMenu>
         <AuthorizeView>
             <Authorized>
-                <NavbarMenuItem Href="" Text="Home">
+                <NavbarMenuItem Href="" Text="Dashboard">
                     <MenuItemIcon>
                         <Icon class="icon" Elements="@Icons.Home" />
                     </MenuItemIcon>
                 </NavbarMenuItem>
-                <NavbarMenuItem Href="#" Text="Log out" @onclick="Logout">
+                <NavbarMenuItem Href="/warehouses" Text="Warehouses">
+                    <MenuItemIcon>
+                        <Icon class="icon" Elements="@Icons.Building_warehouse" />
+                    </MenuItemIcon>
+                </NavbarMenuItem>
+                <NavbarMenuItem Href="/products" Text="Products">
+                    <MenuItemIcon>
+                        <Icon class="icon" Elements="@Icons.Brand_producthunt" />
+                    </MenuItemIcon>
+                </NavbarMenuItem>
+                <NavbarMenuItem Href="/uoms" Text="Product Uoms">
+                    <MenuItemIcon>
+                        <Icon class="icon" Elements="@Icons.Weight" />
+                    </MenuItemIcon>
+                </NavbarMenuItem>
+                <NavbarMenuItem Href="/categories" Text="Product Categories">
+                    <MenuItemIcon>
+                        <Icon class="icon" Elements="@Icons.Category" />
+                    </MenuItemIcon>
+                </NavbarMenuItem>
+                <NavbarMenuItem Href="/sales" Text="Sale product">
+                    <MenuItemIcon>
+                        <Icon class="icon" Elements="@Icons.Moneybag" />
+                    </MenuItemIcon>
+                </NavbarMenuItem>
+                <NavbarMenuItem Href="/purchases" Text="Purchase product">
+                    <MenuItemIcon>
+                        <Icon class="icon" Elements="@Icons.Report_money" />
+                    </MenuItemIcon>
+                </NavbarMenuItem>
+                <NavbarMenuItem Href="/settings" Text="Settings">
+                    <MenuItemIcon>
+                        <Icon class="icon" Elements="@Icons.Settings" />
+                    </MenuItemIcon>
+                </NavbarMenuItem>
+                <NavbarMenuItem Text="Log out" @onclick="Logout">
                     <MenuItemIcon>
                         <Icon class="icon" Elements="@Icons.Login" />
                     </MenuItemIcon>
@@ -26,23 +64,41 @@
                         <Icon class="icon" Elements="@Icons.Login" />
                     </MenuItemIcon>
                 </NavbarMenuItem>
-
+                <NavbarMenuItem Href="/sign-up" Text="SignUp">
+                    <MenuItemIcon>
+                        <Icon class="icon" Elements="@Icons.User" />
+                    </MenuItemIcon>
+                </NavbarMenuItem>
             </NotAuthorized>
-
         </AuthorizeView>
-        <NavbarMenuItem Href="/claims-principle-data" Text="Claims">
-            <MenuItemIcon>
-                <Icon class="icon" Elements="@Icons.Login" />
-            </MenuItemIcon>
-        </NavbarMenuItem>
     </NavbarMenu>
 </Navbar>
+
 @code
 {
+    @inject IModalService ModalService
+
     private async Task Logout()
     {
-        WarehouseAuthStateProvider.IsAuthenticated = false;
-        //get and store token
-        await provider.GetAuthenticationStateAsync();
+        var result = await ModalService.ShowDialogAsync(new TabBlazor.Components.Modals.DialogOptions
+            {
+                MainText = "Are you sure to log out?",
+                SubText = "Please note you will need to log in again",
+                StatusColor = TablerColor.Danger,
+            });
+
+        if (result)
+        {
+            await authService.LogoutAsync();
+        }
+    }
+
+    const string IsHorizontalStorageKey = "IsHorizontalStorageKey";
+    private bool isHorizontal;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isHorizontal = await localStorage.GetItemAsync<bool>(IsHorizontalStorageKey);
+        SettingsState.NavbarDirection = isHorizontal ? NavbarDirection.Horizontal : NavbarDirection.Vertical;
     }
 }
