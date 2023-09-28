@@ -15,6 +15,7 @@ namespace Application.Common.Interfaces
         DbSet<ProductUOM> ProductUOMs { get; }
 
         DbSet<Product> Products { get; }
+        DbSet<SaleProduct> SaleProducts { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
