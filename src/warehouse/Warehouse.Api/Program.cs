@@ -15,11 +15,6 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddCors(options =>
 {
-    //options.AddPolicy(name: "WarehouseClient",
-    //                  builder =>
-    //                  {
-    //                      builder.WithOrigins("https://localhost:7247/");
-    //                  });
     options.AddPolicy("corsapp", builder =>
     {
         builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();

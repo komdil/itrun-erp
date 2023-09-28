@@ -7,6 +7,7 @@ using Warehouse.Client;
 using Warehouse.Client.Pages.Auth;
 using Warehouse.Client.Services.Auth;
 using Warehouse.Client.Services.HttpClients;
+using Warehouse.Client.Services.Warehouse;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -18,6 +19,7 @@ builder.Services.AddTabler();
 builder.Services.AddOptions();
 builder.Services.AddScoped<AuthenticationStateProvider, WarehouseAuthStateProvider>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IWarehouseService, WarehouseService>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
 

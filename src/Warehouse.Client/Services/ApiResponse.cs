@@ -2,22 +2,41 @@
 
 namespace Warehouse.Client.Services
 {
-    public record ApiResponse<T>
+    public record ApiResponse
     {
         public bool Success { get; set; }
 
         public string Error { get; set; }
 
-        public T Response { get; set; }
-
         public HttpStatusCode? HttpStatusCode { get; set; }
 
+        public static ApiResponse BuildSuccess(HttpStatusCode? httpStatusCode = null)
+        {
+            return new ApiResponse
+            {
+                Success = true,
+                HttpStatusCode = httpStatusCode
+            };
+        }
+
+        public static ApiResponse BuildFailed(string error, HttpStatusCode? httpStatusCode = null)
+        {
+            return new ApiResponse
+            {
+                Error = error,
+                HttpStatusCode = httpStatusCode,
+            };
+        }
+    }
+    public record ApiResponse<T> : ApiResponse
+    {
+        public T Result { get; set; }
         public static ApiResponse<T> BuildSuccess(T response, HttpStatusCode? httpStatusCode = null)
         {
             return new ApiResponse<T>
             {
                 Success = true,
-                Response = response,
+                Result = response,
                 HttpStatusCode = httpStatusCode
             };
         }
@@ -36,7 +55,7 @@ namespace Warehouse.Client.Services
             return new ApiResponse<T>
             {
                 HttpStatusCode = httpStatusCode,
-                Response = response
+                Result = response
             };
         }
     }
