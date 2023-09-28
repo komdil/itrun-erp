@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Contracts.User.Responses;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;

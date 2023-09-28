@@ -1,9 +1,9 @@
-﻿ 
+﻿
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
-using Contracts.ApplicationRoles.Commands;
-using Contracts.ApplicationRoles.Queries;
 using Contracts.UserRoles.Commands;
+using Application.Contract.ApplicationRoles.Queries;
+using Application.Contract.ApplicationRoles.Commands;
 
 namespace Account.Api.Controllers
 {

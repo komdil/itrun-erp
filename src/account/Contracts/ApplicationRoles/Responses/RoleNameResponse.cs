@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace Application.Contract.ApplicationRoles.Responses;
 
-namespace Contracts.ApplicationRoles.Responses
+public class RoleNameResponse
 {
-    public class RoleNameResponse
-    {
-        public Guid Id { get; set; }
-        public string? Name { get; set; } = "";
-        public string Slug { get; set; }
-    }
+    public Guid Id { get; set; }
+    public string? Name { get; set; } = "";
+    public string Slug { get; set; }
 }

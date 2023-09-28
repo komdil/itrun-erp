@@ -1,14 +1,9 @@
-﻿using Contracts.ApplicationRoles.Responses;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Application.Contract.ApplicationRoles.Responses;
+using Contracts;
 
-namespace Contracts.ApplicationRoles.Queries
+namespace Application.Contract.ApplicationRoles.Queries;
+
+public class GetRolesQuery : IRequest<ApplicationResponse<List<RoleNameResponse>>>
 {
-    public class GetRolesQuery : IRequest<ApplicationResponse<List<RoleNameResponse>>>
-    {
-    }
 }

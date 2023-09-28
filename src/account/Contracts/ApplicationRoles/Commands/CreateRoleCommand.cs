@@ -1,14 +1,9 @@
-﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Contracts;
+using MediatR;
 
-namespace Contracts.ApplicationRoles.Commands
+namespace Application.Contract.ApplicationRoles.Commands;
+
+public class CreateRoleCommand:IRequest<ApplicationResponse<Guid>>
 {
-    public class CreateRoleCommand : IRequest<ApplicationResponse<Guid>>
-    {
-        public string RoleName { get; set; }
-    }
+    public string RoleName { get; set; }
 }

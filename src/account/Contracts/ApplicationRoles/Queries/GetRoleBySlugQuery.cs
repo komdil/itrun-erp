@@ -1,15 +1,9 @@
-﻿using Contracts.ApplicationRoles.Responses;
+﻿using Application.Contract.ApplicationRoles.Responses;
+using Contracts;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Contracts.ApplicationRoles.Queries
+namespace Application.Contract.ApplicationRoles.Queries;
+public class GetRoleBySlugQuery : IRequest<ApplicationResponse<RoleNameResponse>>
 {
-    public class GetRoleBySlugQuery : IRequest<ApplicationResponse<RoleNameResponse>>
-    {
-        public string Slug { get; set; }
-    }
+    public string Slug { get; set; }
 }
