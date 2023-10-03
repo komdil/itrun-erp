@@ -2,7 +2,7 @@
 
 namespace Warehouse.Contracts.Warehouse
 {
-    public record GetWarehousesQuery : PagedQuery<SingleWarehouseResponse>
+    public record GetWarehouseQuery : PagedQuery<SingleWarehouseResponse>
     {
         public string Name { get; set; }
         public string Details { get; set; }

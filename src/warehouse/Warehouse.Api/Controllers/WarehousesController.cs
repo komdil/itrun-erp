@@ -6,7 +6,7 @@ namespace Warehouse.Api.Controllers
     public class WarehousesController : ApiControllerBase
     {
         [HttpGet]
-        public async Task<List<SingleWarehouseResponse>> Get([FromQuery] GetWarehousesQuery query)
+        public async Task<List<SingleWarehouseResponse>> Get([FromQuery] GetWarehouseQuery query)
         {
             return await Sender.Send(query);
         }

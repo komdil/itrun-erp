@@ -36,7 +36,7 @@ namespace Application.IntergrationTests.Warehouses
         {
             // Arrange
             await CreateWarehouses(3);
-            GetWarehousesQuery request = new();
+            GetWarehouseQuery request = new();
 
             // Act
             List<SingleWarehouseResponse> wareHouses = await _httpClient.GetFromJsonAsync<List<SingleWarehouseResponse>>("warehouses", request);
