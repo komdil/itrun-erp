@@ -28,7 +28,7 @@ namespace Warehouse.Client.Services.Auth
                 var response = await _httpClient.PostAsJsonAsync<AccountSignInResponse>($"{_configuration["AccountServiceUrl"]}/sign-in", accountSignInRequest);
                 if (response.Success)
                 {
-                    await _localStorageService.SetItemAsync(IAuthService.TokenLocalStorageKey, response.Response.Token);
+                    await _localStorageService.SetItemAsync(IAuthService.TokenLocalStorageKey, response.Result.Token);
                     await _authenticationStateProvider.GetAuthenticationStateAsync();
                 }
                 else if (response.HttpStatusCode == System.Net.HttpStatusCode.Unauthorized)
@@ -57,12 +57,12 @@ namespace Warehouse.Client.Services.Auth
                 var tokenResponse = await _httpClient.PostAsJsonAsync<AccountSignUpResponse>($"{_configuration["AccountServiceUrl"]}/sign-up", accountSignUpRequest);
                 if (tokenResponse.Success)
                 {
-                    await _localStorageService.SetItemAsync(IAuthService.TokenLocalStorageKey, tokenResponse.Response.Token);
+                    await _localStorageService.SetItemAsync(IAuthService.TokenLocalStorageKey, tokenResponse.Result.Token);
                     await _authenticationStateProvider.GetAuthenticationStateAsync();
                 }
-                else if (tokenResponse.Response != null)
+                else if (tokenResponse.Result != null)
                 {
-                    tokenResponse.Error = tokenResponse.Response.Message;
+                    tokenResponse.Error = tokenResponse.Result.Message;
                 }
 
                 return tokenResponse;
