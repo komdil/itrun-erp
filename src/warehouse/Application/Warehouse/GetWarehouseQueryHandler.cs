@@ -14,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Warehouse
 {
-    public class GetWarehouseQueryHandler : IRequestHandler<GetWarehouseQuery, List<SingleWarehouseResponse>>
+    public class GetWarehouseQueryHandler : IRequestHandler<GetWarehousesQuery, List<SingleWarehouseResponse>>
     {
         IApplicationDbContext _dbContext;
         IMapper _mapper;
@@ -25,7 +25,7 @@ namespace Application.Warehouse
             _mapper = mapper;
         }
 
-        public async Task<List<SingleWarehouseResponse>> Handle(GetWarehouseQuery request, CancellationToken cancellationToken)
+        public async Task<List<SingleWarehouseResponse>> Handle(GetWarehousesQuery request, CancellationToken cancellationToken)
         {
             IQueryable<WareHouse> warehouseQuery = _dbContext.Warehouses;
 

@@ -3,10 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using Domain.Entities;
+using Warehouse.Contracts.Categories;
+using Warehouse.Contracts.Warehouse;
 
-namespace Application.Common.Mappings.Category
+namespace Application.Common.Mappings.Categories
 {
-    internal class CategoryMapProfile
+    public class CategoryMapProfile : Profile
     {
+        public CategoryMapProfile()
+        {
+            CreateMap<Category, SingleCategoryResponse>();
+        }
     }
 }

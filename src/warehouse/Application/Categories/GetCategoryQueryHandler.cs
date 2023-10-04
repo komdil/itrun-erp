@@ -26,20 +26,17 @@ namespace Application.Categories
 
             public async Task<List<SingleCategoryResponse>> Handle(GetCategoryQuery request, CancellationToken cancellationToken)
             {
-                IQueryable<Category> warehouseQuery = _dbContext.Warehouses;
+                IQueryable<Category> categoryQuery = _dbContext.Categories;
 
                 if (!string.IsNullOrWhiteSpace(request.Name))
-                    warehouseQuery = warehouseQuery.Where(p => p.Name == request.Name);
+                categoryQuery = categoryQuery.Where(p => p.Name == request.Name);
 
-                if (!string.IsNullOrWhiteSpace(request.Location))
-                    warehouseQuery = warehouseQuery.Where(p => p.Location == request.Location);
+                if (!string.IsNullOrWhiteSpace(request.Description))
+                categoryQuery = categoryQuery.Where(p => p.Description == request.Description);            
 
-                if (!string.IsNullOrWhiteSpace(request.Details))
-                    warehouseQuery = warehouseQuery.Where(p => p.Details == request.Details);
+                categoryQuery = categoryQuery.Skip(request.StartIndex).Take(request.EndIndex);
 
-                warehouseQuery = warehouseQuery.Skip(request.StartIndex).Take(request.EndIndex);
-
-                return await warehouseQuery.ProjectTo<SingleCategoryResponse>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
+                return await categoryQuery.ProjectTo<SingleCategoryResponse>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
             }
         }
     }

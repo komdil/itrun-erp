@@ -20,8 +20,4 @@
     <ProjectReference Include="..\Warehouse.Contracts\Warehouse.Contracts.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Common\Mappings\Category\Новая папка\" />
-  </ItemGroup>
-
 </Project>

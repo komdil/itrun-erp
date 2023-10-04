@@ -7,38 +7,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Warehouse.Contracts.Categories;
 
-namespace Application.Categories
+namespace Application.Warehouse
 {
-    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryRequest, CreateCategoryResponse>
+    public class CreateWarehouseCommandHandler : IRequestHandler<CreateWarehouseRequest, CreateWarehouseResponse>
     {
         IApplicationDbContext _context;
-        public CreateCategoryCommandHandler(IApplicationDbContext context)
+        public CreateWarehouseCommandHandler(IApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task<CreateCategoryResponse> Handle(CreateCategoryRequest request, CancellationToken cancellationToken)
+        public async Task<CreateWarehouseResponse> Handle(CreateWarehouseRequest request, CancellationToken cancellationToken)
         {
-            var category = new Category()
+            var warehouse = new WareHouse()
             {
-                
                 Name = request.Name,
-                Description = request.Description,
-                ParentCategory = request.ParentCategory,
-                SubCategories = request.SubCategories,
+                Location = request.Location,
+                Details = request.Details,
                 Id = Guid.NewGuid(),
             };
-            _context.Categories.Add(category);
+            _context.Warehouses.Add(warehouse);
             await _context.SaveChangesAsync();
-            return new CreateCategoryResponse
+            return new CreateWarehouseResponse
             {
-                Description = category.Description,
-                ParentCategory = category.ParentCategory,
-                SubCategories = category.SubCategories,
-                Name = category.Name,
-                Slug = category.Name,
+                Details = warehouse.Details,
+                Location = warehouse.Location,
+                Name = warehouse.Name,
                 //TODO: Use auto mapper
             };
         }

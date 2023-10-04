@@ -7,10 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Warehouse.Contracts.Categories;
 
-namespace Application.Warehouse
+namespace Application.Categories
 {
-    public class CreateCategoryCommandHandler : IRequestHandler<CreateWarehouseRequest, CreateWarehouseResponse>
+    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryRequest, CreateCategoryResponse>
     {
         IApplicationDbContext _context;
         public CreateCategoryCommandHandler(IApplicationDbContext context)
@@ -18,22 +19,26 @@ namespace Application.Warehouse
             _context = context;
         }
 
-        public async Task<CreateWarehouseResponse> Handle(CreateWarehouseRequest request, CancellationToken cancellationToken)
+        public async Task<CreateCategoryResponse> Handle(CreateCategoryRequest request, CancellationToken cancellationToken)
         {
-            var warehouse = new WareHouse()
+            var category = new Category()
             {
+                
                 Name = request.Name,
-                Location = request.Location,
-                Details = request.Details,
+                Description = request.Description,
+                ParentCategory = request.ParentCategory,
+                SubCategories = request.SubCategories,
                 Id = Guid.NewGuid(),
             };
-            _context.Warehouses.Add(warehouse);
+            _context.Categories.Add(category);
             await _context.SaveChangesAsync();
-            return new CreateWarehouseResponse
+            return new CreateCategoryResponse
             {
-                Details = warehouse.Details,
-                Location = warehouse.Location,
-                Name = warehouse.Name,
+                Description = category.Description,
+                ParentCategory = category.ParentCategory,
+                SubCategories = category.SubCategories,
+                Name = category.Name,
+                Slug = category.Name,
                 //TODO: Use auto mapper
             };
         }
