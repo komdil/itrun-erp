@@ -10,6 +10,7 @@ using Domain.Entities;
 using MediatR;
 using Warehouse.Contracts.Warehouse;
 using Warehouse.Contracts.Categories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Categories
 {
@@ -38,6 +39,6 @@ namespace Application.Categories
 
                 return await categoryQuery.ProjectTo<SingleCategoryResponse>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
             }
-        }
     }
 }
+
