@@ -1,15 +1,19 @@
 ﻿@page "/products"
+@using Warehouse.Client.Services.Categories;
 @using Warehouse.Client.Services.Product;
+@using Warehouse.Client.Services.Uom;
 @using Warehouse.Contracts.Product;
 @attribute [Authorize]
 @inject IProductService _productService
+@inject ICategoryService _categoryService
+@inject IUomService _uomService
 <br />
 
 @if (isError)
 {
     <Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
-     <div class="text-secondary">@errorMessage</div>
- </Alert>
+        <div class="text-secondary">@errorMessage</div>
+    </Alert>
 }
 
 @if (isLoading)
@@ -23,20 +27,21 @@
 <Table Item="SingleProductResponse" Items="products" PageSize="20" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
        OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete"
        Hover Responsive EditMode=tableEditMode>
-     <HeaderTemplate>
-         <strong>Products</strong>
-     </HeaderTemplate>
+    <HeaderTemplate>
+        <strong>Products</strong>
+    </HeaderTemplate>
 
-     <ChildContent>
+    <ChildContent>
 
-         <Column Item="SingleProductResponse" Property="product=>product.Name" Title="Name" Sortable Searchable Groupable>
+        <Column Item="SingleProductResponse" Property="product=>product.Name" Title="Name" Sortable Searchable Groupable>
             <EditorTemplate>
                 <input type="text" class="form-control" @bind-value="@context.Name" />
             </EditorTemplate>
         </Column>
         <Column Item="SingleProductResponse" Property="product=>product.ProductUom" Title="Uom" Sortable Searchable Groupable>
             <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.ProductUom" />
+                <ItemSelect Items="uoms" @bind-SelectedValue="@context.ProductUom">
+                </ItemSelect>
             </EditorTemplate>
         </Column>
         <Column Item="SingleProductResponse" Property="product=>product.Category" Title="Category" Sortable Searchable Groupable>
@@ -75,6 +80,8 @@
     [Inject] TabBlazor.Services.TablerService TablerService { get; set; }
     [Inject] TabBlazor.Services.IModalService ModalService { get; set; }
     private List<SingleProductResponse> products = new();
+    private List<string> uoms = new();
+    private List<string> categories = new();
 
     private TableEditMode tableEditMode = TableEditMode.Inline;
     private GetProductsQuery getProductQuery = new();
@@ -97,7 +104,13 @@
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
-        var response = await _productService.GetAllAsync(getProductQuery);
+        var getProductsTask = _productService.GetAllAsync(getProductQuery);
+        var getUomsTask = _uomService.GetAsync();
+        var getCategoriesTask = _categoryService.GetAsync();
+        await Task.WhenAll(getProductsTask, getUomsTask, getCategoriesTask);
+        var response = getProductsTask.Result;
+        uoms = getUomsTask.Result;
+        categories = getCategoriesTask.Result;
         if (response.Success)
         {
             products = response.Result;

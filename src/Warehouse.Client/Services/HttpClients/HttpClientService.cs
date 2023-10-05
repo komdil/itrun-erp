@@ -4,17 +4,17 @@ namespace Warehouse.Client.Services.HttpClients
 {
     public class HttpClientService : IHttpClientService
     {
-        private readonly HttpClient _httpClient;
-        public HttpClientService(HttpClient httpClient)
+        private readonly IHttpClientFactory _httpClientFactory;
+        public HttpClientService(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
         }
-
 
         public async Task<ApiResponse<T>> GetAsJsonAsync<T>(string url, object content)
         {
             try
             {
+                using var _httpClient = _httpClientFactory.CreateClient();
                 var responseContent = await _httpClient.GetFromJsonAsync<T>(url, content);
                 return ApiResponse<T>.BuildSuccess(responseContent);
             }
@@ -28,6 +28,7 @@ namespace Warehouse.Client.Services.HttpClients
         {
             try
             {
+                var _httpClient = _httpClientFactory.CreateClient();
                 var response = await _httpClient.DeleteAsync(url);
                 if (response.IsSuccessStatusCode)
                     return ApiResponse.BuildSuccess();
@@ -43,6 +44,7 @@ namespace Warehouse.Client.Services.HttpClients
         {
             try
             {
+                var _httpClient = _httpClientFactory.CreateClient();
                 var response = await _httpClient.PostAsJsonAsync(url, content);
                 return await GetApiResponseAsync<T>(response);
             }
@@ -75,6 +77,7 @@ namespace Warehouse.Client.Services.HttpClients
         {
             try
             {
+                var _httpClient = _httpClientFactory.CreateClient();
                 var response = await _httpClient.PutAsJsonAsync(url, content);
                 return await GetApiResponseAsync<T>(response);
             }
