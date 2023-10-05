@@ -52,7 +52,7 @@
 
     private List<SingleWarehouseResponse> warehouses = new();
 
-    private TableEditMode tableEditMode;
+    private TableEditMode tableEditMode = TableEditMode.Inline;
     private GetWarehousesQuery getWarehousesQuery = new();
 
     #region Error
@@ -148,7 +148,7 @@
         }
     }
 
-    private async Task ShowDialog(string title, string icon = null, TablerColor color = TablerColor.Primary)
+    private async Task ShowDialog(string title, IIconType icon = null, TablerColor color = TablerColor.Primary)
     {
         if (icon == null)
             icon = Icons.Info_circle;
@@ -156,7 +156,7 @@
             {
                 CancelText = "",
                 StatusColor = color,
-                IconElements = icon,
+                IconType = icon,
                 MainText = title
             });
     }
