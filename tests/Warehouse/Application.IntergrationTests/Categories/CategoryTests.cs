@@ -97,5 +97,22 @@ namespace Application.IntergrationTests.Categories
             var updatedCategory = await GetEntity<Category>(s => s.Id == categoryFromDb.Id);
             updatedCategory.Name.Should().Be(request.Name);
         }
+
+        [Test]
+        public async Task DeleteCategory_ShouldDeleteFromDb()
+        {
+            // Arrange
+            await CreateCategories(1);
+            var categoryFromDb = GetEntities<Category>().First();
+
+            // Act
+            HttpResponseMessage result = await _httpClient.DeleteAsync($"categories/{categoryFromDb.Id}");
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+            var deletedCategory = await GetEntity<Category>(s => s.Id == categoryFromDb.Id);
+            deletedCategory.Should().BeNull();
+        }
     }
 }
