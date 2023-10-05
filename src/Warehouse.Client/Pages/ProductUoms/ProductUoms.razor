@@ -1,8 +1,175 @@
 ﻿@page "/uoms"
 @attribute [Authorize]
+@page "/warehouses"
+@using Warehouse.Client.Services.ProductUoms;
+@using Warehouse.Contracts.ProductUom;
+@attribute [Authorize]
+@inject IProductUomService _productUomService
 
 <h3>ProductUoms</h3>
 
 @code {
+<br/>
+@if (isError)
+{
+    <Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
+        <div class="text-secondary">@errorMessage</div>
+    </Alert>
+}
+
+@if (isLoading)
+{
+    <br />
+    <Progress Color="TablerColor.Blue" Indeterminate />
+}
+
+<Table Item="SingleProductUomResponse" Items="productuom" PageSize="20" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
+       OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete"
+       Hover Responsive EditMode=tableEditMode>
+    <HeaderTemplate>
+        <strong>ProductUom</strong>
+    </HeaderTemplate>
+
+    <ChildContent>
+
+        <Column Item="SingleProductUomResponse" Property="e=>e.Name" Title="Name" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.Name" />
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductUomResponse" Property="e=>e.Details" Title="Info" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.Details" />
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductUomResponse" Property="e=>e.Location" Title="Location" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.Location" />
+            </EditorTemplate>
+        </Column>
+    </ChildContent>
+
+</Table>
+
+
+@code {
+    [Inject] TabBlazor.Services.TablerService TablerService { get; set; }
+    [Inject] TabBlazor.Services.IModalService ModalService { get; set; }
+
+    private List<SingleProductUomResponse> productUom = new();
+
+    private TableEditMode tableEditMode;
+    private GetProductUomQuery getProductUomQuery = new();
+
+    #region Error
+    private string errorMessage;
+    private bool isError;
+    private void ShowError(string error)
+    {
+        errorMessage = error;
+        isError = true;
+    }
+
+    #endregion
+
+    #region
+    private bool isLoading;
+    #endregion
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        var response = await _productUomService.GetAllAsync(getProductUomQuery);
+        if (response.Success)
+        {
+            productUom = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+        isLoading = false;
+    }
+
+    private async Task OnItemEdit(SingleProductUomResponse singleProductUom)
+    {
+        var response = await _productUomService.UpdateAsync(new UpdateProductUomRequest
+            {
+                Id=singleProductUom.Id,
+                Name = singleProductUom.Name,
+                Details = singleProductUom.Details,
+                Location = singleProductUom.Location
+            });
+
+        if (response.Success)
+        {
+            await ShowDialog($"ProductUoms updated{singleProductUom.Name}");
+        }
+        else
+        {
+            if (productUom.Contains(singleProductUom))
+                productUom.Remove(singleProductUom);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private async Task OnItemAdd(SingleProductUomResponse singleProductUom)
+    {
+        var response = await _productUomService.CreateAsync(new CreateProductUomRequest
+            {
+                Name = singleProductUom.Name,
+                Details = singleProductUom.Details,
+                Location = singleProductUom.Location
+            });
+
+        if (response.Success)
+        {
+            await ShowDialog($"Added uom {singleProductUom.Name}");
+        }
+        else
+        {
+            if (productUom.Contains(singleProductUom))
+                productUom.Remove(singleProductUom);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private async Task OnItemDelete(SingleWarehouseResponse singleWarehouse)
+    {
+        var response = await _productUomService.DeleteAsync(new DeleteProductUomRequest
+            {
+                Id = singleProductUom.Id
+            });
+
+        if (response.Success)
+        {
+            await ShowDialog($"ProductUom deleted {singleProductUom.Name}");
+        }
+        else
+        {
+            if (!productUom.Contains(singleProductUom))
+                productUom.Add(singleProductUom);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private async Task ShowDialog(string title, string icon = null, TablerColor color = TablerColor.Primary)
+    {
+        if (icon == null)
+            icon = Icons.Info_circle;
+        await ModalService.ShowDialogAsync(new TabBlazor.Components.Modals.DialogOptions
+            {
+                CancelText = "",
+                StatusColor = color,
+                IconElements = icon,
+                MainText = title
+            });
+    }
+
+    private Task<SingleProductUomResponse> AddItem()
+    {
+        return Task.FromResult(new SingleProductUomResponse { Name = "New ProductUom" });
+    }
+}
 
 }
