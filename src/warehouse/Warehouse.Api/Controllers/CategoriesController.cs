@@ -18,5 +18,22 @@ namespace Warehouse.Api.Controllers
         {
             return await Sender.Send(query);
         }
+
+        [HttpGet("{id}")]
+        public async Task<SingleCategoryResponse> Get(Guid id)
+        {
+            var query = new GetSingleCategoryQuery()
+            {
+                Id = id
+            };
+            return await Sender.Send(query);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<SingleCategoryResponse> Put(Guid id, [FromBody] UpdateCategoryRequest updateCategoryRequest)
+        {
+            updateCategoryRequest.Id = id;
+            return await Sender.Send(updateCategoryRequest);
+        }
     }
 }

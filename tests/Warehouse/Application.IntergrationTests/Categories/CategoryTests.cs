@@ -61,5 +61,41 @@ namespace Application.IntergrationTests.Categories
                 });
             }
         }
+
+        [Test]
+        public async Task GetSingleCategory_ShouldReturnCategoryFromDb()
+        {
+            // Arrange
+            await CreateCategories(1);
+            var categoryFromDb = GetEntities<Category>().First();
+
+            string url = $"categories/{categoryFromDb.Id}";
+            // Act
+            var category = await _httpClient.GetFromJsonAsync<SingleCategoryResponse>(url);
+
+            category.Should().NotBeNull();
+            category.Name.Should().Be(categoryFromDb.Name);
+            category.Description.Should().Be(categoryFromDb.Description);
+            category.ParentCategory.Should().Be(categoryFromDb.ParentCategory);
+            category.SubCategories.Should().Be(categoryFromDb.SubCategories);
+        }
+
+        [Test]
+        public async Task UpdateCategory_ShouldUpdateDb()
+        {
+            // Arrange
+            await CreateCategories(1);
+            var categoryFromDb = GetEntities<Category>().First();
+            UpdateCategoryRequest request = new() { Name = Guid.NewGuid().ToString(), Description = "Lenin 226", ParentCategory = "Test", SubCategories = "Test" };
+
+            // Act
+            HttpResponseMessage result = await _httpClient.PutAsJsonAsync($"categories/{categoryFromDb.Id}", request);
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var updatedCategory = await GetEntity<Category>(s => s.Id == categoryFromDb.Id);
+            updatedCategory.Name.Should().Be(request.Name);
+        }
     }
 }
