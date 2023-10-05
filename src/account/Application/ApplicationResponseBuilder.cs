@@ -39,13 +39,8 @@ namespace Application
         {
             return this;
         }
-
-        internal ApplicationResponse<List<UserRolesResponse>> SetResponse(List<Task<UserRolesResponse>> list)
-        {
-            throw new NotImplementedException();
-        }
     }
-}
+
 
     internal class ApplicationResponseBuilder : ApplicationResponse
     {
@@ -77,4 +72,5 @@ namespace Application
             return this;
         }
     }
+}
 
