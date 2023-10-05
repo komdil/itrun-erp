@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Application.ProductUom.Queries.GetProductUomDetails
 {
-    public class GetProductUomDetailsValidator : AbstractValidator<GetProductUomQuery>
+    public class GetProductUomDetailsValidator : AbstractValidator<GetSingleProductUomQuery>
     {
         public GetProductUomDetailsValidator()
         {

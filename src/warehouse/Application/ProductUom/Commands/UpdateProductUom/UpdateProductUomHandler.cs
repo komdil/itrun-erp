@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace Application.ProductUom.Commands.UpdateProductUom
 {
-    public class UpdateProductUomCommandHandler : IRequestHandler<UpdateProductUomRequest, CreatProductUOMResponse>
+    public class UpdateProductUomCommandHandler : IRequestHandler<UpdateProductUomRequest, SingleProductUomResponse>
     {
         IApplicationDbContext _dbContext;
         IMapper _mapper;
@@ -21,17 +21,23 @@ namespace Application.ProductUom.Commands.UpdateProductUom
             _mapper = mapper;
         }
 
-        public async Task<CreatProductUOMResponse> Handle(UpdateProductUomRequest request, CancellationToken cancellationToken)
-        { 
+        public async Task<SingleProductUomResponse> Handle(UpdateProductUomRequest request, CancellationToken cancellationToken)
+        {
+            var productuom = await _dbContext.ProductsUom.FirstOrDefaultAsync(prod => prod.Id == request.Id, cancellationToken: cancellationToken);
+
+            if (productuom == null)
+                throw new NotFoundException();
+
             var productUom = await _dbContext.ProductUOMs.FirstOrDefaultAsync(pUom => pUom.Name == request.ProductUom, cancellationToken: cancellationToken);
             if (productUom == null)
                 throw new ValidationFailedException(request.ProductUom);
 
-            product.Uom = _mapper.Map<Product>(request);
+            productuom = _mapper.Map<Product>(request);
             product.Uom = productUom;
 
             await _dbContext.SaveChangesAsync(cancellationToken);
-            return _mapper.Map<CreatProductUOMResponse>(product);
+            return _mapper.Map<SingleProductUomResponse>(productuom);
         }
+    }
     }
 }

@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace Application.ProductUom.Queries.GetProductUomList
 {
-    public class GetProductUomListQueryHandler : IRequestHandler<GetProductUomQuery, List<CreatProductUomResponse>>
+    public class GetProductUomListQueryHandler : IRequestHandler<GetProductUomQuery, List<SingleProductUomResponse>>
     {
         IApplicationDbContext _dbContext;
         IMapper _mapper;
@@ -23,7 +23,7 @@ namespace Application.ProductUom.Queries.GetProductUomList
             _mapper = mapper;
         }
 
-        public async Task<List<CreatProductUomResponse>> Handle(GetProductUomQuery request, CancellationToken cancellationToken)
+        public async Task<List<SingleProductUomResponse>> Handle(GetProductUomQuery request, CancellationToken cancellationToken)
         {
             IQueryable<ProductUom> productQuery = _dbContext.Products;
 

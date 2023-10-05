@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace Application.ProductUom.Queries.GetProductUomDetails
 {
-    public class GetSingleProductUomQueryHandler : IRequestHandler<GetProductUomQuery, CreatProductUomResponse>
+    public class GetSingleProductUomQueryHandler : IRequestHandler<GetProductUomQuery, SingleProductUomResponse>
     {
         IApplicationDbContext _dbContext;
         IMapper _mapper;
@@ -20,7 +20,7 @@ namespace Application.ProductUom.Queries.GetProductUomDetails
             _mapper = mapper;
         }
 
-        public async Task<CreatProductUomResponse> Handle(GetSingleProductUomQuery request, CancellationToken cancellationToken)
+        public async Task<SingleProductUomResponse> Handle(GetSingleProductUomQuery request, CancellationToken cancellationToken)
         {
             var productuom = await _dbContext.Products
                 .FirstOrDefaultAsync(productuom =>
