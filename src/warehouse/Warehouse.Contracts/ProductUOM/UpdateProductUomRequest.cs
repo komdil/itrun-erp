@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Warehouse.Contracts.ProductUOM
 {
-    public record CreateProductUOMRequest : IRequest<CreateProductUOMResponse>
+    public record CreateProductUOMRequest : IRequest<SingleProductUomResponse>
     {
         public Guid Id { get; set; }
         public string Name { get; init; }

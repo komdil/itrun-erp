@@ -29,7 +29,7 @@ namespace Application.ProductUom.Queries.GetProductUomDetails
             if (productuom == null)
                 throw new NotFoundException();
 
-            return _mapper.Map<CreatProductUomResponse>(productuom);
+            return _mapper.Map<SingleProductUomResponse>(productuom);
         }
     }
 }

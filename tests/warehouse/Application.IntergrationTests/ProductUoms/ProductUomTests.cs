@@ -96,5 +96,29 @@ namespace Application.IntergrationTests.ProductUoms
                 updatedProductUom.Should().NotBeNull();
             }
 
+        [Test]
+        public async Task DeleteProduct_ShouldReturnNoContent_WhenSlugIsValid()
+        {
+            // Arrange
+            CreateProductUOMRequest productUomRequest = new() { Name = "Kilo", Abbreviation = "KG", Details = "Test" };
+
+            HttpResponseMessage prodUomRequestResult = await _httpClient.PostAsJsonAsync("productuoms", productUomRequest);
+
+            var validProductuom = await GetEntity<ProductUom>(prod => prod.Name == productUomRequest.Name);
+
+            DeleteProductUomRequest deleteProductUomRequest = new(validProductuom.Name);
+
+            // Act
+            HttpResponseMessage deleteProductUomRequestResult = await _httpClient.DeleteAsync($"productuom/{deleteProductUomRequest.Slug}");
+
+            // Assert
+            deleteProductUomRequestResult.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+            var deletedProductUom = await GetEntity<ProductUom>(prod =>
+                                                prod.Name == productRequest.Name);
+            deletedProductUom.Should().BeNull();
         }
+
+
     }
+}

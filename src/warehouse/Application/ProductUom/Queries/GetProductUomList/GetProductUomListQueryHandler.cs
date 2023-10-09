@@ -33,7 +33,7 @@ namespace Application.ProductUom.Queries.GetProductUomList
             if (!string.IsNullOrWhiteSpace(request.Abbreviation))
                 productQuery = productQuery.Where(p => p.Abbreviation == request.Abbreviation);
 
-            return await productQuery.ProjectTo<CreatProductUomResponse>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
+            return await productQuery.ProjectTo<SingleProductUomResponse>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
         }
     }
 }
