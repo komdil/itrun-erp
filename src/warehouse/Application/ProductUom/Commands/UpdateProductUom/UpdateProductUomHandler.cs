@@ -32,7 +32,7 @@ namespace Application.ProductUom.Commands.UpdateProductUom
             if (productUom == null)
                 throw new ValidationFailedException(request.ProductUom);
 
-            productuom = _mapper.Map<Product>(request);
+            productuom = _mapper.Map<ProductUOM>(request);
             productuom.Uom = productUom;
 
             await _dbContext.SaveChangesAsync(cancellationToken);
