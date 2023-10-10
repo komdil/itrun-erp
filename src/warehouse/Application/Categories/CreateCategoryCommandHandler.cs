@@ -11,7 +11,7 @@ using Warehouse.Contracts.Categories;
 
 namespace Application.Categories
 {
-    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryRequest, CreateCategoryResponse>
+    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryRequest, SingleCategoryResponse>
     {
         IApplicationDbContext _context;
         public CreateCategoryCommandHandler(IApplicationDbContext context)
@@ -19,7 +19,7 @@ namespace Application.Categories
             _context = context;
         }
 
-        public async Task<CreateCategoryResponse> Handle(CreateCategoryRequest request, CancellationToken cancellationToken)
+        public async Task<SingleCategoryResponse> Handle(CreateCategoryRequest request, CancellationToken cancellationToken)
         {
             var category = new Category()
             {
@@ -32,13 +32,13 @@ namespace Application.Categories
             };
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
-            return new CreateCategoryResponse
+            return new SingleCategoryResponse
             {
                 Description = category.Description,
                 ParentCategory = category.ParentCategory,
                 SubCategories = category.SubCategories,
                 Name = category.Name,
-                Slug = category.Name,
+                //Slug = category.Name,
                 //TODO: Use auto mapper
             };
         }

@@ -35,5 +35,16 @@ namespace Warehouse.Api.Controllers
             updateCategoryRequest.Id = id;
             return await Sender.Send(updateCategoryRequest);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var deleteRequest = new DeleteCategoryRequest()
+            {
+                Id = id
+            };
+            await Sender.Send(deleteRequest);
+            return NoContent();
+        }
     }
 }
