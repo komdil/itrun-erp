@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "TabBlazor.Templates.Wasm": {
+    "Warehouse.Client": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

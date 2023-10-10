@@ -1,5 +1,6 @@
 using Application;
 using Infrastructure;
+using Warehouse.Api.Extensions;
 using Warehouse.Api.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,11 +16,6 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
 builder.Services.AddCors(options =>
 {
-    //options.AddPolicy(name: "WarehouseClient",
-    //                  builder =>
-    //                  {
-    //                      builder.WithOrigins("https://localhost:7247/");
-    //                  });
     options.AddPolicy("corsapp", builder =>
     {
         builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
@@ -27,15 +23,14 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-
+app.Services.Migrate();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
-app.UseSwagger();
-app.UseSwaggerUI();
 
-//app.UseCors("WarehouseClient");
 app.UseCors("corsapp");
 app.UseHttpsRedirection();
 

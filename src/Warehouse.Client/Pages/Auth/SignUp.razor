@@ -1,5 +1,6 @@
 ﻿@page "/sign-up"
 @using Account.Contracts.Requests.Auth;
+@using Warehouse.Client.Services.Auth;
 @inject IAuthService authService;
 @inject NavigationManager NavManager;
 <br />
@@ -25,9 +26,14 @@
                 <InputText @bind-Value="SingUpRequest.Password" type="password" class="form-control" />
                 <ValidationMessage For="@(() => SingUpRequest.Password)" />
             </div>
+            @if (isSigningUp)
+            {
+                <br />
+                <Progress Color="TablerColor.Blue" Indeterminate />
+            }
             <br />
             <button class="btn btn-primary">
-                Login
+                Sign up
             </button>
         </EditForm>
     </NotAuthorized>
@@ -39,7 +45,7 @@
 <br />
 @if (SignUpIsNotValid)
 {
-    <Alert BackgroundColor="TablerColor.Danger" Title="Login" Dismissible>
+    <Alert BackgroundColor="TablerColor.Danger" Title="Signing up" Dismissible>
      <div class="text-muted">@message</div>
  </Alert>
 }
@@ -48,13 +54,16 @@
     private AccountSignUpRequest SingUpRequest { get; } = new();
     private bool SignUpIsNotValid = false;
     private string message;
+    private bool isSigningUp;
     private async Task HandleValidSubmit()
     {
         SignUpIsNotValid = false;
-        var result = await authService.SignUpAsync(SingUpRequest);
-        SignUpIsNotValid = !result.Success;
-        message = result.Message;
-        if (result.Success)
+        isSigningUp = true;
+        var response = await authService.SignUpAsync(SingUpRequest);
+        isSigningUp = false;
+        SignUpIsNotValid = !response.Success;
+        message = response.Error;
+        if (response.Success)
         {
             NavManager.NavigateTo("/");
         }

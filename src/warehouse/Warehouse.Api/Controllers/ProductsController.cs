@@ -11,7 +11,7 @@ namespace Warehouse.Api.Controllers
             return await Sender.Send(request);
         }
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         public async Task<SingleProductResponse> Get(Guid id)
         {
             var query = new GetSingleProductQuery()

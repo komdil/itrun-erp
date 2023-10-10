@@ -1,8 +1,168 @@
 ﻿@page "/warehouses"
+@using Warehouse.Client.Services.Warehouse;
+@using Warehouse.Contracts.Warehouse;
 @attribute [Authorize]
+@inject IWarehouseService _warehouseService
+<br />
+@if (isError)
+{
+    <Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
+     <div class="text-secondary">@errorMessage</div>
+ </Alert>
+}
 
-<h3>Warehouses</h3>
+@if (isLoading)
+{
+    <br />
+    <Progress Color="TablerColor.Blue" Indeterminate />
+}
+
+<Table Item="SingleWarehouseResponse" Items="warehouses" PageSize="getWarehousesQuery.PageSize" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
+       OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete"
+       Hover Responsive EditMode=tableEditMode>
+     <HeaderTemplate>
+         <strong>Warehouses</strong>
+     </HeaderTemplate>
+
+     <ChildContent>
+
+         <Column Item="SingleWarehouseResponse" Property="e=>e.Name" Title="Name" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.Name" />
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleWarehouseResponse" Property="e=>e.Details" Title="Info" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.Details" />
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleWarehouseResponse" Property="e=>e.Location" Title="Location" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.Location" />
+            </EditorTemplate>
+        </Column>
+    </ChildContent>
+
+</Table>
+
 
 @code {
+    [Inject] TabBlazor.Services.TablerService TablerService { get; set; }
+    [Inject] TabBlazor.Services.IModalService ModalService { get; set; }
 
+    private List<SingleWarehouseResponse> warehouses = new();
+
+    private TableEditMode tableEditMode = TableEditMode.Inline;
+    private GetWarehousesQuery getWarehousesQuery = new();
+
+    #region Error
+    private string errorMessage;
+    private bool isError;
+    private void ShowError(string error)
+    {
+        errorMessage = error;
+        isError = true;
+    }
+
+    #endregion
+
+    #region
+    private bool isLoading;
+    #endregion
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        var response = await _warehouseService.GetAllAsync(getWarehousesQuery);
+        if (response.Success)
+        {
+            warehouses = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+        isLoading = false;
+    }
+
+    private async Task OnItemEdit(SingleWarehouseResponse singleWarehouse)
+    {
+        var response = await _warehouseService.UpdateAsync(new UpdateWarehouseRequest
+            {
+                Id = singleWarehouse.Id,
+                Name = singleWarehouse.Name,
+                Details = singleWarehouse.Details,
+                Location = singleWarehouse.Location
+            });
+
+        if (response.Success)
+        {
+            await ShowDialog($"Warehouse updated{singleWarehouse.Name}");
+        }
+        else
+        {
+            if (warehouses.Contains(singleWarehouse))
+                warehouses.Remove(singleWarehouse);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private async Task OnItemAdd(SingleWarehouseResponse singleWarehouse)
+    {
+        singleWarehouse.Id = Guid.NewGuid();
+        var response = await _warehouseService.CreateAsync(new CreateWarehouseRequest
+            {
+                Name = singleWarehouse.Name,
+                Details = singleWarehouse.Details,
+                Location = singleWarehouse.Location
+            });
+
+        if (response.Success)
+        {
+            await ShowDialog($"Added warehouse {singleWarehouse.Name}");
+        }
+        else
+        {
+            if (warehouses.Contains(singleWarehouse))
+                warehouses.Remove(singleWarehouse);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private async Task OnItemDelete(SingleWarehouseResponse singleWarehouse)
+    {
+        var response = await _warehouseService.DeleteAsync(new DeleteWarehouseRequest
+            {
+                Id = singleWarehouse.Id
+            });
+
+        if (response.Success)
+        {
+            await ShowDialog($"Warehouse deleted {singleWarehouse.Name}");
+        }
+        else
+        {
+            if (!warehouses.Contains(singleWarehouse))
+                warehouses.Add(singleWarehouse);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private async Task ShowDialog(string title, IIconType icon = null, TablerColor color = TablerColor.Primary)
+    {
+        if (icon == null)
+            icon = Icons.Info_circle;
+        await ModalService.ShowDialogAsync(new TabBlazor.Components.Modals.DialogOptions
+            {
+                CancelText = "",
+                StatusColor = color,
+                IconType = icon,
+                MainText = title
+            });
+    }
+
+    private Task<SingleWarehouseResponse> AddItem()
+    {
+        return Task.FromResult(new SingleWarehouseResponse { Name = "New warehouse" });
+    }
 }

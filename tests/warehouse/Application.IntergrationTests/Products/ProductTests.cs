@@ -217,7 +217,7 @@ namespace Application.IntergrationTests.Products
 
             // Act
             HttpResponseMessage getProductListResult = await _httpClient
-                                    .GetAsync($"Products/id?id={validProduct.Id}");
+                                    .GetAsync($"Products/{validProduct.Id}");
             // Assert
             getProductListResult.StatusCode.Should().Be(HttpStatusCode.OK);
         }
