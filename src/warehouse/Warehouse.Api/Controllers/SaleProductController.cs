@@ -1,16 +1,15 @@
-﻿using Contracts.Product;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Warehouse.Contracts.SellProduct;
 
 namespace Warehouse.Api.Controllers
 {
-	[ApiController]
+    [ApiController]
 	[Route("api/sale")]
 	public class SaleProductController : ApiControllerBase
 	{
-        [HttpPut]
-		public async Task<IActionResult> SellProductAsync([FromBody] SellProductRequest request)
+        [HttpPost]
+		public async Task<IActionResult> SellProductAsync([FromBody] CreateSellProductRequest request)
 		{
-			
 			var response = await Sender.Send(request);
 			return Ok(response);
 		}

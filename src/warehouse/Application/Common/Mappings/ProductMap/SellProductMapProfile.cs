@@ -1,10 +1,5 @@
 ﻿using AutoMapper;
-using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Warehouse.Contracts.SellProduct;
 
 namespace Application.Common.Mappings.ProductMap
 {
@@ -12,7 +7,10 @@ namespace Application.Common.Mappings.ProductMap
 	{
         public SellProductMapProfile()
         {
-            CreateMap<Product, SaleProduct>();  
-        }
+			CreateMap<CreateSellProductRequest, SaleProduct>()
+			  .ForMember(p => p.TotalPrice, opt => opt.MapFrom(src => src.Price * src.Quantity));
+
+			CreateMap<SaleProduct, SingleProductSellResponse>();
+		}
     }
 }
