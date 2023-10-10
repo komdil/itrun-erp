@@ -6,10 +6,11 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Threading;
+using Warehouse.Contracts.ProductUOM;
 
 namespace Application.ProductUom.Queries.GetProductUomDetails
 {
-    public class GetSingleProductUomQueryHandler : IRequestHandler<GetProductUomQuery, SingleProductUomResponse>
+    public class GetSingleProductUomQueryHandler : IRequestHandler<GetSingleProductUomQuery, SingleProductUomResponse>
     {
         IApplicationDbContext _dbContext;
         IMapper _mapper;

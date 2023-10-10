@@ -9,10 +9,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using Warehouse.Contracts.ProductUOM;
 
 namespace Application.ProductUom.Queries.GetProductUomList
 {
-    public class GetProductUomListQueryHandler : IRequestHandler<GetProductUomQuery, List<SingleProductUomResponse>>
+    public class GetProductUomListQueryHandler : IRequestHandler<GetProductsUomQuery, List<SingleProductUomResponse>>
     {
         IApplicationDbContext _dbContext;
         IMapper _mapper;
@@ -23,9 +24,9 @@ namespace Application.ProductUom.Queries.GetProductUomList
             _mapper = mapper;
         }
 
-        public async Task<List<SingleProductUomResponse>> Handle(GetProductUomQuery request, CancellationToken cancellationToken)
+        public async Task<List<SingleProductUomResponse>> Handle(GetProductsUomQuery request, CancellationToken cancellationToken)
         {
-            IQueryable<ProductUom> productQuery = _dbContext.Products;
+            IQueryable<ProductUOM> productQuery = _dbContext.ProductUOMs;
 
             if (!string.IsNullOrWhiteSpace(request.Name))
                 productQuery = productQuery.Where(p => p.Name == request.Name);

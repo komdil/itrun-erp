@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Threading;
+using Warehouse.Contracts.ProductUOM;
 
 namespace Application.ProductUom.Commands.UpdateProductUom
 {
@@ -23,20 +24,15 @@ namespace Application.ProductUom.Commands.UpdateProductUom
 
         public async Task<SingleProductUomResponse> Handle(UpdateProductUomRequest request, CancellationToken cancellationToken)
         {
-            var productuom = await _dbContext.ProductsUom.FirstOrDefaultAsync(prod => prod.Id == request.Id, cancellationToken: cancellationToken);
+            var productuom = await _dbContext.ProductUOMs.FirstOrDefaultAsync(prod => prod.Id == request.Id, cancellationToken: cancellationToken);
 
             if (productuom == null)
                 throw new NotFoundException();
-
-            var productUom = await _dbContext.ProductUOMs.FirstOrDefaultAsync(pUom => pUom.Name == request.ProductUom, cancellationToken: cancellationToken);
-            if (productUom == null)
-                throw new ValidationFailedException(request.ProductUom);
-
-            productuom = _mapper.Map<ProductUOM>(request);
-            productuom.Uom = productUom;
-
+            productuom.Name = request.Name;
+            productuom.Details = request.Details;
+            productuom.Abbreviation = request.Abbreviation;
             await _dbContext.SaveChangesAsync(cancellationToken);
             return _mapper.Map<SingleProductUomResponse>(productuom);
         }
     }
-    }
+}

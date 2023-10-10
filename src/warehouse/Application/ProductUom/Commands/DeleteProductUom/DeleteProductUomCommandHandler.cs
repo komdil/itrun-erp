@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Threading;
+using Warehouse.Contracts.ProductUOM;
 
 namespace Application.ProductUom.Commands.DeleteProductUom
 {
@@ -16,12 +17,12 @@ namespace Application.ProductUom.Commands.DeleteProductUom
 
         public async Task Handle(DeleteProductUomRequest request, CancellationToken cancellationToken)
         {
-            var productuom = await _dbContext.ProductsUom.FirstOrDefaultAsync(prod => prod.Name == request.Slug, cancellationToken);
+            var productuom = await _dbContext.ProductUOMs.FirstOrDefaultAsync(prod => prod.Name == request.Slug, cancellationToken);
 
             if (productuom == null)
                 throw new NotFoundException();
 
-            _dbContext.ProductsUom.Remove(productuom);
+            _dbContext.ProductUOMs.Remove(productuom);
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
     }

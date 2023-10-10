@@ -1,5 +1,6 @@
 ﻿using Warehouse.Contracts.Product;
 using FluentValidation;
+using Warehouse.Contracts.ProductUOM;
 
 namespace Application.ProductUom.Queries.GetProductUomDetails
 {

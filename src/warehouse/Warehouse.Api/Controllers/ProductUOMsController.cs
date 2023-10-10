@@ -1,5 +1,6 @@
 ﻿using Warehouse.Contracts.ProductUOM;
 using Microsoft.AspNetCore.Mvc;
+using Warehouse.Contracts.Product;
 
 namespace Warehouse.Api.Controllers
 {
@@ -12,32 +13,33 @@ namespace Warehouse.Api.Controllers
             return Created($"productuoms/{response.Slug}", response);
         }
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery]GetProductUomQuery getproductuom)
+        public async Task<List<SingleProductUomResponse>> Get([FromQuery] GetProductsUomQuery getproductuom)
         {
-            return await Sender.send(getproductuom);
+            return await Sender.Send(getproductuom);
         }
 
-        [HttpGet("id")]
-        public async Task<IActionResult> Get(Guid id)
+        [HttpGet("{id}")]
+        public async Task<SingleProductUomResponse> Get(Guid id)
         {
-            var response = Get(id);
+            var query = new GetSingleProductUomQuery()
             {
-                ProductuomId = id
+                ProductUomId = id
             };
-            return await ProductuomId(id);
+            return await Sender.Send(query);
         }
 
         [HttpDelete("{slug}")]
-        public async Task<IActionResult> Delete([FromBody] string slug)
+        public async Task<IActionResult> Delete(string slug)
         {
-            var request = new DeleteProductRequest(slug);
+            var request = new DeleteProductUomRequest(slug);
             await Sender.Send(request);
             return NoContent();
         }
 
         [HttpPut]
-        public async Task<CreatProductUOMResponse> Put([FromBody] UpdateProductUomRequest putproduct)
+        public async Task<SingleProductUomResponse> Put([FromBody] UpdateProductUomRequest putproduct)
         {
             return await Sender.Send(putproduct);
         }
+    }
 }

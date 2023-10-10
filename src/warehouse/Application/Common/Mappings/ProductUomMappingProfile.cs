@@ -17,11 +17,11 @@ namespace Application.Common.Mappings
                 .ForMember(prodUom => prodUom.Id,
                 opt => Guid.NewGuid());
 
-            CreateMap<ProductUOM, CreateProductUOMResponse>()
+            CreateMap<ProductUOM, SingleProductUomResponse>()
                 .ForMember(prodUomResponse => prodUomResponse.Slug,
                 opt => opt.MapFrom(p =>p.Abbreviation));
 
-            CreateMap<UpdateProductUomRequest, ProductUom>();
+            CreateMap<UpdateProductUomRequest, ProductUOM>();
         }
     }
 }

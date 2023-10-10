@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
+using Warehouse.Contracts.Product;
 
 namespace Application.IntergrationTests.ProductUoms
 {
@@ -50,75 +51,74 @@ namespace Application.IntergrationTests.ProductUoms
             error.Message.Should().Be("'Name' must not be empty.");
         }
 
-            [Test]
-            public async Task DeleteProduct_ShouldReturnException_WhenUrlIsInvalid()
+        [Test]
+        public async Task DeleteProduct_ShouldReturnException_WhenSlugIsInvalid()
+        {
+            // Arrange
+            DeleteProductRequest DeleteProductUomRequest = new("-");
+
+            // Act
+            HttpResponseMessage result = await _httpClient.DeleteAsync($"productuom/{DeleteProductUomRequest.Slug}");
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Test]
+        public async Task UpdateProduct_ShouldReturnSuccess()
+        {
+            var validProduct = await CreateProductUom();
+
+            UpdateProductUomRequest updateProductUomRequest = new()
             {
-                // Arrange
-                DeleteProductRequest DeleteProductUomRequest = new("-");
+                Id = validProduct.Id,
+                Name = "Apple",
+                Abbreviation = "G",
+                Details = "Test"
+            };
 
-                // Act
-                HttpResponseMessage result = await _httpClient.DeleteAsync($"productuom/{DeleteProductUomRequest.Slug}");
+            // Act
+            HttpResponseMessage updateProductUomRequestResult = await _httpClient.PutAsJsonAsync("productuoms", updateProductUomRequest);
 
-                // Assert
-                result.StatusCode.Should().Be(HttpStatusCode.NotFound);
-            }
+            // Assert
+            updateProductUomRequestResult.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            [Test]
-            public async Task UpdateProduct_ShouldReturnSuccess()
-            {
-                // Arrange
-                CreateProductUOMRequest productUomRequest = new() { Name = "Kilo", Abbreviation = "KG", Details = "Test" };
-             
-
-                HttpResponseMessage prodUomRequestResult = await _httpClient.PostAsJsonAsync("productuoms", productUomRequest);
-
-                var validProduct = await GetEntity<ProductUOM>(prod => prod.Name == productUomRequest.Name);
-
-                UpdateProductUomRequest updateProductUomRequest = new()
-                {
-                    Id = validProduct.Id,
-                    Name = "Apple",
-                    Abbreviation = "G",
-                    Details = "Test"
-                };
-
-                // Act
-                HttpResponseMessage updateProductUomRequestResult = await _httpClient.PutAsJsonAsync("products", updateProductUomRequest);
-
-                // Assert
-                updateProductUomRequestResult.StatusCode.Should().Be(HttpStatusCode.OK);
-
-                var updatedProductUom = await GetEntity<ProductUOM>(prod =>
-                                   prod.Id == updateProductUomRequest.Id &&
-                                   prod.Name == updateProductUomRequest.Name &&
-                                   prod.Abbreviation == updateProductUomRequest.Abbreviation&&
-                                   prod.Details == updateProductUomRequest.Details);
-                updatedProductUom.Should().NotBeNull();
-            }
+            var updatedProductUom = await GetEntity<ProductUOM>(prod =>
+                               prod.Id == updateProductUomRequest.Id &&
+                               prod.Name == updateProductUomRequest.Name &&
+                               prod.Abbreviation == updateProductUomRequest.Abbreviation &&
+                               prod.Details == updateProductUomRequest.Details);
+            updatedProductUom.Should().NotBeNull();
+        }
 
         [Test]
         public async Task DeleteProduct_ShouldReturnNoContent_WhenSlugIsValid()
         {
-            // Arrange
-            CreateProductUOMRequest productUomRequest = new() { Name = "Kilo", Abbreviation = "KG", Details = "Test" };
-
-            HttpResponseMessage prodUomRequestResult = await _httpClient.PostAsJsonAsync("productuoms", productUomRequest);
-
-            var validProductuom = await GetEntity<ProductUom>(prod => prod.Name == productUomRequest.Name);
-
-            DeleteProductUomRequest deleteProductUomRequest = new(validProductuom.Name);
+            var productUomInDb = await CreateProductUom();
+            DeleteProductUomRequest deleteProductUomRequest = new(productUomInDb.Name);
 
             // Act
-            HttpResponseMessage deleteProductUomRequestResult = await _httpClient.DeleteAsync($"productuom/{deleteProductUomRequest.Slug}");
+            HttpResponseMessage deleteProductUomRequestResult = await _httpClient.DeleteAsync($"productuoms/{deleteProductUomRequest.Slug}");
 
             // Assert
             deleteProductUomRequestResult.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-            var deletedProductUom = await GetEntity<ProductUom>(prod =>
-                                                prod.Name == productRequest.Name);
+            var deletedProductUom = await GetEntity<ProductUOM>(prod =>
+                                                prod.Name == productUomInDb.Name);
             deletedProductUom.Should().BeNull();
         }
 
-
+        private async Task<ProductUOM> CreateProductUom()
+        {
+            var productUomInDb = new ProductUOM
+            {
+                Id = Guid.NewGuid(),
+                Name = "Test",
+                Abbreviation = "kg",
+                Details = "Test"
+            };
+            await AddAsync(productUomInDb);
+            return productUomInDb;
+        }
     }
 }
