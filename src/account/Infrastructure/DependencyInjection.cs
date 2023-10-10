@@ -1,4 +1,5 @@
-﻿using Application.Abstractions.Services;
+﻿using Application.Abstractions.Data;
+using Application.Abstractions.Services;
 using Domain;
 using Infrastructure.Data;
 using Infrastructure.Services;
@@ -21,7 +22,7 @@ namespace Infrastructure
                 else
                     options.UseSqlServer(connectionString);
             });
-
+            services.AddScoped<IApplicationDbInitializer, ApplicationDbInitializer>();
             services
                 .AddIdentityCore<ApplicationUser>()
                 .AddRoles<IdentityRole<Guid>>()

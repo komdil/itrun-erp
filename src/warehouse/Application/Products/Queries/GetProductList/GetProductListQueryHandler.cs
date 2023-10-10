@@ -29,7 +29,7 @@ namespace Application.Products.Queries.GetProductList
             if (!string.IsNullOrWhiteSpace(request.Category))
                 productQuery = productQuery.Where(p => p.Category == request.Category);
 
-            productQuery = productQuery.Skip(request.StartIndex).Take(request.EndIndex);
+            productQuery = productQuery.Skip(request.Skip).Take(request.PageSize);
 
             return await productQuery.ProjectTo<SingleProductResponse>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
         }

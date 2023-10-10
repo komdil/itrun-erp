@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Application.ProductUom
 {
-    public class CreateProductUOMHandler : IRequestHandler<CreateProductUOMRequest, CreateProductUOMResponse>
+    public class CreateProductUOMHandler : IRequestHandler<CreateProductUOMRequest, SingleProductUomResponse>
     {
         IApplicationDbContext _context;
         IMapper _mapper;
@@ -21,13 +21,13 @@ namespace Application.ProductUom
             _context = context;
             _mapper = mapper;
         }
-        public async Task<CreateProductUOMResponse> Handle(CreateProductUOMRequest request, CancellationToken cancellationToken)
+        public async Task<SingleProductUomResponse> Handle(CreateProductUOMRequest request, CancellationToken cancellationToken)
         {
 
             var productUOM = _mapper.Map<ProductUOM>(request);
             _context.ProductUOMs.Add(productUOM);
             await _context.SaveChangesAsync();
-            return _mapper.Map<CreateProductUOMResponse>(productUOM);
+            return _mapper.Map<SingleProductUomResponse>(productUOM);
         }
     }
 }
