@@ -58,7 +58,7 @@ namespace Application.IntergrationTests.ProductUoms
             DeleteProductRequest DeleteProductUomRequest = new("-");
 
             // Act
-            HttpResponseMessage result = await _httpClient.DeleteAsync($"productuom/{DeleteProductUomRequest.Slug}");
+            HttpResponseMessage result = await _httpClient.DeleteAsync($"productuoms/{DeleteProductUomRequest.Slug}");
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -78,7 +78,7 @@ namespace Application.IntergrationTests.ProductUoms
             };
 
             // Act
-            HttpResponseMessage updateProductUomRequestResult = await _httpClient.PutAsJsonAsync("productuoms", updateProductUomRequest);
+            HttpResponseMessage updateProductUomRequestResult = await _httpClient.PutAsJsonAsync($"productuoms/{updateProductUomRequest.Id}", updateProductUomRequest);
 
             // Assert
             updateProductUomRequestResult.StatusCode.Should().Be(HttpStatusCode.OK);

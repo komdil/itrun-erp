@@ -12,7 +12,7 @@ namespace Warehouse.Contracts.ProductUOM
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Details { get; set; }
-        public string Location { get; set; }
+        public string Abbreviation { get; set; }
         public string Slug { get; init; }
     }
 }

@@ -1,13 +1,12 @@
 ﻿@page "/uoms"
 @attribute [Authorize]
-@using Warehouse.Client.Services.ProductUoms;
-@using Warehouse.Contracts.ProductUom;
-@inject IProductUomService _productUomService
+@using Warehouse.Client.Services.ProductUom;
+@using Warehouse.Contracts.ProductUOM;
+@inject IProductUomServise _productUomService
 
 <h3>ProductUoms</h3>
 
-@code {
-<br/>
+<br />
 @if (isError)
 {
     <Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
@@ -21,7 +20,7 @@
     <Progress Color="TablerColor.Blue" Indeterminate />
 }
 
-<Table Item="SingleProductUomResponse" Items="productuom" PageSize="20" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
+<Table Item="SingleProductUomResponse" Items="productUoms" PageSize="20" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
        OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete"
        Hover Responsive EditMode=tableEditMode>
     <HeaderTemplate>
@@ -40,9 +39,9 @@
                 <input type="text" class="form-control" @bind-value="@context.Details" />
             </EditorTemplate>
         </Column>
-        <Column Item="SingleProductUomResponse" Property="e=>e.Location" Title="Location" Sortable Searchable Groupable>
+        <Column Item="SingleProductUomResponse" Property="e=>e.Abbreviation" Title="Abbreviation" Sortable Searchable Groupable>
             <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.Location" />
+                <input type="text" class="form-control" @bind-value="@context.Abbreviation" />
             </EditorTemplate>
         </Column>
     </ChildContent>
@@ -54,10 +53,10 @@
     [Inject] TabBlazor.Services.TablerService TablerService { get; set; }
     [Inject] TabBlazor.Services.IModalService ModalService { get; set; }
 
-    private List<SingleProductUomResponse> productUom = new();
+    private List<SingleProductUomResponse> productUoms = new();
 
     private TableEditMode tableEditMode;
-    private GetProductUomQuery getProductUomQuery = new();
+    private GetProductsUomQuery getProductUomQuery = new();
 
     #region Error
     private string errorMessage;
@@ -80,7 +79,7 @@
         var response = await _productUomService.GetAllAsync(getProductUomQuery);
         if (response.Success)
         {
-            productUom = response.Result;
+            productUoms = response.Result;
         }
         else
         {
@@ -93,10 +92,10 @@
     {
         var response = await _productUomService.UpdateAsync(new UpdateProductUomRequest
             {
-                Id=singleProductUom.Id,
+                Id = singleProductUom.Id,
                 Name = singleProductUom.Name,
                 Details = singleProductUom.Details,
-                Location = singleProductUom.Location
+                Abbreviation = singleProductUom.Abbreviation,
             });
 
         if (response.Success)
@@ -105,19 +104,17 @@
         }
         else
         {
-            if (productUom.Contains(singleProductUom))
-                productUom.Remove(singleProductUom);
             await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
         }
     }
 
     private async Task OnItemAdd(SingleProductUomResponse singleProductUom)
     {
-        var response = await _productUomService.CreateAsync(new CreateProductUomRequest
+        var response = await _productUomService.CreateAsync(new CreateProductUOMRequest
             {
                 Name = singleProductUom.Name,
                 Details = singleProductUom.Details,
-                Location = singleProductUom.Location
+                Abbreviation = singleProductUom.Abbreviation
             });
 
         if (response.Success)
@@ -126,18 +123,15 @@
         }
         else
         {
-            if (productUom.Contains(singleProductUom))
-                productUom.Remove(singleProductUom);
+            if (productUoms.Contains(singleProductUom))
+                productUoms.Remove(singleProductUom);
             await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
         }
     }
 
-    private async Task OnItemDelete(SingleWarehouseResponse singleWarehouse)
+    private async Task OnItemDelete(SingleProductUomResponse singleProductUom)
     {
-        var response = await _productUomService.DeleteAsync(new DeleteProductUomRequest
-            {
-                Id = singleProductUom.Id
-            });
+        var response = await _productUomService.DeleteAsync(singleProductUom.Name);
 
         if (response.Success)
         {
@@ -145,13 +139,13 @@
         }
         else
         {
-            if (!productUom.Contains(singleProductUom))
-                productUom.Add(singleProductUom);
+            if (!productUoms.Contains(singleProductUom))
+                productUoms.Add(singleProductUom);
             await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
         }
     }
 
-    private async Task ShowDialog(string title, string icon = null, TablerColor color = TablerColor.Primary)
+    private async Task ShowDialog(string title, IIconType icon = null, TablerColor color = TablerColor.Primary)
     {
         if (icon == null)
             icon = Icons.Info_circle;
@@ -159,7 +153,7 @@
             {
                 CancelText = "",
                 StatusColor = color,
-                IconElements = icon,
+                IconType = icon,
                 MainText = title
             });
     }
@@ -168,6 +162,5 @@
     {
         return Task.FromResult(new SingleProductUomResponse { Name = "New ProductUom" });
     }
-}
 
 }

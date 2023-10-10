@@ -36,9 +36,10 @@ namespace Warehouse.Api.Controllers
             return NoContent();
         }
 
-        [HttpPut]
-        public async Task<SingleProductUomResponse> Put([FromBody] UpdateProductUomRequest putproduct)
+        [HttpPut("{id}")]
+        public async Task<SingleProductUomResponse> Put(Guid id, [FromBody] UpdateProductUomRequest putproduct)
         {
+            putproduct.Id = id;
             return await Sender.Send(putproduct);
         }
     }
