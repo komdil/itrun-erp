@@ -8,7 +8,7 @@ namespace Application.Common.Mappings.ProductMap
         public SellProductMapProfile()
         {
 			CreateMap<CreateSellProductRequest, SaleProduct>()
-			  .ForMember(p => p.TotalPrice, opt => opt.MapFrom(src => src.Price * src.Quantity));
+			 .ForMember(product => product.Id, opt => Guid.NewGuid());
 
 			CreateMap<SaleProduct, SingleProductSellResponse>();
 		}
