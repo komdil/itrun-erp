@@ -64,7 +64,7 @@
                 <input type="text" class="form-control" @bind-value="@context.Description" />
             </EditorTemplate>
         </Column>
-        
+
     </ChildContent>
 
 </Table>
@@ -76,7 +76,7 @@
     [Inject] TabBlazor.Services.IModalService ModalService { get; set; }
     private List<SingleProductResponse> products = new();
 
-    private TableEditMode tableEditMode;
+    private TableEditMode tableEditMode = TableEditMode.Inline;
     private GetProductsQuery getProductQuery = new();
 
     #region Error
@@ -162,7 +162,7 @@
 
     private async Task OnItemDelete(SingleProductResponse singleWarehouse)
     {
-        var response = await _productService.DeleteAsync(new DeleteProductRequest(singleWarehouse.Name));        
+        var response = await _productService.DeleteAsync(new DeleteProductRequest(singleWarehouse.Name));
 
         if (response.Success)
         {
@@ -181,7 +181,7 @@
         return Task.FromResult(new SingleProductResponse { Name = "New product" });
     }
 
-    private async Task ShowDialog(string title, string icon = null, TablerColor color = TablerColor.Primary)
+    private async Task ShowDialog(string title, IIconType icon = null, TablerColor color = TablerColor.Primary)
     {
         if (icon == null)
             icon = Icons.Info_circle;
@@ -189,7 +189,7 @@
             {
                 CancelText = "",
                 StatusColor = color,
-                IconElements = icon,
+                IconType = Icons.Info_circle,
                 MainText = title
             });
     }

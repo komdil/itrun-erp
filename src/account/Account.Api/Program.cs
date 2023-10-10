@@ -1,3 +1,4 @@
+using Account.Api.Extensions;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -45,7 +46,7 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
-
+app.Services.Migrate();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

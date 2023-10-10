@@ -38,7 +38,7 @@ namespace Application.Warehouse
             if (!string.IsNullOrWhiteSpace(request.Details))
                 warehouseQuery = warehouseQuery.Where(p => p.Details == request.Details);
 
-            warehouseQuery = warehouseQuery.Skip(request.StartIndex).Take(request.EndIndex);
+            warehouseQuery = warehouseQuery.Skip(request.Skip).Take(request.PageSize);
 
             return await warehouseQuery.ProjectTo<SingleWarehouseResponse>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
         }
