@@ -12,7 +12,7 @@ namespace Domain.Entities
         public string ProductName { get; set; }
         public string ProductUom { get; set; }
         public decimal Price { get; set; }
-        public WareHouse WareHouse { get; set; }
+        public Guid WareHouseId { get; set; }
         public int Quantity { get; set; }
         public string VendorName { get; set; }
         public decimal TotalPrice { get; set; }

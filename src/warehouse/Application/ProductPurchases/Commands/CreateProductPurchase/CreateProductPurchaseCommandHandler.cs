@@ -21,17 +21,23 @@ namespace Application.ProductPurchases.Commands.CreateProductPurchase
         public async Task<SingleProductPurchaseResponse> Handle(CreateProductPurchaseRequest request, CancellationToken cancellationToken)
         {
             var product = await _dbcontext.Products.FirstOrDefaultAsync(p => p.Name == request.ProductName, cancellationToken);
-            if (product == null)
+            var uom = await _dbcontext.ProductUOMs.FirstOrDefaultAsync(u => u.Name == request.ProductUom, cancellationToken);
+
+            if (uom == null)
                 throw new NotFoundException();
 
-            if (product.Quantity < request.Quantity)
-                throw new ValidationFailedException(request.ProductName);
-
-            product.Quantity -= request.Quantity;
+            if (product == null)
+            {
+                product = new Product { Name = request.ProductName, Uom = uom, Price = request.Price, Quantity = request.Quantity };
+            }
+            else
+            {
+                product.Quantity += request.Quantity;
+            }
             var prod = _mapper.Map<ProductPurchase>(request);
 
             await _dbcontext.ProductPurchases.AddAsync(prod);
-            await _dbcontext.SaveChangesAsync();
+            await _dbcontext.SaveChangesAsync(cancellationToken);
 
             return _mapper.Map<SingleProductPurchaseResponse>(prod);
         }
