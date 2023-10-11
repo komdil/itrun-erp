@@ -11,6 +11,7 @@ using Warehouse.Client.Pages.Auth;
 using Warehouse.Client.Services.Auth;
 using Warehouse.Client.Services.HttpClients;
 using Warehouse.Client.Services.Product;
+using Warehouse.Client.Services.ProductUom;
 using Warehouse.Client.Services.Warehouse;
 using Warehouse.Contracts.Exceptions;
 
@@ -26,6 +27,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, WarehouseAuthStateProvid
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IWarehouseService, WarehouseService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductUomServise, ProductUomServise>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
 
