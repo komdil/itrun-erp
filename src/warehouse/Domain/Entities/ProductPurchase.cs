@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,5 +19,7 @@ namespace Domain.Entities
         public decimal TotalPrice { get; set; }
         public DateTime Date { get; set; }
         public string Comment { get; set; }
+        [Timestamp]
+        public byte[] Version { get; set; }
     }
 }
