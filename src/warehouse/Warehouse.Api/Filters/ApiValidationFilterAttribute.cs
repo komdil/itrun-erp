@@ -1,6 +1,8 @@
 ﻿using Application.Common.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
+using Warehouse.Contracts.Exceptions;
 
 namespace Warehouse.Api.Filters
 {
@@ -20,7 +22,14 @@ namespace Warehouse.Api.Filters
                 context.Result = new NotFoundResult();
                 return;
             }
-
+            else if (context.Exception is DbUpdateConcurrencyException)
+            {
+                context.ExceptionHandled = true;
+                context.Result = new BadRequestObjectResult(new ErrorResponse()
+                {
+                    Errors = new List<ErrorMessage> { new ErrorMessage() { Message = "Something went wrong, try again." } }
+                });
+            }
             base.OnException(context);
         }
     }

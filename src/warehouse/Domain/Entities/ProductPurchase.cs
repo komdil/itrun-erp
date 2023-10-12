@@ -14,7 +14,6 @@ namespace Domain.Entities
         public string ProductUom { get; set; }
         public decimal Price { get; set; }
         public Guid WareHouseId { get; set; }
-        [ConcurrencyCheck]
         public int Quantity { get; set; }
         public string VendorName { get; set; }
         public decimal TotalPrice { get; set; }

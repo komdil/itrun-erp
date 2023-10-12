@@ -3,7 +3,9 @@ using Application.Common.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
+using Warehouse.Contracts.Exceptions;
 using Warehouse.Contracts.ProductPurchase;
 
 namespace Application.ProductPurchases.Commands.CreateProductPurchase
@@ -38,15 +40,9 @@ namespace Application.ProductPurchases.Commands.CreateProductPurchase
                 product.Price = request.Price;
             }
             var prod = _mapper.Map<ProductPurchase>(request);
-            try
-            {
-                await _dbcontext.ProductPurchases.AddAsync(prod);
-                await _dbcontext.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw new Exception("Something went wrong, try again!");
-            }
+
+            await _dbcontext.ProductPurchases.AddAsync(prod);
+            await _dbcontext.SaveChangesAsync(cancellationToken);
 
             return _mapper.Map<SingleProductPurchaseResponse>(prod);
         }
