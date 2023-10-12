@@ -37,38 +37,14 @@ namespace Application.ProductPurchases.Commands.CreateProductPurchase
                 product.Quantity += request.Quantity;
             }
             var prod = _mapper.Map<ProductPurchase>(request);
-            var saved = false;
-
-            while (!saved)
+            try
             {
-                try
-                {
-                    await _dbcontext.ProductPurchases.AddAsync(prod);
-                    await _dbcontext.SaveChangesAsync(cancellationToken);
-                    saved = true;
-                } catch (DbUpdateConcurrencyException ex)
-                {
-                    foreach (var item in ex.Entries)
-                    {
-                        if (item.Entity is ProductPurchase)
-                        {
-                            var currentValues = item.CurrentValues;
-                            var dbValues = item.GetDatabaseValues();
-
-                            foreach (var prop in currentValues.Properties)
-                            {
-                                var currentValue = currentValues[prop];
-                                var dbValue = dbValues[prop];
-                            }
-
-                            item.OriginalValues.SetValues(dbValues);
-                        }
-                        else
-                        {
-                            throw new NotSupportedException("Concurrency conflict " + item.Metadata.Name);
-                        }
-                    }
-                }
+                await _dbcontext.ProductPurchases.AddAsync(prod);
+                await _dbcontext.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                
             }
 
             return _mapper.Map<SingleProductPurchaseResponse>(prod);
