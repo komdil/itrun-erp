@@ -42,9 +42,9 @@ namespace Application.ProductPurchases.Commands.CreateProductPurchase
                 await _dbcontext.ProductPurchases.AddAsync(prod);
                 await _dbcontext.SaveChangesAsync(cancellationToken);
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException)
             {
-                
+                throw new Exception("Something went wrong, try again!");
             }
 
             return _mapper.Map<SingleProductPurchaseResponse>(prod);
