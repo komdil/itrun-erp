@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Warehouse.Contracts.SellProduct;
 
-namespace Application.SaleProduct
+namespace Application.Sale
 {
 	public class CreateProductPurchaseCommandHandler : IRequestHandler<CreateSellProductRequest, SingleProductSellResponse>
 	{
@@ -35,7 +35,6 @@ namespace Application.SaleProduct
 			product.Quantity -= request.Quantity;
 			var prod = _mapper.Map<SingleProductSellResponse>(request);
 
-			await _dbcontext.SaleProducts.AddAsync(prod);
 			await _dbcontext.SaveChangesAsync();
 
 			return _mapper.Map<SingleProductSellResponse>(prod);

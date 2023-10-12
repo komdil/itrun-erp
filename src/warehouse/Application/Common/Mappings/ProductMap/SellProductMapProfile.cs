@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Domain.Entities;
 using Warehouse.Contracts.SellProduct;
 
 namespace Application.Common.Mappings.ProductMap
@@ -9,8 +10,8 @@ namespace Application.Common.Mappings.ProductMap
         {
 			CreateMap<CreateSellProductRequest, SaleProduct>()
 			 .ForMember(product => product.Id, opt => Guid.NewGuid());
-
 			CreateMap<SaleProduct, SingleProductSellResponse>();
+
 		}
     }
 }
