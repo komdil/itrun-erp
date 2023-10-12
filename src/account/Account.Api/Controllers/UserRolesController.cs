@@ -9,34 +9,19 @@ namespace Account.Api.Controllers
     [ApiController]
     public class UserRolesController : ControllerBase
     {
-        private readonly IMediator _mediator;
-        public UserRolesController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
 
         [HttpGet]
         public async Task<IActionResult> Get(string role = null, string userName = null)
         {
-
             var result = await _mediator
                 .Send(new GetUserRolesQuery
                 {
                     Role = role,
                     UserName = userName
                 });
-            if (result.IsSuccess)
-            {
-                return Ok(result.Response);
-            }
-            if (result.ErrorMessage != null)
-            {
-                return BadRequest(result.ErrorMessage);
-            }
-            if (result.Exception != null)
-                return BadRequest(result.Exception.ToString());
-
-            return BadRequest();
+            if (!result.IsSuccess)
+                return BadRequest();       
+            return Ok(result.Response);
         }
 
         [HttpGet("{slug}")]
@@ -44,33 +29,18 @@ namespace Account.Api.Controllers
         {
             var query = new GetUserRolesBySlugQuery { Slug = slug };
             var result = await _mediator.Send(query);
-            if (result.IsSuccess)
-            {
-                return Ok(result.Response);
-            }
-            if (result.ErrorMessage != null)
-            {
-                return BadRequest(result.ErrorMessage);
-            }
-            if (result.Exception != null)
-                return BadRequest(result.Exception.ToString());
-            return BadRequest();
+            if (!result.IsSuccess)
+                return BadRequest();             
+            return Ok(result.Response);
         }
         [HttpPost]
         public async Task<IActionResult> Create(CreateUserRolesCommand command)
         {
             var result = await _mediator.Send(command);
-            if (result.IsSuccess)
-            {
-                return Ok(result.Response);
-            }
-            if (result.ErrorMessage != null)
-            {
-                return BadRequest(result.ErrorMessage);
-            }
-            if (result.Exception != null)
-                return BadRequest(result.Exception.ToString());
-            return BadRequest();
+            if (!result.IsSuccess)
+                throw new ValidationFailedException(result.ErrorMessage);
+            return Ok(result.Response);
+     
         }
         [HttpDelete("{slug}")]
         public async Task<IActionResult> Delete(string slug)
