@@ -19,7 +19,7 @@ namespace Application.IntergrationTests.Categories
         public async Task PostingCategory_ShoudbeSavedToDb()
         {
             // Arrange
-            CreateCategoryRequest request = new() { Name = "MyWareHouse", Description = "Lenin 226", ParentCategory = "Test", SubCategories = "TestCat" };
+            CreateCategoryRequest request = new() { Name = "MyWareHouse", Description = "Lenin 226", ParentCategoryId = Guid.Parse("")};
 
             // Act
             HttpResponseMessage result = await _httpClient.PostAsJsonAsync("Categories", request);
@@ -29,8 +29,7 @@ namespace Application.IntergrationTests.Categories
 
             var createdCategory = GetEntity<Category>(n => n.Name == request.Name &&
                                n.Description == request.Description &&
-                               n.ParentCategory == request.ParentCategory &&
-                               n.SubCategories == request.SubCategories);
+                               n.ParentCategoryId == request.ParentCategoryId);
             createdCategory.Should().NotBeNull();
         }
 

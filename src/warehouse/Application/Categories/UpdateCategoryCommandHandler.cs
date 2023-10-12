@@ -32,8 +32,13 @@ namespace Application.Categories
 
             category.Name = request.Name;
             category.Description = request.Description;
-            category.ParentCategory = request.ParentCategory;
-            category.SubCategories = request.SubCategories;
+            category.ParentCategoryId = request.ParentCategoryId;
+
+            foreach(var item in request.SubCategories)
+            {
+                var subCategory = _context.Categories.Find(item);
+                subCategory.ParentCategoryId = category.Id;
+            }
 
             await _context.SaveChangesAsync(cancellationToken);
             return _mapper.Map<SingleCategoryResponse>(category);
