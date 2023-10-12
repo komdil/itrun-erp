@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Warehouse.Contracts.Dtos;
 
 namespace Warehouse.Contracts.ProductPurchase
 {

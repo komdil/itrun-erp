@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Warehouse.Contracts.Dtos;
-
-namespace Warehouse.Contracts.ProductPurchase
+﻿namespace Warehouse.Contracts.ProductPurchase
 {
     public record SingleProductPurchaseResponse
     {
@@ -13,7 +6,7 @@ namespace Warehouse.Contracts.ProductPurchase
         public string ProductName { get; init; }
         public string ProductUom { get; init; }
         public decimal Price { get; init; }
-        public WareHouse WareHouse { get; init; }
+        public Guid WareHouseId { get; init; }
         public int Quantity { get; init; }
         public string VendorName { get; init; }
         public decimal TotalPrice { get; init; }

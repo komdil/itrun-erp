@@ -35,6 +35,7 @@ namespace Application.ProductPurchases.Commands.CreateProductPurchase
             else
             {
                 product.Quantity += request.Quantity;
+                product.Price = request.Price;
             }
             var prod = _mapper.Map<ProductPurchase>(request);
             try
