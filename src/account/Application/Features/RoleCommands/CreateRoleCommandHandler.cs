@@ -2,6 +2,7 @@
 using Contracts;
 using Domain;
 using MediatR;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -14,36 +15,31 @@ namespace Application.Features.RoleCommands
     public class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand, ApplicationResponse<Guid>>
     {
         private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly IMapper _mapper;
 
-        public CreateRoleCommandHandler(RoleManager<ApplicationRole> roleManager)
+        public CreateRoleCommandHandler(RoleManager<ApplicationRole> roleManager, IMapper mapper)
         {
             _roleManager = roleManager;
+            _mapper = mapper;
         }
 
         public async Task<ApplicationResponse<Guid>> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                var role = new ApplicationRole
-                {
-                    Id = Guid.NewGuid(),
-                    Name = request.RoleName,
-                    NormalizedName = request.RoleName.ToLower(),
-                    Slug = request.RoleName.ToLower(),
-                };
+                var role = _mapper.Map<ApplicationRole>(request);
 
                 var result = await _roleManager.CreateAsync(role);
                 if (result.Succeeded)
                 {
-                    return new ApplicationResponseBuilder<Guid>().SetResponse(role.Id).Build();
+                    return new ApplicationResponse<Guid> { Response = role.Id };
                 }
 
-                return new ApplicationResponseBuilder<Guid>().SetErrorMessage(result.Errors.First().Description)
-                    .Success(false).Build();
+                return new ApplicationResponse<Guid> { Success = false, ErrorMessage = result.Errors.First().Description };
             }
             catch (Exception e)
             {
-                return new ApplicationResponseBuilder<Guid>().Success(false).SetException(e).Build();
+                return new ApplicationResponse<Guid> { Success = false, ErrorMessage = e.Message };
             }
         }
     }

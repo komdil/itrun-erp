@@ -9,18 +9,12 @@ namespace Account.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RolesController : ControllerBase
+    public class RolesController : ApiBaseController
     {
-        private readonly IMediator _mediator;
-        public RolesController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] GetRolesQuery query)
         {
-            var query = new GetRolesQuery();
             var result = await _mediator.Send(query);
             return Ok(result);
         }
@@ -36,19 +30,18 @@ namespace Account.Api.Controllers
         public async Task<IActionResult> Create(CreateUserRolesCommand command)
         {
             var result = await _mediator.Send(command);
-            if (result.IsSuccess == false)
-                return BadRequest(result);
-
+            if (!result.IsSuccess)
+                throw new ValidationFailedException(result.ErrorMessage);
             return Ok(result);
         }
-
+            
         [HttpPut("{slug}")]
         public async Task<IActionResult> Update(UpdateRoleCommand command, string slug)
         {
             command.Slug = slug;
             var result = await _mediator.Send(command);
-            if (result.IsSuccess == false)
-                return BadRequest(result);
+            if (!result.IsSuccess)
+                throw new NotFoundException();
             return Ok(result);
         }
 
@@ -57,8 +50,8 @@ namespace Account.Api.Controllers
         {
             var command = new DeleteRoleCommand { Slug = slug };
             var result = await _mediator.Send(command);
-            if (result.IsSuccess == false)
-                return NotFound();
+            if (!result.IsSuccess)
+                throw new NotFoundException();
 
             return Ok(result);
         }
