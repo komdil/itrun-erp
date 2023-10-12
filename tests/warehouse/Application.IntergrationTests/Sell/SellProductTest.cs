@@ -17,7 +17,7 @@ namespace Application.IntergrationTests.SallProduct
     public class SellProductTest : TestBase
 	{
 		[Test]
-		public async Task SellProduct_ShouldReturnSuccess()
+		public async Task SellProduct_ShouldNotFound()
 		{
 			await CreateProduct(3);
 			CreateSellProductRequest  createSellProductRequest = new ()
