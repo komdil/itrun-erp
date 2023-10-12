@@ -1,0 +1,23 @@
+﻿@page "/settings"
+@attribute [Authorize]
+
+@inject ILocalStorageService localStorage;
+<br />
+<h3>Settings</h3>
+
+<Checkbox Label="Is horizontal menu" @bind-Value="isHorizontal" Switch Changed="HorizontalChanged" />
+
+@code {
+    const string IsHorizontalStorageKey = "IsHorizontalStorageKey";
+    private bool isHorizontal;
+    private async Task HorizontalChanged()
+    {
+        await localStorage.SetItemAsync<bool>(IsHorizontalStorageKey, isHorizontal);
+        SettingsState.NavbarDirection = isHorizontal ? NavbarDirection.Horizontal : NavbarDirection.Vertical;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        isHorizontal = await localStorage.GetItemAsync<bool>(IsHorizontalStorageKey);
+    }
+}

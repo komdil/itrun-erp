@@ -1,3 +1,4 @@
+using Account.Api.Extensions;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -36,15 +37,23 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-var app = builder.Build();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("corsapp", builder =>
+    {
+        builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+    });
+});
 
+var app = builder.Build();
+app.Services.Migrate();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("corsapp");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

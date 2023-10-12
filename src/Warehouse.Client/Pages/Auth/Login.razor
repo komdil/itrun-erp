@@ -1,0 +1,63 @@
+﻿@page "/login"
+@using Account.Contracts.Requests.Auth;
+@using Warehouse.Client.Services.Auth;
+@inject IAuthService authService;
+
+<br />
+<h3>Login</h3>
+
+<AuthorizeView>
+    <NotAuthorized>
+        <EditForm Model="@LoginRequest" OnValidSubmit="HandleValidSubmit" Context="_login">
+            <DataAnnotationsValidator />
+            <div class="form-group">
+                <label>Username</label>
+                <InputText @bind-Value="LoginRequest.Username" class="form-control" />
+                <ValidationMessage For="@(() => LoginRequest.Username)" />
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <InputText @bind-Value="LoginRequest.Password" type="password" class="form-control" />
+                <ValidationMessage For="@(() => LoginRequest.Password)" />
+            </div>
+
+            @if (isLogging)
+            {
+                <br />
+                <Progress Color="TablerColor.Blue" Indeterminate />
+            }
+            <br />
+            <button class="btn btn-primary">
+                Login
+            </button>
+        </EditForm>
+    </NotAuthorized>
+    <Authorized>
+        <p>You already signed in. Back to <a href="/">Home</a></p>
+    </Authorized>
+</AuthorizeView>
+
+
+<br />
+@if (LoginIsNotValid)
+{
+    <Alert BackgroundColor="TablerColor.Danger" Title="Login" Dismissible>
+     <div class="text-muted">@errorMessage</div>
+ </Alert>
+}
+
+@code {
+    private AccountSignInRequest LoginRequest { get; } = new AccountSignInRequest();
+    private bool LoginIsNotValid = false;
+    private string errorMessage;
+    private bool isLogging = false;
+    private async Task HandleValidSubmit()
+    {
+        LoginIsNotValid = false;
+        isLogging = true;
+        var response = await authService.LoginAsync(LoginRequest);
+        LoginIsNotValid = !response.Success;
+        errorMessage = response.Error;
+        isLogging = false;
+    }
+}

@@ -26,5 +26,25 @@ namespace Application.IntergrationTests
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             return await dbContext.Set<T>().FirstOrDefaultAsync(query);
         }
+
+        protected List<T> GetEntities<T>(Expression<Func<T, bool>> query = null) where T : class
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            IQueryable<T> queryForAll = dbContext.Set<T>();
+            if (query != null)
+            {
+                queryForAll = queryForAll.Where(query);
+            }
+            return queryForAll.ToList();
+        }
+
+        protected async Task AddAsync<T>(T entity) where T : class
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            await dbContext.Set<T>().AddAsync(entity);
+            await dbContext.SaveChangesAsync();
+        }
     }
 }

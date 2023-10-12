@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Contracts.ProductUOM;
+using Warehouse.Contracts.ProductUOM;
 using Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -17,9 +17,11 @@ namespace Application.Common.Mappings
                 .ForMember(prodUom => prodUom.Id,
                 opt => Guid.NewGuid());
 
-            CreateMap<ProductUOM, CreateProductUOMResponse>()
+            CreateMap<ProductUOM, SingleProductUomResponse>()
                 .ForMember(prodUomResponse => prodUomResponse.Slug,
                 opt => opt.MapFrom(p =>p.Abbreviation));
+
+            CreateMap<UpdateProductUomRequest, ProductUOM>();
         }
     }
 }

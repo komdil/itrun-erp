@@ -1,12 +1,13 @@
-﻿using Contracts.Exceptions;
-using Contracts.ProductUOM;
-using Contracts.Warehouse;
+﻿using Warehouse.Contracts.Exceptions;
+using Warehouse.Contracts.ProductUOM;
+using Warehouse.Contracts.Warehouse;
 using Domain.Entities;
 using FluentAssertions;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
+using Warehouse.Contracts.Product;
 
 namespace Application.IntergrationTests.ProductUoms
 {
@@ -50,5 +51,74 @@ namespace Application.IntergrationTests.ProductUoms
             error.Message.Should().Be("'Name' must not be empty.");
         }
 
+        [Test]
+        public async Task DeleteProduct_ShouldReturnException_WhenSlugIsInvalid()
+        {
+            // Arrange
+            DeleteProductRequest DeleteProductUomRequest = new("-");
+
+            // Act
+            HttpResponseMessage result = await _httpClient.DeleteAsync($"productuoms/{DeleteProductUomRequest.Slug}");
+
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Test]
+        public async Task UpdateProduct_ShouldReturnSuccess()
+        {
+            var validProduct = await CreateProductUom();
+
+            UpdateProductUomRequest updateProductUomRequest = new()
+            {
+                Id = validProduct.Id,
+                Name = "Apple",
+                Abbreviation = "G",
+                Details = "Test"
+            };
+
+            // Act
+            HttpResponseMessage updateProductUomRequestResult = await _httpClient.PutAsJsonAsync($"productuoms/{updateProductUomRequest.Id}", updateProductUomRequest);
+
+            // Assert
+            updateProductUomRequestResult.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var updatedProductUom = await GetEntity<ProductUOM>(prod =>
+                               prod.Id == updateProductUomRequest.Id &&
+                               prod.Name == updateProductUomRequest.Name &&
+                               prod.Abbreviation == updateProductUomRequest.Abbreviation &&
+                               prod.Details == updateProductUomRequest.Details);
+            updatedProductUom.Should().NotBeNull();
+        }
+
+        [Test]
+        public async Task DeleteProduct_ShouldReturnNoContent_WhenSlugIsValid()
+        {
+            var productUomInDb = await CreateProductUom();
+            DeleteProductUomRequest deleteProductUomRequest = new(productUomInDb.Name);
+
+            // Act
+            HttpResponseMessage deleteProductUomRequestResult = await _httpClient.DeleteAsync($"productuoms/{deleteProductUomRequest.Slug}");
+
+            // Assert
+            deleteProductUomRequestResult.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+            var deletedProductUom = await GetEntity<ProductUOM>(prod =>
+                                                prod.Name == productUomInDb.Name);
+            deletedProductUom.Should().BeNull();
+        }
+
+        private async Task<ProductUOM> CreateProductUom()
+        {
+            var productUomInDb = new ProductUOM
+            {
+                Id = Guid.NewGuid(),
+                Name = "Test",
+                Abbreviation = "kg",
+                Details = "Test"
+            };
+            await AddAsync(productUomInDb);
+            return productUomInDb;
+        }
     }
 }

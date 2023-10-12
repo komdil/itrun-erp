@@ -1,7 +1,7 @@
 ﻿using System.Net.Http.Json;
 using System.Text;
-using Contracts.Requests.Auth;
-using Contracts.Response.Auth;
+using Account.Contracts.Requests.Auth;
+using Account.Contracts.Response.Auth;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
 using Domain;

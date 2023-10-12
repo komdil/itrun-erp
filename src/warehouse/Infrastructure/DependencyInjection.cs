@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Abstractions.Data;
+using Application.Common.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddScoped<IApplicationDbInitializer, ApplicationDbInitializer>();
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
             {
