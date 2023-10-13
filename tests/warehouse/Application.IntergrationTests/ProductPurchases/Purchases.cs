@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Json;
@@ -12,7 +13,7 @@ namespace Application.IntergrationTests.ProductPurchases
     public class Purchases : TestBase
     {
         [Test]
-        public async Task CreateProductPurchase_TriggeringConcurrencyException_IsBadRequest()
+        public async Task CreateProductPurchase_TriggeringConcurrencyException()
         {
             // Arrange
             var warehouseId = await CreateWareHouse();
@@ -41,6 +42,53 @@ namespace Application.IntergrationTests.ProductPurchases
             Assert.Throws<DbUpdateConcurrencyException>(() => ctx1.SaveChanges());
         }
 
+        [Test]
+        public async Task CreateProductPurchase_PurchasingExistingProduct_Success()
+        {
+            var warehouseId = await CreateWareHouse();
+            var prod = await CreateProduct();
+
+            CreateProductPurchaseRequest productPurchaseRequest = new()
+            {
+                VendorName = "Some vendor",
+                Comment = "Fresh fruit",
+                Date = DateTime.Now,
+                Price = 8,
+                ProductName = "Pineapple",
+                ProductUom = "kilogram",
+                Quantity = 1,
+                WareHouseId = warehouseId
+            };
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/purchaseProduct", productPurchaseRequest);
+            response.EnsureSuccessStatusCode();
+
+            var product = await GetEntity<Product>(p => p.Name == "Pineapple");
+            Assert.That(product.Quantity == prod.Quantity + productPurchaseRequest.Quantity);
+        }
+
+        [Test]
+        public async Task CreateProductPurchase_PurchasingNewProduct_Success()
+        {
+            var warehouseId = await CreateWareHouse();
+
+            CreateProductPurchaseRequest productPurchaseRequest = new()
+            {
+                VendorName = "Some vendor",
+                Comment = "Fresh fruit",
+                Date = DateTime.Now,
+                Price = 8,
+                ProductName = "Peach",
+                ProductUom = "kilogram",
+                Quantity = 1,
+                WareHouseId = warehouseId
+            };
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/purchaseProduct", productPurchaseRequest);
+            response.EnsureSuccessStatusCode();
+
+            var product = await GetEntity<Product>(p => p.Name == "Peach");
+            Assert.That(product.Quantity == productPurchaseRequest.Quantity);
+        }
+
         async Task<Guid> CreateWareHouse()
         {
             WareHouse warehouse = new()
@@ -53,14 +101,8 @@ namespace Application.IntergrationTests.ProductPurchases
             await AddAsync(warehouse);
             return warehouse.Id;
         }
-        async Task<ProductUOM> CreateProductUom()
-        {
-            ProductUOM productUom = new() { Details = "Used to measure weight of the product", Abbreviation = "KG", Id = Guid.NewGuid(), Name = "kilogram" };
-            await AddAsync(productUom);
-            return productUom;
-        }
 
-        async Task CreateProduct()
+        async Task<Product> CreateProduct()
         {
             Product product = new()
             {
@@ -74,6 +116,7 @@ namespace Application.IntergrationTests.ProductPurchases
                 Uom = new ProductUOM() { Name = "kilogram", Abbreviation="KG", Details = "Test", Id = Guid.NewGuid() }
             };
             await AddAsync(product);
+            return product;
         }
     }
 }
