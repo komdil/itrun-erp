@@ -20,21 +20,21 @@ namespace Application.IntergrationTests.ProductPurchases
 
             CreateProductPurchaseRequest productPurchaseRequest = new()
             {
-                VendorName = "Test",
-                Comment = "Test",
+                VendorName = "Some vendor",
+                Comment = "Fresh fruit",
                 Date = DateTime.Now,
                 Price = 8,
-                ProductName = "Apple",
+                ProductName = "Pineapple",
                 ProductUom = "kilogram",
                 Quantity = 1,
                 WareHouseId = warehouseId
             };
             var ctx1 = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var prod1 =  ctx1.Products.FirstOrDefault(p => p.Name == "Apple");
+            var prod1 =  ctx1.Products.FirstOrDefault(p => p.Name == "Pineapple");
             prod1.Quantity += 2;
 
             var ctx2 = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var prod2 = ctx2.Products.FirstOrDefault(p => p.Name == "Apple");
+            var prod2 = ctx2.Products.FirstOrDefault(p => p.Name == "Pineapple");
             prod2.Quantity += 5;
 
             ctx2.SaveChanges();
@@ -68,7 +68,7 @@ namespace Application.IntergrationTests.ProductPurchases
                 Description = "Test",
                 Id = Guid.NewGuid(),
                 Manufacturer = "Microsoft",
-                Name = "Apple",
+                Name = "Pineapple",
                 Price = 12,
                 Quantity = 15,
                 Uom = new ProductUOM() { Name = "kilogram", Abbreviation="KG", Details = "Test", Id = Guid.NewGuid() }
