@@ -34,11 +34,11 @@ namespace Application.IntergrationTests.ProductPurchases
             prod1.Quantity += 2;
 
             var ctx2 = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var prod2 = ctx1.Products.FirstOrDefault(p => p.Name == "Apple");
+            var prod2 = ctx2.Products.FirstOrDefault(p => p.Name == "Apple");
             prod2.Quantity += 5;
 
             ctx2.SaveChanges();
-            ctx1.SaveChanges();
+            Assert.Throws<DbUpdateConcurrencyException>(() => ctx1.SaveChanges());
         }
 
         async Task<Guid> CreateWareHouse()
