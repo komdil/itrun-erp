@@ -1,7 +1,10 @@
 using Account.Api.Extensions;
+using Account.Api.Utilities;
+using Azure.Identity;
 using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +24,6 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-
 // Jwt Bearer
 .AddJwtBearer(options =>
 {
@@ -45,14 +47,17 @@ builder.Services.AddCors(options =>
     });
 });
 
+if (builder.Environment.IsProduction())
+{
+    builder.Configuration.AddAzureKeyVault(
+        new Uri($"https://{builder.Configuration["KeyVault:Name"]}.vault.azure.net/"), new DefaultAzureCredential(), new CustomPrefixKeyVaultSecretManager());
+}
+
 var app = builder.Build();
 app.Services.Migrate();
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseCors("corsapp");
 app.UseHttpsRedirection();
 

@@ -9,10 +9,18 @@ namespace Account.Api.Controllers
     public class AuthController : ControllerBase
     {
         private IAccountService _accountService;
+        private IConfiguration _configuration;
 
-        public AuthController(IAccountService accountService)
+        public AuthController(IAccountService accountService, IConfiguration configuration)
         {
             _accountService = accountService;
+            _configuration = configuration;
+        }
+
+        [HttpGet("GetSome/{name}")]
+        public IActionResult GetSome(string name)
+        {
+            return Ok(_configuration[name]);
         }
 
         [HttpPost("sign-up")]
