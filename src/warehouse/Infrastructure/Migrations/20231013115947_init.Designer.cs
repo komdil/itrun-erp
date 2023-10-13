@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231011093129_ProductPurchaseVersion")]
-    partial class ProductPurchaseVersion
+    [Migration("20231013115947_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -46,6 +46,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Quantity")
+                        .IsConcurrencyToken()
                         .HasColumnType("int");
 
                     b.Property<Guid?>("UomId")
@@ -87,11 +88,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("VendorName")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte[]>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
 
                     b.Property<Guid>("WareHouseId")
                         .HasColumnType("uniqueidentifier");

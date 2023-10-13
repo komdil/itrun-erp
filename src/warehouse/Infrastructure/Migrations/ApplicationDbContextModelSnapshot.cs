@@ -44,6 +44,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Quantity")
+                        .IsConcurrencyToken()
                         .HasColumnType("int");
 
                     b.Property<Guid?>("UomId")
@@ -78,7 +79,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Quantity")
-                        .IsConcurrencyToken()
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalPrice")
