@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Domain.Entities
 {
     public class Product
@@ -9,6 +11,7 @@ namespace Domain.Entities
         public string Manufacturer {get; set;}
         public decimal Price { get; set;}
         public string Description {get; set;}
+        [ConcurrencyCheck]
         public int Quantity { get; set;}
     }
 }
