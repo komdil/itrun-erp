@@ -34,10 +34,10 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Build with dotnet
-        run: dotnet build ./src/account/Account.api/Account.Api.csproj --configuration Release
+        run: dotnet build src/account/Account.api/Account.Api.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish ./src/account/Account.api/Account.Api.csproj -c Release -o ${{env.DOTNET_ROOT}}/account_api
+        run: dotnet publish src/account/Account.api/Account.Api.csproj -c Release -o ${{env.DOTNET_ROOT}}/account_api
         
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
