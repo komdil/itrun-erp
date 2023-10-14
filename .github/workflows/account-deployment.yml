@@ -37,7 +37,7 @@ jobs:
         run: dotnet build ${{ github.workspace }}/src/account/Account.Api/Account.Api.csproj --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish src/account/Account.api/Account.Api.csproj -c Release -o ${{env.DOTNET_ROOT}}/account_api
+        run: dotnet publish ${{ github.workspace }}/src/account/Account.Api/Account.Api.csproj -c Release -o ${{env.DOTNET_ROOT}}/account_api
         
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
