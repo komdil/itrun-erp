@@ -35,11 +35,11 @@ jobs:
 
       - name: Build with dotnet
         run: dotnet build Account.Api.csproj --configuration Release
-        working-directory: ./src/account
+        working-directory: ./src/account/account.api
 
       - name: dotnet publish
         run: dotnet publish Account.Api.csproj -c Release -o ${{env.DOTNET_ROOT}}/account_api
-        working-directory: ./src/account
+        working-directory: ./src/account/account.api
         
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
