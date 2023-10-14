@@ -5,13 +5,6 @@ namespace Warehouse.Api.Controllers
 {
     public class ProductsController : ApiControllerBase
     {
-        private IConfiguration _configuration;
-
-        public ProductsController(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
         [HttpGet]
         public async Task<List<SingleProductResponse>> Get([FromQuery] GetProductsQuery request)
         {
@@ -27,13 +20,7 @@ namespace Warehouse.Api.Controllers
             };
             return await Sender.Send(query);
         }
-
-        [HttpGet("GetSome/{name}")]
-        public IActionResult GetSome(string name)
-        {
-            return Ok(_configuration[name]);
-        }
-
+      
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateProductRequest request)
         {
