@@ -35,6 +35,7 @@ jobs:
 
       - name: Build with dotnet
         run: dotnet build ./src/account/account.api/account.api.csproj --configuration Release
+        working-directory: ${{ github.workspace }}
 
       - name: dotnet publish
         run: dotnet publish src/account/Account.api/Account.Api.csproj -c Release -o ${{env.DOTNET_ROOT}}/account_api
