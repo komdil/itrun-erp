@@ -34,7 +34,7 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Build with dotnet
-        run: dotnet build ./src/account/account.api/account.api.csproj --configuration Release
+        run: dotnet build ./src/account/Account.Api/Account.Api.csproj --configuration Release
         working-directory: ${{ github.workspace }}
 
       - name: dotnet publish
