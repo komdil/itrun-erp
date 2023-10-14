@@ -27,7 +27,8 @@ builder.Services.AddCors(options =>
 if (builder.Environment.IsProduction())
 {
     builder.Configuration.AddAzureKeyVault(
-        new Uri($"https://{builder.Configuration["KeyVault:Name"]}.vault.azure.net/"), new DefaultAzureCredential(), new CustomPrefixKeyVaultSecretManager());
+        new Uri($"https://{builder.Configuration["KeyVault:Name"]}.vault.azure.net/"),
+        new DefaultAzureCredential(), new CustomPrefixKeyVaultSecretManager());
 }
 
 var app = builder.Build();
