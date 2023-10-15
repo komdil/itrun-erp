@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Warehouse.Contracts.ProductPurchase;
 using Warehouse.Contracts.Warehouse;
+using Azure;
 
 namespace Application.IntergrationTests.SallProduct
 {
@@ -152,8 +153,20 @@ namespace Application.IntergrationTests.SallProduct
 			// Assert
 			result.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-			var deletedWareHouse = await GetEntity<WareHouse>(s => s.Id == SaleProductFromDb.Id);
+			var deletedWareHouse = await GetEntity<SaleProduct>(s => s.Id == SaleProductFromDb.Id);
 			deletedWareHouse.Should().BeNull();
+		}
+		[Test]
+		public async Task DeleteProductSell_ShouldBadRequest()
+		{
+			await CreateSaleProduct(1);
+			// Arrange
+			var SaleProductFromDb = GetEntities<SaleProduct>().First();
+			// Act
+			HttpResponseMessage result = await _httpClient.DeleteAsync($"/SaleProduct/{10000}");
+
+			// Assert
+			Assert.That(result.StatusCode == HttpStatusCode.BadRequest);
 		}
 
 		async Task<Guid> CreateWareHouse()
