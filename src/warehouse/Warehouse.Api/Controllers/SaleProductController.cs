@@ -6,7 +6,7 @@ namespace Warehouse.Api.Controllers
 	public class SaleProductController : ApiControllerBase
 	{
         [HttpPost]
-		public async Task<IActionResult> SellProductAsync([FromBody] CreateSellProductRequest request)
+		public async Task<IActionResult> Post([FromBody] CreateSellProductRequest request)
 		{
 			var response = await Sender.Send(request);
 			return Ok(response);

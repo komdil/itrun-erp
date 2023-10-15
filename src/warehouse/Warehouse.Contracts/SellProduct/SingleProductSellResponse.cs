@@ -8,14 +8,15 @@ namespace Warehouse.Contracts.SellProduct
 {
 	public class SingleProductSellResponse
 	{
-		public int Id { get; set; }
-		public string ProductName { get; set; }
-		public string ProductUom { get; set; }
-		public Guid Warehouse { get; set; }
-		public decimal Price { get; set; }
-		public int Quantity { get; set; }
-		public decimal TotalPrice { get; set; }
-		public DateTime Date { get; set; }
-		public string Comment { get; set; }
+		public Guid Id { get; init; }
+		public string ProductName { get; init; }
+		public string ProductUom { get; init; }
+		public Guid WareHouseId { get; init; }
+		public decimal Price { get; init; }
+		public int Quantity { get; init; }
+		public decimal TotalPrice { get; init; }
+		public DateTime Date { get; init; }
+		public string Comment { get; init; }
+
 	}
 }

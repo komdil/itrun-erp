@@ -27,7 +27,7 @@ namespace Application.IntergrationTests.SallProduct
 				Date= DateTime.Now,
 				Comment="Test",
 				ProductUom="Test",
-				Warehouse=Guid.Empty,
+				WareHouseId=Guid.Empty,
 				TotalPrice=1,
 				Quantity = 1,
 

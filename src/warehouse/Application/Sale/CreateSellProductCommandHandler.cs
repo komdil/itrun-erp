@@ -26,18 +26,31 @@ namespace Application.Sale
 
 		public async Task<SingleProductSellResponse> Handle(CreateSellProductRequest request, CancellationToken cancellationToken)
 		{
-			var product = await _dbcontext.Products.FirstOrDefaultAsync(p => p.Name == request.ProductName, cancellationToken);
-			if (product == null)
+			var uom = await _dbcontext.ProductUOMs.FirstOrDefaultAsync(u => u.Name == request.ProductUom, cancellationToken);
+			if (uom == null)
 				throw new NotFoundException();
-			if (product.Quantity < request.Quantity)
+
+			var product = await _dbcontext.Products.FirstOrDefaultAsync(p => p.Name == request.ProductName, cancellationToken);
+
+			if (product == null)
+			{
+				product = new Product { Name = request.ProductName, Uom = uom, Price = request.Price, Quantity = request.Quantity };
+				await _dbcontext.Products.AddAsync(product);
+			}
+			else if (product.Quantity < request.Quantity)
 				throw new ValidationFailedException(request.ProductName);
-
-			product.Quantity -= request.Quantity;
-			var prod = _mapper.Map<SingleProductSellResponse>(request);
-
-			await _dbcontext.SaveChangesAsync();
+			else
+			{
+				product.Quantity -= request.Quantity;
+				product.Price = request.Price;
+			}
+		
+			var prod = _mapper.Map<SaleProduct>(request);
+			await _dbcontext.SaleProducts.AddAsync(prod);
+			await _dbcontext.SaveChangesAsync(cancellationToken);
 
 			return _mapper.Map<SingleProductSellResponse>(prod);
 		}
+
 	}
 }
