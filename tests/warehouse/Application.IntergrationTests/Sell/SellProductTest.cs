@@ -15,6 +15,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Warehouse.Contracts.ProductPurchase;
+using Warehouse.Contracts.Warehouse;
 
 namespace Application.IntergrationTests.SallProduct
 {
@@ -109,6 +110,51 @@ namespace Application.IntergrationTests.SallProduct
 			ctx2.SaveChanges();
 			Assert.Throws<DbUpdateConcurrencyException>(() => ctx1.SaveChanges());
 		}
+		[Test]
+		public async Task GetSaleProduct_ShouldReturnListOfSaleProductFromDb()
+		{
+			// Arrange
+			await CreateSaleProduct(3);
+			GetSaleProductsQuery request = new();
+
+			// Act
+			List<SingleProductSellResponse> saleProduct = await _httpClient.GetFromJsonAsync<List<SingleProductSellResponse>>("SaleProduct", request);
+
+			saleProduct.Count().Should().BeGreaterThanOrEqualTo(3);
+		}
+
+		[Test]
+		public async Task GetSingleSaleProduct_ShouldReturnSaleProductFromDb()
+		{
+			// Arrange
+			await CreateSaleProduct(1);
+			var SaleProductFromDb = GetEntities<SaleProduct>().First();
+
+			string url = $"SaleProduct/{SaleProductFromDb.Id}";
+			// Act
+			var saleProduct = await _httpClient.GetFromJsonAsync<SingleProductSellResponse>(url);
+
+			saleProduct.Should().NotBeNull();
+			saleProduct.ProductName.Should().Be(SaleProductFromDb.ProductName);
+			saleProduct.ProductUom.Should().Be(SaleProductFromDb.ProductUom);
+			saleProduct.Comment.Should().Be(SaleProductFromDb.Comment);
+		}
+		[Test]
+		public async Task DeleteProductSell_ShouldDeleteFromDb()
+		{
+			 await CreateSaleProduct(1);
+			// Arrange
+			var SaleProductFromDb = GetEntities<SaleProduct>().First();
+
+			// Act
+			HttpResponseMessage result = await _httpClient.DeleteAsync($"/SaleProduct/{SaleProductFromDb.Id}");
+
+			// Assert
+			result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+			var deletedWareHouse = await GetEntity<WareHouse>(s => s.Id == SaleProductFromDb.Id);
+			deletedWareHouse.Should().BeNull();
+		}
 
 		async Task<Guid> CreateWareHouse()
 		{
@@ -137,6 +183,26 @@ namespace Application.IntergrationTests.SallProduct
 			};
 			await AddAsync(product);
 			return product;
+		}
+		async Task CreateSaleProduct(int v)
+		{
+			for (int i = 0; i < v; i++)
+			{
+				var warehouseId = await CreateWareHouse();
+				SaleProduct saleProduct = new()
+				{
+					ProductName = $"TestName{i}",
+					Price = 10+i,
+					Date = DateTime.Now,
+					Comment = "Test",
+					ProductUom = "kilogram",
+					WareHouseId = warehouseId,
+					TotalPrice = 100+i,
+					Quantity = 10+i,
+
+				};
+				await AddAsync(saleProduct);
+			}
 		}
 	}
 }
