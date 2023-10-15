@@ -19,6 +19,8 @@ namespace Application.Common.Interfaces
 
         DbSet<SaleProduct> SaleProducts { get; }
 
+        DbSet<ProductPurchase> ProductPurchases { get; }
+
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

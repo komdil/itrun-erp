@@ -14,9 +14,9 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationDbContext>(options =>
             {
+                var connectionString = configuration.GetConnectionString("DefaultConnection");
                 if (configuration["UseInMemoryDatabase"] == "true")
                     options.UseInMemoryDatabase("testDb");
                 else
