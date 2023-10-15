@@ -38,7 +38,9 @@ namespace Application.Sale
 				await _dbcontext.Products.AddAsync(product);
 			}
 			else if (product.Quantity < request.Quantity)
+			{
 				throw new ValidationFailedException(request.ProductName);
+			}
 			else
 			{
 				product.Quantity -= request.Quantity;
