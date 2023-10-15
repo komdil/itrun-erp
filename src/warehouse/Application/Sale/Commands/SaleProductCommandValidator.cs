@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Application.SaleProductValidation
+namespace Application.Sale.Commands
 {
     public class SaleProductCommandValidator
     {

@@ -1,8 +1,10 @@
-﻿namespace Warehouse.Contracts.SellProduct
+﻿using Warehouse.Contracts.SellProduct;
+using Warehouse.Queries;
+
+namespace Warehouse.Contracts.Warehouse
 {
-	public class SingleProductSellResponse
-	{
-		public Guid Id { get; init; }
+    public record GetSaleProductsQuery : PagedQuery<SingleProductSellResponse>
+    {
 		public string ProductName { get; init; }
 		public string ProductUom { get; init; }
 		public Guid WareHouseId { get; init; }
