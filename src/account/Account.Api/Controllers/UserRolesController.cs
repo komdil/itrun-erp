@@ -13,7 +13,7 @@ namespace Account.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get(string role = null, string userName = null)
         {
-            var result = await _mediator
+            var result = await Sender.
                 .Send(new GetUserRolesQuery
                 {
                     Role = role,
