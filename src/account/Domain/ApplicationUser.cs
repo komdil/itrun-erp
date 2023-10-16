@@ -15,5 +15,6 @@ namespace Domain
 		public Guid? PrimaryContactId { get; set; }
 
 		public Contact PrimaryContact { get; set; }
-	}
+     
+    }
 }
