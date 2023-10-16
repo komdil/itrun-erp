@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Abstractions.Data;
+using Application.Common.Interfaces;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,10 +12,15 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            services.AddScoped<IApplicationDbInitializer, ApplicationDbInitializer>();
+           
             services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
             {
-                options.UseInMemoryDatabase("testDb");
+                var connectionString = configuration.GetConnectionString("DefaultConnection");
+                if (configuration["UseInMemoryDatabase"] == "true")
+                    options.UseInMemoryDatabase("testDb");
+                else
+                    options.UseSqlServer(connectionString);
             });
             return services;
         }

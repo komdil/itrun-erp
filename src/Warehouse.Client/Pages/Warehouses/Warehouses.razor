@@ -3,12 +3,12 @@
 @using Warehouse.Contracts.Warehouse;
 @attribute [Authorize]
 @inject IWarehouseService _warehouseService
-<br/>
+<br />
 @if (isError)
 {
     <Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
-        <div class="text-secondary">@errorMessage</div>
-    </Alert>
+     <div class="text-secondary">@errorMessage</div>
+ </Alert>
 }
 
 @if (isLoading)
@@ -17,16 +17,16 @@
     <Progress Color="TablerColor.Blue" Indeterminate />
 }
 
-<Table Item="SingleWarehouseResponse" Items="warehouses" PageSize="20" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
+<Table Item="SingleWarehouseResponse" Items="warehouses" PageSize="getWarehousesQuery.PageSize" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
        OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete"
        Hover Responsive EditMode=tableEditMode>
-    <HeaderTemplate>
-        <strong>Warehouses</strong>
-    </HeaderTemplate>
+     <HeaderTemplate>
+         <strong>Warehouses</strong>
+     </HeaderTemplate>
 
-    <ChildContent>
+     <ChildContent>
 
-        <Column Item="SingleWarehouseResponse" Property="e=>e.Name" Title="Name" Sortable Searchable Groupable>
+         <Column Item="SingleWarehouseResponse" Property="e=>e.Name" Title="Name" Sortable Searchable Groupable>
             <EditorTemplate>
                 <input type="text" class="form-control" @bind-value="@context.Name" />
             </EditorTemplate>
@@ -52,7 +52,7 @@
 
     private List<SingleWarehouseResponse> warehouses = new();
 
-    private TableEditMode tableEditMode;
+    private TableEditMode tableEditMode = TableEditMode.Inline;
     private GetWarehousesQuery getWarehousesQuery = new();
 
     #region Error
@@ -89,7 +89,7 @@
     {
         var response = await _warehouseService.UpdateAsync(new UpdateWarehouseRequest
             {
-                Id=singleWarehouse.Id,
+                Id = singleWarehouse.Id,
                 Name = singleWarehouse.Name,
                 Details = singleWarehouse.Details,
                 Location = singleWarehouse.Location
@@ -109,6 +109,7 @@
 
     private async Task OnItemAdd(SingleWarehouseResponse singleWarehouse)
     {
+        singleWarehouse.Id = Guid.NewGuid();
         var response = await _warehouseService.CreateAsync(new CreateWarehouseRequest
             {
                 Name = singleWarehouse.Name,
@@ -147,7 +148,7 @@
         }
     }
 
-    private async Task ShowDialog(string title, string icon = null, TablerColor color = TablerColor.Primary)
+    private async Task ShowDialog(string title, IIconType icon = null, TablerColor color = TablerColor.Primary)
     {
         if (icon == null)
             icon = Icons.Info_circle;
@@ -155,7 +156,7 @@
             {
                 CancelText = "",
                 StatusColor = color,
-                IconElements = icon,
+                IconType = icon,
                 MainText = title
             });
     }

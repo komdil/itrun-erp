@@ -4,8 +4,8 @@ namespace Warehouse.Queries
 {
     public abstract record PagedQuery<T> : IRequest<List<T>>
     {
-        public int StartIndex { get; set; } = 0;
+        public int Skip { get; set; } = 0;
 
-        public int EndIndex { get; set; } = 20;
+        public int PageSize { get; set; } = 20;
     }
 }

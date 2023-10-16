@@ -1,8 +1,196 @@
 ﻿@page "/products"
+@using Warehouse.Client.Services.Product;
+@using Warehouse.Contracts.Product;
 @attribute [Authorize]
+@inject IProductService _productService
+<br />
+
+@if (isError)
+{
+    <Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
+     <div class="text-secondary">@errorMessage</div>
+ </Alert>
+}
+
+@if (isLoading)
+{
+    <br />
+    <Progress Color="TablerColor.Blue" Indeterminate />
+}
 
 <h3>Products</h3>
 
-@code {
+<Table Item="SingleProductResponse" Items="products" PageSize="20" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
+       OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete"
+       Hover Responsive EditMode=tableEditMode>
+     <HeaderTemplate>
+         <strong>Products</strong>
+     </HeaderTemplate>
 
+     <ChildContent>
+
+         <Column Item="SingleProductResponse" Property="product=>product.Name" Title="Name" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.Name" />
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductResponse" Property="product=>product.ProductUom" Title="Uom" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.ProductUom" />
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductResponse" Property="product=>product.Category" Title="Category" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.Category" />
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductResponse" Property="product=>product.Manufacturer" Title="Manufacturer" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.Manufacturer" />
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductResponse" Property="product=>product.Quantity" Title="Quantity" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.Quantity" />
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductResponse" Property="product=>product.Price" Title="Price" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.Price" />
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductResponse" Property="product=>product.Description" Title="Description" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.Description" />
+            </EditorTemplate>
+        </Column>
+
+    </ChildContent>
+
+</Table>
+
+
+
+@code {
+    [Inject] TabBlazor.Services.TablerService TablerService { get; set; }
+    [Inject] TabBlazor.Services.IModalService ModalService { get; set; }
+    private List<SingleProductResponse> products = new();
+
+    private TableEditMode tableEditMode = TableEditMode.Inline;
+    private GetProductsQuery getProductQuery = new();
+
+    #region Error
+    private string errorMessage;
+    private bool isError;
+    private void ShowError(string error)
+    {
+        errorMessage = error;
+        isError = true;
+    }
+
+    #endregion
+
+    #region
+    private bool isLoading;
+    #endregion
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        var response = await _productService.GetAllAsync(getProductQuery);
+        if (response.Success)
+        {
+            products = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+        isLoading = false;
+    }
+
+    private async Task OnItemEdit(SingleProductResponse singleProduct)
+    {
+        var response = await _productService.UpdateAsync(new UpdateProductRequest
+            {
+                Id = singleProduct.Id,
+                Name = singleProduct.Name,
+                ProductUom = singleProduct.ProductUom,
+                Category = singleProduct.Category,
+                Manufacturer = singleProduct.Manufacturer,
+                Price = singleProduct.Price,
+                Quantity = singleProduct.Quantity,
+                Description = singleProduct.Description
+            });
+
+        if (response.Success)
+        {
+            await ShowDialog($"Product updated{singleProduct.Name}");
+        }
+        else
+        {
+            if (products.Contains(singleProduct))
+                products.Remove(singleProduct);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private async Task OnItemAdd(SingleProductResponse singleProduct)
+    {
+        var response = await _productService.CreateAsync(new CreateProductRequest
+            {
+                Name = singleProduct.Name,
+                ProductUom = singleProduct.ProductUom,
+                Category = singleProduct.Category,
+                Manufacturer = singleProduct.Manufacturer,
+                Price = singleProduct.Price,
+                Quantity = singleProduct.Quantity,
+                Description = singleProduct.Description
+            });
+
+        if (response.Success)
+        {
+            await ShowDialog($"Added product {singleProduct.Name}");
+        }
+        else
+        {
+            if (products.Contains(singleProduct))
+                products.Remove(singleProduct);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private async Task OnItemDelete(SingleProductResponse singleWarehouse)
+    {
+        var response = await _productService.DeleteAsync(new DeleteProductRequest(singleWarehouse.Name));
+
+        if (response.Success)
+        {
+            await ShowDialog($"Product deleted {singleWarehouse.Name}");
+        }
+        else
+        {
+            if (!products.Contains(singleWarehouse))
+                products.Add(singleWarehouse);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private Task<SingleProductResponse> AddItem()
+    {
+        return Task.FromResult(new SingleProductResponse { Name = "New product" });
+    }
+
+    private async Task ShowDialog(string title, IIconType icon = null, TablerColor color = TablerColor.Primary)
+    {
+        if (icon == null)
+            icon = Icons.Info_circle;
+        await ModalService.ShowDialogAsync(new TabBlazor.Components.Modals.DialogOptions
+            {
+                CancelText = "",
+                StatusColor = color,
+                IconType = Icons.Info_circle,
+                MainText = title
+            });
+    }
 }
