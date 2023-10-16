@@ -1,7 +1,9 @@
 using Application;
+using Azure.Identity;
 using Infrastructure;
 using Warehouse.Api.Extensions;
 using Warehouse.Api.Filters;
+using Warehouse.Api.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,14 +24,18 @@ builder.Services.AddCors(options =>
     });
 });
 
+if (builder.Environment.IsProduction())
+{
+    builder.Configuration.AddAzureKeyVault(
+        new Uri($"https://{builder.Configuration["KeyVault:Name"]}.vault.azure.net/"),
+        new DefaultAzureCredential(), new CustomPrefixKeyVaultSecretManager());
+}
+
 var app = builder.Build();
 app.Services.Migrate();
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCors("corsapp");
 app.UseHttpsRedirection();

@@ -20,7 +20,7 @@ namespace Warehouse.Api.Controllers
             };
             return await Sender.Send(query);
         }
-
+      
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateProductRequest request)
         {

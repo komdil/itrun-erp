@@ -9,7 +9,6 @@ namespace Account.Api.Controllers
     public class AuthController : ControllerBase
     {
         private IAccountService _accountService;
-
         public AuthController(IAccountService accountService)
         {
             _accountService = accountService;

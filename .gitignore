@@ -409,3 +409,7 @@ FodyWeavers.xsd
 
 # Built Visual Studio Code Extensions
 *.vsix
+/src/warehouse/Warehouse.Api/Properties/ServiceDependencies
+*.json
+/src/warehouse/Warehouse.Api/Properties/ServiceDependencies/itrun-warehouse - FTP/profile.arm.json
+

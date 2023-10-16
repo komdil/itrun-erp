@@ -1,8 +1,131 @@
 ﻿@page "/sales"
+@using Warehouse.Client.Services.Sales;
+@using Warehouse.Contracts.SellProduct;
+@using Warehouse.Contracts.Warehouse;
+@inject ISaleProductService _saleProductService
+<br />
 @attribute [Authorize]
 
+@if (isError)
+{
+	<Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
+		<div class="text-secondary">@errorMessage</div>
+	</Alert>
+}
+
+@if (isLoading)
+{
+	<br />
+	<Progress Color="TablerColor.Blue" Indeterminate />
+}
 <h3>Sales</h3>
+<Table Item="SingleProductSellResponse" Items="saleProduct" PageSize="20" OnItemDeleted="OnItemDelete"
+		   Hover Responsive EditMode=tableEditMode>
+		<HeaderTemplate>
+			<strong>Sales Products</strong>
+		</HeaderTemplate>
+
+		<ChildContent>
+			<Column Item="SingleProductSellResponse" Property="product=>product.ProductName" Title="Name" Sortable Searchable Groupable>
+			<EditorTemplate>
+			</EditorTemplate>
+		</Column>
+		<Column Item="SingleProductSellResponse" Property="product=>product.ProductUom" Title="Uom" Sortable Searchable Groupable>
+			<EditorTemplate>
+			</EditorTemplate>
+		</Column>
+		<Column Item="SingleProductSellResponse" Property="product=>product.WareHouseId" Title="WareHouseId" Sortable Searchable Groupable>
+			<EditorTemplate>
+			</EditorTemplate>
+		</Column>
+		<Column Item="SingleProductSellResponse" Property="product=>product.Quantity" Title="Quantity" Sortable Searchable Groupable>
+			<EditorTemplate>
+			</EditorTemplate>
+		</Column>
+		<Column Item="SingleProductSellResponse" Property="product=>product.Price" Title="Price" Sortable Searchable Groupable>
+			<EditorTemplate>
+			</EditorTemplate>
+		</Column>
+		<Column Item="SingleProductSellResponse" Property="product=>product.TotalPrice" Title="TotalPrice" Sortable Searchable Groupable>
+			<EditorTemplate>
+			</EditorTemplate>
+		</Column>
+		<Column Item="SingleProductSellResponse" Property="product=>product.Date" Title="Manufacturer" Sortable Searchable Groupable>
+			<EditorTemplate>
+			</EditorTemplate>
+		</Column>
+		<Column Item="SingleProductSellResponse" Property="product=>product.Comment" Title="Manufacturer" Sortable Searchable Groupable>
+			<EditorTemplate>
+			</EditorTemplate>
+		</Column>
+
+	</ChildContent>
+
+</Table>
 
 @code {
+	[Inject] TabBlazor.Services.TablerService TablerService { get; set; }
+	[Inject] TabBlazor.Services.IModalService ModalService { get; set; }
+	private List<SingleProductSellResponse> saleProduct = new();
 
+	private TableEditMode tableEditMode = TableEditMode.Inline;
+	private GetSaleProductsQuery getProductQuery = new();
+	#region Error
+	private string errorMessage;
+	private bool isError;
+	private void ShowError(string error)
+	{
+		errorMessage = error;
+		isError = true;
+	}
+
+	#endregion
+
+	#region
+	private bool isLoading;
+	#endregion
+	protected override async Task OnInitializedAsync()
+	{
+		isLoading = true;
+		var response = await _saleProductService.GetAllAsync(getProductQuery);
+		if (response.Success)
+		{
+			saleProduct = response.Result;
+		}
+		else
+		{
+			ShowError(response.Error);
+		}
+		isLoading = false;
+	}
+	private async Task OnItemDelete(SingleProductSellResponse singleProductSell)
+	{
+		var response = await _saleProductService.DeleteAsync(new DeleteSaleProductRequest
+			{
+				Id = singleProductSell.Id
+			});
+
+		if (response.Success)
+		{
+			await ShowDialog($"SaleProduct deleted {singleProductSell.ProductName}");
+		}
+		else
+		{
+			if (!saleProduct.Contains(singleProductSell))
+				saleProduct.Add(singleProductSell);
+			await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+		}
+	}
+	private async Task ShowDialog(string title, IIconType icon = null, TablerColor color = TablerColor.Primary)
+	{
+		if (icon == null)
+			icon = Icons.Info_circle;
+		await ModalService.ShowDialogAsync(new TabBlazor.Components.Modals.DialogOptions
+			{
+				CancelText = "",
+				StatusColor = color,
+				IconType = icon,
+				MainText = title
+			});
+	}
 }
