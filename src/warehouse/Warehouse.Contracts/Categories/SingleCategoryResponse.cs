@@ -8,5 +8,10 @@
         public string Description { get; set; }
         public string ParentCategory { get; set; }
         public string SubCategories { get; set; }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

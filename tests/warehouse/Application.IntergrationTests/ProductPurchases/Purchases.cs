@@ -31,7 +31,7 @@ namespace Application.IntergrationTests.ProductPurchases
                 WareHouseId = warehouseId
             };
             var ctx1 = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var prod1 =  ctx1.Products.FirstOrDefault(p => p.Name == "Pineapple");
+            var prod1 = ctx1.Products.FirstOrDefault(p => p.Name == "Pineapple");
             prod1.Quantity += 2;
 
             var ctx2 = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -106,14 +106,14 @@ namespace Application.IntergrationTests.ProductPurchases
         {
             Product product = new()
             {
-                Category = "Fruit",
+                Category = new Category() { Name = "Fruit" },
                 Description = "Test",
                 Id = Guid.NewGuid(),
                 Manufacturer = "Microsoft",
                 Name = "Pineapple",
                 Price = 12,
                 Quantity = 15,
-                Uom = new ProductUOM() { Name = "kilogram", Abbreviation="KG", Details = "Test", Id = Guid.NewGuid() }
+                Uom = new ProductUOM() { Name = "kilogram", Abbreviation = "KG", Details = "Test", Id = Guid.NewGuid() }
             };
             await AddAsync(product);
             return product;

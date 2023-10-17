@@ -94,7 +94,7 @@ namespace Application.IntergrationTests.Categories
             var categoryFromDb = GetEntities<Category>().First();
 
             // Act
-            HttpResponseMessage result = await _httpClient.DeleteAsync($"categories/{categoryFromDb.Id}");
+            HttpResponseMessage result = await _httpClient.DeleteAsync($"categories/{categoryFromDb.Name}");
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);

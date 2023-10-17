@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Warehouse.Client.Services.Auth;
+using Warehouse.Contracts.Exceptions;
 
 namespace Warehouse.Client.Services.HttpClients
 {
@@ -68,12 +69,8 @@ namespace Warehouse.Client.Services.HttpClients
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
             {
-                try
-                {
-                    T responseContent = await response.Content.ReadFromJsonAsync<T>();
-                    return ApiResponse<T>.BuildFailed(responseContent, response.StatusCode);
-                }
-                catch { }
+                ErrorResponse responseContent = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+                return ApiResponse<T>.BuildFailed(responseContent, response.StatusCode);
             }
             return ApiResponse<T>.BuildFailed("Error on sending response. Please try again later", response.StatusCode);
         }

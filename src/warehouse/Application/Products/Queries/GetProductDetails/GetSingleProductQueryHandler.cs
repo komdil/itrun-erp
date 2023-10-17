@@ -21,6 +21,8 @@ namespace Application.Products.Queries.GetProductDetails
         public async Task<SingleProductResponse> Handle(GetSingleProductQuery request, CancellationToken cancellationToken)
         {
             var product = await _dbContext.Products
+                .Include(s => s.Category)
+                .Include(s => s.Warehouse)
                 .FirstOrDefaultAsync(product =>
                 product.Id == request.ProductId, cancellationToken);
 

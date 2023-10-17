@@ -17,7 +17,6 @@ namespace Application.IntergrationTests.Products
         public async Task CreateProduct_ShouldReturnSuccess()
         {
             // Arrange
-            CreateProductUOMRequest productUomRequest = new() { Name = "Kilo", Abbreviation = "KG", Details = "Test" };
             CreateProductRequest productRequest = new()
             {
                 Name = "Apple",
@@ -26,10 +25,9 @@ namespace Application.IntergrationTests.Products
                 Manufacturer = "TajFruitCompany",
                 Price = 100,
                 Quantity = 16,
-                ProductUom = productUomRequest.Name
+                ProductUom = "kg",
+                Warehouse="some"
             };
-            HttpResponseMessage prodUomRequestResult = await _httpClient.PostAsJsonAsync("productuoms", productUomRequest);
-
             // Act
             HttpResponseMessage prodRequestResult = await _httpClient.PostAsJsonAsync("products", productRequest);
 
@@ -38,7 +36,6 @@ namespace Application.IntergrationTests.Products
 
             var createdProduct = await GetEntity<Product>(
                                prod => prod.Name == productRequest.Name &&
-                               prod.Category == productRequest.Category &&
                                prod.Description == productRequest.Description &&
                                prod.Manufacturer == productRequest.Manufacturer &&
                                prod.Price == productRequest.Price &&
@@ -89,7 +86,6 @@ namespace Application.IntergrationTests.Products
             var updatedProduct = await GetEntity<Product>(prod =>
                                prod.Id == updateProductRequest.Id &&
                                prod.Name == updateProductRequest.Name &&
-                               prod.Category == updateProductRequest.Category &&
                                prod.Description == updateProductRequest.Description &&
                                prod.Manufacturer == updateProductRequest.Manufacturer &&
                                prod.Price == updateProductRequest.Price &&

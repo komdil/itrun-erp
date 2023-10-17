@@ -13,9 +13,9 @@ namespace Application.Products.Commands.UpdateProduct
         IApplicationDbContext _dbContext;
         IMapper _mapper;
 
-        public UpdateProductCommandHandler(IApplicationDbContext dbcontext, IMapper mapper)
+        public UpdateProductCommandHandler(IApplicationDbContext dbContext, IMapper mapper)
         {
-            _dbContext = dbcontext;
+            _dbContext = dbContext;
             _mapper = mapper;
         }
 
@@ -30,9 +30,21 @@ namespace Application.Products.Commands.UpdateProduct
             if (productUom == null)
                 throw new ValidationFailedException(request.ProductUom);
 
-            product = _mapper.Map<Product>(request);
-            product.Uom = productUom;
+            var category = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Name == request.Category, cancellationToken: cancellationToken);
+            if (category == null)
+                throw new ValidationFailedException(request.Category);
 
+            var warehouse = await _dbContext.Warehouses.FirstOrDefaultAsync(w => w.Name == request.Warehouse, cancellationToken: cancellationToken);
+            if (warehouse == null)
+                throw new ValidationFailedException(request.ProductUom);
+            product.Name = request.Name;
+            product.Manufacturer = request.Manufacturer;
+            product.Price = request.Price;
+            product.Description = request.Description;
+            product.Quantity = request.Quantity;
+            product.UomId = productUom.Id;
+            product.WarehouseId = warehouse.Id;
+            product.CategoryId = category.Id;
             await _dbContext.SaveChangesAsync(cancellationToken);
             return _mapper.Map<SingleProductResponse>(product);
         }

@@ -8,7 +8,8 @@ namespace Application.Common.Mappings.Categories
     {
         public CategoryMapProfile()
         {
-            CreateMap<Category, SingleCategoryResponse>();
+            CreateMap<Category, SingleCategoryResponse>()
+                .ForMember(s => s.ParentCategory, x => x.MapFrom(s => s.ParentCategory.Name));
             CreateMap<CreateCategoryRequest, Category>();
         }
     }

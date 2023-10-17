@@ -1,13 +1,16 @@
 ﻿@page "/products"
 @using Warehouse.Client.Services.Product;
 @using Warehouse.Client.Services.ProductUom;
+@using Warehouse.Client.Services.Warehouse;
 @using Warehouse.Contracts.Categories;
 @using Warehouse.Contracts.Product;
 @using Warehouse.Contracts.ProductUOM;
+@using Warehouse.Contracts.Warehouse;
 @attribute [Authorize]
 @inject IProductService _productService
 @inject IProductUomServise _productUomService
 @inject ICategoryService _categoryService
+@inject IWarehouseService _warehouseService
 <br />
 
 @if (isError)
@@ -24,7 +27,23 @@
 }
 
 <h3>Products</h3>
-<Button BackgroundColor="TablerColor.Primary" Type="ButtonType.Button" Text="+ Add new" @onclick="AddNew" />
+<div style="display: flex; align-items: center;">
+    <Button BackgroundColor="TablerColor.Primary" Type="ButtonType.Button" Text="+ Add new" @onclick="AddNew" />
+    <select class="form-control" @onchange="CategorySelected" style="margin-left:10px">
+        <option value="0">Select category</option>
+        @foreach (var category in categories)
+        {
+            <option value="@category.Name">@category.Name</option>
+        }
+    </select>
+    <select class="form-control" @onchange="WarehouseSelected" style="margin-left:10px">
+        <option value="0">Select warehouse</option>
+        @foreach (var warehouse in warehouses)
+        {
+            <option value="@warehouse.Name">@warehouse.Name</option>
+        }
+    </select>
+</div>
 <br />
 <Table Item="SingleProductResponse" Items="products" PageSize="20" OnItemDeleted="OnItemDelete" Add>
     <HeaderTemplate>
@@ -76,12 +95,13 @@
     [Inject] TabBlazor.Services.IModalService ModalService { get; set; }
     private List<SingleProductResponse> products = new();
     private List<SingleCategoryResponse> categories = new();
+    private List<SingleWarehouseResponse> warehouses = new();
     private List<SingleProductUomResponse> uoms = new();
 
-    private TableEditMode tableEditMode = TableEditMode.Popup;
     private GetProductsQuery getProductQuery = new();
     private GetProductsUomQuery getProductUomQuery = new();
     private GetCategoryQuery getCategoryQuery = new();
+    private GetWarehousesQuery getWarehouseQuery = new();
     #region Error
     private string errorMessage;
     private bool isError;
@@ -91,16 +111,45 @@
         isError = true;
     }
 
-    #endregion
-
-    #region
     private bool isLoading;
     #endregion
 
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
-        await Task.WhenAll(LoadProductsAsync(), LoadProductUomsAsync(), LoadProductCategorysAsync());
+        await Task.WhenAll(LoadProductsAsync(), LoadProductUomsAsync(), LoadPWarehousesAsync(), LoadProductCategorysAsync());
+        isLoading = false;
+    }
+
+    private async Task CategorySelected(ChangeEventArgs e)
+    {
+        var selected = categories.FirstOrDefault(s => s.Name == e.Value.ToString());
+        if (selected != null)
+        {
+            getProductQuery.Category = selected.Name;
+        }
+        else
+        {
+            getProductQuery.Category = null;
+        }
+        isLoading = true;
+        await LoadProductsAsync();
+        isLoading = false;
+    }
+
+    private async Task WarehouseSelected(ChangeEventArgs e)
+    {
+        var selected = warehouses.FirstOrDefault(s => s.Name == e.Value.ToString());
+        if (selected != null)
+        {
+            getProductQuery.Warehouse = selected.Name;
+        }
+        else
+        {
+            getProductQuery.Warehouse = null;
+        }
+        isLoading = true;
+        await LoadProductsAsync();
         isLoading = false;
     }
 
@@ -143,30 +192,28 @@
         }
     }
 
-    private async Task OnItemEdit(SingleProductResponse singleProduct)
+    private async Task LoadPWarehousesAsync()
     {
-        var response = await _productService.UpdateAsync(new UpdateProductRequest
-            {
-                Id = singleProduct.Id,
-                Name = singleProduct.Name,
-                ProductUom = singleProduct.ProductUom,
-                Category = singleProduct.Category,
-                Manufacturer = singleProduct.Manufacturer,
-                Price = singleProduct.Price,
-                Quantity = singleProduct.Quantity,
-                Description = singleProduct.Description
-            });
-
+        var response = await _warehouseService.GetAllAsync(getWarehouseQuery);
         if (response.Success)
         {
-            await ShowDialog($"Product updated{singleProduct.Name}");
+            warehouses = response.Result;
         }
         else
         {
-            if (products.Contains(singleProduct))
-                products.Remove(singleProduct);
-            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+            ShowError(response.Error);
         }
+    }
+
+    private async Task OnItemEdit(SingleProductResponse singleProduct)
+    {
+        var component = new RenderComponent<ProductDialog>()
+            .Set(e => e.Product, singleProduct)
+            .Set(e => e.Categories, categories)
+            .Set(e => e.Warehouses, warehouses)
+            .Set(e => e.IsNew, false)
+            .Set(e => e.Uoms, uoms);
+        await ModalService.ShowAsync("Update product", component, new ModalOptions { Size = ModalSize.Large });
     }
 
     private async Task AddNew()
@@ -175,31 +222,13 @@
         var component = new RenderComponent<ProductDialog>()
             .Set(e => e.Product, singleProduct)
             .Set(e => e.Categories, categories)
-            .Set(e => e.Uoms, uoms.ToList());
+            .Set(e => e.Warehouses, warehouses)
+            .Set(e => e.IsNew, true)
+            .Set(e => e.Uoms, uoms);
         var result = await ModalService.ShowAsync("Create new product", component, new ModalOptions { Size = ModalSize.Large });
         if (!result.Cancelled)
         {
-            var response = await _productService.CreateAsync(new CreateProductRequest
-                {
-                    Name = singleProduct.Name,
-                    ProductUom = singleProduct.ProductUom,
-                    Category = singleProduct.Category,
-                    Manufacturer = singleProduct.Manufacturer,
-                    Price = singleProduct.Price,
-                    Quantity = singleProduct.Quantity,
-                    Description = singleProduct.Description
-                });
-
-            if (response.Success)
-            {
-                await ShowDialog($"Added product {singleProduct.Name}");
-            }
-            else
-            {
-                if (products.Contains(singleProduct))
-                    products.Remove(singleProduct);
-                await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
-            }
+            products.Add(singleProduct);
         }
     }
 

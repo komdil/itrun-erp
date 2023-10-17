@@ -1,0 +1,182 @@
+﻿@page "/categories"
+@attribute [Authorize]
+@using Warehouse.Client.Services.ProductUom;
+@using Warehouse.Contracts.Categories;
+@using Warehouse.Contracts.ProductUOM;
+@inject ICategoryService _categoryService
+
+<h3>Categories</h3>
+
+<br />
+@if (isError)
+{
+    <Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
+     <div class="text-secondary">@errorMessage</div>
+ </Alert>
+}
+
+@if (isLoading)
+{
+    <br />
+    <Progress Color="TablerColor.Blue" Indeterminate />
+}
+
+<Table Item="SingleCategoryResponse" Items="categories" PageSize="20" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
+       OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete"
+       Hover Responsive EditMode=tableEditMode>
+     <HeaderTemplate>
+         <strong>Category</strong>
+     </HeaderTemplate>
+
+     <ChildContent>
+
+         <Column Item="SingleCategoryResponse" Property="e=>e.Name" Title="Name" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.Name" />
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleCategoryResponse" Property="e=>e.ParentCategory" Title="Parent category" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <select class="form-control" @bind="context.ParentCategory">
+                    <option value="0">Select parent</option>
+                    @foreach (var category in categories.Where(s => s.Name != context.Name))
+                    {
+                        if (category.Name == context.ParentCategory)
+                        {
+                            <option selected="selected" value="@category.Name">@category.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@category.Name">@category.Name</option>
+                        }
+                    }
+                </select>
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleCategoryResponse" Property="e=>e.Description" Title="Description" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.Description" />
+            </EditorTemplate>
+        </Column>
+    </ChildContent>
+
+</Table>
+
+
+@code {
+    [Inject] TabBlazor.Services.TablerService TablerService { get; set; }
+    [Inject] TabBlazor.Services.IModalService ModalService { get; set; }
+
+    private List<SingleCategoryResponse> categories = new();
+
+    private TableEditMode tableEditMode = TableEditMode.Inline;
+    private GetCategoryQuery query = new();
+
+    #region Error
+    private string errorMessage;
+    private bool isError;
+    private void ShowError(string error)
+    {
+        errorMessage = error;
+        isError = true;
+    }
+
+    #endregion
+
+    #region
+    private bool isLoading;
+    #endregion
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        var response = await _categoryService.GetAllAsync(query);
+        if (response.Success)
+        {
+            categories = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+        isLoading = false;
+    }
+
+    private async Task OnItemEdit(SingleCategoryResponse singleProductUom)
+    {
+        var parentCategoryId = categories.FirstOrDefault(s => s.Name == singleProductUom.ParentCategory)?.Id;
+        var response = await _categoryService.UpdateAsync(new UpdateCategoryRequest
+            {
+                Id = singleProductUom.Id,
+                Name = singleProductUom.Name,
+                Description = singleProductUom.Description,
+                ParentCategoryId = parentCategoryId
+            });
+
+        if (response.Success)
+        {
+            await ShowDialog($"ProductUoms updated{singleProductUom.Name}");
+        }
+        else
+        {
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private async Task OnItemAdd(SingleCategoryResponse singleProductUom)
+    {
+        var parentCategoryId = categories.FirstOrDefault(s => s.Name == singleProductUom.ParentCategory)?.Id;
+        var response = await _categoryService.CreateAsync(new CreateCategoryRequest
+            {
+                Name = singleProductUom.Name,
+                Description = singleProductUom.Description,
+                ParentCategoryId = parentCategoryId
+            });
+
+        if (response.Success)
+        {
+            await ShowDialog($"Added category {singleProductUom.Name}");
+        }
+        else
+        {
+            if (categories.Contains(singleProductUom))
+                categories.Remove(singleProductUom);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private async Task OnItemDelete(SingleCategoryResponse singleProductUom)
+    {
+        var response = await _categoryService.DeleteAsync(singleProductUom.Name);
+
+        if (response.Success)
+        {
+            await ShowDialog($"Category deleted {singleProductUom.Name}");
+        }
+        else
+        {
+            if (!categories.Contains(singleProductUom))
+                categories.Add(singleProductUom);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private async Task ShowDialog(string title, IIconType icon = null, TablerColor color = TablerColor.Primary)
+    {
+        if (icon == null)
+            icon = Icons.Info_circle;
+        await ModalService.ShowDialogAsync(new TabBlazor.Components.Modals.DialogOptions
+            {
+                CancelText = "",
+                StatusColor = color,
+                IconType = icon,
+                MainText = title
+            });
+    }
+
+    private Task<SingleCategoryResponse> AddItem()
+    {
+        return Task.FromResult(new SingleCategoryResponse { Name = "New category" });
+    }
+
+}

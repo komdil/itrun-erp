@@ -8,6 +8,8 @@ namespace Application.Products.Commands.CreateProduct
         public CreateProductCommandValidator()
         {
             RuleFor(product => product.Name).NotEmpty();
+            RuleFor(product => product.Category).NotEmpty();
+            RuleFor(product => product.Warehouse).NotEmpty();
         }
     }
 }

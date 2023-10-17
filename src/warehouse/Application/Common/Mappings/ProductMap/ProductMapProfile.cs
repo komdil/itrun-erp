@@ -8,14 +8,17 @@ namespace Application.Common.Mappings.ProductMap
     {
         public ProductMapProfile()
         {
-            CreateMap<CreateProductRequest, Product>()
-                .ForMember(product => product.Id, opt => Guid.NewGuid());
+            CreateMap<CreateProductRequest, Product>();
 
             CreateMap<Product, SingleProductResponse>()
                 .ForMember(getProduct => getProduct.ProductUom,
-                    opt => opt.MapFrom(product => product.Uom.Name));
+                    opt => opt.MapFrom(product => product.Uom.Name))
+                .ForMember(getProduct => getProduct.Category,
+                    opt => opt.MapFrom(product => product.Category.Name))
+                .ForMember(getProduct => getProduct.Warehouse,
+                    opt => opt.MapFrom(product => product.Warehouse.Name));
 
-            CreateMap<UpdateProductRequest, Product>();
+            //CreateMap<UpdateProductRequest, Product>();
         }
     }
 }

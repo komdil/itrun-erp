@@ -1,6 +1,9 @@
-﻿@using Warehouse.Contracts.Categories;
+﻿@using Warehouse.Client.Services.Product;
+@using Warehouse.Contracts.Categories;
 @using Warehouse.Contracts.Product;
 @using Warehouse.Contracts.ProductUOM;
+@using Warehouse.Contracts.Warehouse;
+@inject IProductService _productService
 
 <div class="form-selectgroup-boxes row mb-3">
     <div class="col-lg-6">
@@ -38,6 +41,23 @@
                     else
                     {
                         <option value="@category.Name">@category.Name</option>
+                    }
+                }
+            </select>
+        </div>
+        ﻿<div class="mb-3">
+            <label class="form-label">Warehouse</label>
+            <select class="form-control" @bind="Product.Warehouse">
+                <option value="0">Select warehouse</option>
+                @foreach (var warehouse in Warehouses)
+                {
+                    if (warehouse.Name == Product.Warehouse)
+                    {
+                        <option selected="selected" value="@warehouse.Name">@warehouse.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@warehouse.Name">@warehouse.Name</option>
                     }
                 }
             </select>
@@ -83,14 +103,62 @@
 
 @code {
     @inject IModalService ModalService
-
+    [Parameter] public bool IsNew { get; set; }
     [Parameter] public SingleProductResponse Product { get; set; }
     [Parameter] public List<SingleCategoryResponse> Categories { get; set; }
+    [Parameter] public List<SingleWarehouseResponse> Warehouses { get; set; }
     [Parameter] public List<SingleProductUomResponse> Uoms { get; set; }
-    private SingleProductUomResponse uom;
-    private void CreateReport()
+    private async Task CreateReport()
     {
-        ModalService.Close(ModalResult.Ok());
+        if (IsNew)
+        {
+            var response = await _productService.CreateAsync(new CreateProductRequest
+                {
+                    Name = Product.Name,
+                    ProductUom = Product.ProductUom,
+                    Category = Product.Category,
+                    Manufacturer = Product.Manufacturer,
+                    Price = Product.Price,
+                    Quantity = Product.Quantity,
+                    Description = Product.Description,
+                    Warehouse = Product.Warehouse
+                });
+
+            if (response.Success)
+            {
+                await ShowDialog($"Added product {Product.Name}");
+                ModalService.Close(ModalResult.Ok());
+            }
+            else
+            {
+                await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+            }
+        }
+        else
+        {
+            var response = await _productService.UpdateAsync(new UpdateProductRequest
+                {
+                    Id = Product.Id,
+                    Name = Product.Name,
+                    ProductUom = Product.ProductUom,
+                    Category = Product.Category,
+                    Manufacturer = Product.Manufacturer,
+                    Price = Product.Price,
+                    Quantity = Product.Quantity,
+                    Description = Product.Description,
+                    Warehouse = Product.Warehouse
+                });
+
+            if (response.Success)
+            {
+                await ShowDialog($"Product updated{Product.Name}");
+                ModalService.Close(ModalResult.Ok());
+            }
+            else
+            {
+                await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+            }
+        }
     }
 
     private void Cancel()
@@ -98,4 +166,16 @@
         ModalService.Close(ModalResult.Cancel());
     }
 
+    private async Task ShowDialog(string title, IIconType icon = null, TablerColor color = TablerColor.Primary)
+    {
+        if (icon == null)
+            icon = Icons.Info_circle;
+        await ModalService.ShowDialogAsync(new TabBlazor.Components.Modals.DialogOptions
+            {
+                CancelText = "",
+                StatusColor = color,
+                IconType = Icons.Info_circle,
+                MainText = title
+            });
+    }
 } 

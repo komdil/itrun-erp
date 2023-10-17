@@ -23,7 +23,7 @@ namespace Application.Categories
 
         public async Task Handle(DeleteCategoryRequest request, CancellationToken cancellationToken)
         {
-            Category category = await _context.Categories.FirstOrDefaultAsync(s => s.Id == request.Id);
+            Category category = await _context.Categories.FirstOrDefaultAsync(s => s.Name == request.Name);
             if (category == null)
                 throw new NotFoundException();
 

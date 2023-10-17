@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Warehouse.Contracts.Exceptions;
 
 namespace Warehouse.Client.Services
 {
@@ -24,6 +25,15 @@ namespace Warehouse.Client.Services
             return new ApiResponse
             {
                 Error = error,
+                HttpStatusCode = httpStatusCode,
+            };
+        }
+
+        public static ApiResponse BuildFailed(ErrorResponse error, HttpStatusCode? httpStatusCode = null)
+        {
+            return new ApiResponse
+            {
+                Error = string.Join(',', error.Errors.Select(s => s.Message)),
                 HttpStatusCode = httpStatusCode,
             };
         }
@@ -56,6 +66,15 @@ namespace Warehouse.Client.Services
             {
                 HttpStatusCode = httpStatusCode,
                 Result = response
+            };
+        }
+
+        public static ApiResponse<T> BuildFailed(ErrorResponse error, HttpStatusCode? httpStatusCode = null)
+        {
+            return new ApiResponse<T>
+            {
+                Error = string.Join(',', error.Errors.Select(s => s.Message)),
+                HttpStatusCode = httpStatusCode,
             };
         }
     }

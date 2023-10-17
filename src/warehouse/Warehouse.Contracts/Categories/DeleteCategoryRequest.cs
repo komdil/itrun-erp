@@ -9,6 +9,6 @@ namespace Warehouse.Contracts.Categories
 {    
     public record DeleteCategoryRequest : IRequest
     {
-        public Guid Id { get; set; }
+        public string Name { get; set; }
     }
 }

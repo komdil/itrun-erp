@@ -62,3 +62,12 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+.horizontal-container {
+    display: flex;
+    align-items: center; /* Vertically align items if needed */
+}
+
+    /* Add spacing between elements if desired */
+    .horizontal-container .form-control {
+        margin-left: 10px; /* Adjust this margin to your preference */
+    }
