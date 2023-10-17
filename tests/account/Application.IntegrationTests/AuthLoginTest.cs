@@ -1,7 +1,5 @@
 ﻿using System.Net.Http.Json;
 using System.Text;
-using Account.Contracts.Requests.Auth;
-using Account.Contracts.Response.Auth;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
 using Domain;
@@ -10,27 +8,12 @@ using System.Net;
 using FluentAssertions;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Account.Contracts.Auth;
 
 namespace Application.IntegrationTests
 {
-    public class AuthLoginTest
+    public class AuthLoginTest : TestBase
     {
-        private const string _userName = "TestUser";
-        private const string _password = "ABc12345678@J$@!1";
-        private const string _userRole = "Admin";
-        private static readonly Guid _userId = Guid.NewGuid();
-        private HttpClient _httpClient;
-        private IServiceScopeFactory _scopeFactory;
-
-        [OneTimeSetUp]
-        public async Task OneTimeSetUp()
-        {
-            var factory = new CustomWebApplicationFactory();
-            _scopeFactory = factory.Services.GetRequiredService<IServiceScopeFactory>();
-            _httpClient = factory.CreateClient();
-            await AddUserToDb(_userName, _password);
-        }
-
         [Test]
         public async Task Login_ShouldGiveAccessToken_WhenUserNameAndPasswordAreCorrect()
         {
@@ -63,7 +46,7 @@ namespace Application.IntegrationTests
         }
 
         [Test]
-        public async Task AccessToken_ShouldbeValid()
+        public async Task AccessToken_ShouldBeValid()
         {
             // Arrange
             AccountSignInRequest request = new() { Username = _userName, Password = _password };
@@ -120,32 +103,6 @@ namespace Application.IntegrationTests
             var roleClaim = jwt.Claims.FirstOrDefault(s => s.Type == ClaimTypes.Role);
             roleClaim.Should().NotBeNull();
             roleClaim.Value.Should().Be(_userRole);
-        }
-
-        async Task AddUserToDb(string userName, string password)
-        {
-            using var scope = _scopeFactory.CreateScope();
-
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-
-            var addNewRoleResult = await roleManager.CreateAsync(new IdentityRole<Guid>
-            {
-                Name = _userRole
-            });
-            addNewRoleResult.Succeeded.Should().BeTrue();
-
-            var user = new ApplicationUser
-            {
-                Id = _userId,
-                UserName = userName,
-            };
-
-            IdentityResult result = await userManager.CreateAsync(user, password);
-            result.Succeeded.Should().BeTrue();
-
-            var assignRoleToUserResult = await userManager.AddToRoleAsync(user, _userRole);
-            assignRoleToUserResult.Succeeded.Should().BeTrue();
         }
     }
 }

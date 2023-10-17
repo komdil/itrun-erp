@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
 using Domain.Entities;
 using FluentAssertions;
-using Warehouse.Contracts.Warehouse;
 using Warehouse.Contracts.Categories;
 using System.Net.Http.Json;
 
 namespace Application.IntergrationTests.Categories
 {
-    public class CategoryTests: TestBase
+    public class CategoryTests : TestBase
     {
         [Test]
         public async Task PostingCategory_ShoudbeSavedToDb()
         {
             // Arrange
-            CreateCategoryRequest request = new() { Name = "MyWareHouse", Description = "Lenin 226", ParentCategoryId = Guid.Parse("")};
+            CreateCategoryRequest request = new() { Name = "MyWareHouse", Description = "Lenin 226", ParentCategoryId = Guid.Parse("") };
 
             // Act
             HttpResponseMessage result = await _httpClient.PostAsJsonAsync("Categories", request);
@@ -54,8 +47,6 @@ namespace Application.IntergrationTests.Categories
                 {
                     Id = Guid.NewGuid(),
                     Description = "Test",
-                    ParentCategory = "test",
-                    SubCategories = "test",
                     Name = $"Name{i}"
                 });
             }
@@ -75,8 +66,6 @@ namespace Application.IntergrationTests.Categories
             category.Should().NotBeNull();
             category.Name.Should().Be(categoryFromDb.Name);
             category.Description.Should().Be(categoryFromDb.Description);
-            category.ParentCategory.Should().Be(categoryFromDb.ParentCategory);
-            category.SubCategories.Should().Be(categoryFromDb.SubCategories);
         }
 
         [Test]
@@ -85,7 +74,7 @@ namespace Application.IntergrationTests.Categories
             // Arrange
             await CreateCategories(1);
             var categoryFromDb = GetEntities<Category>().First();
-            UpdateCategoryRequest request = new() { Name = Guid.NewGuid().ToString(), Description = "Lenin 226", ParentCategory = "Test", SubCategories = "Test" };
+            UpdateCategoryRequest request = new() { Name = Guid.NewGuid().ToString(), Description = "Lenin 226", };
 
             // Act
             HttpResponseMessage result = await _httpClient.PutAsJsonAsync($"categories/{categoryFromDb.Id}", request);

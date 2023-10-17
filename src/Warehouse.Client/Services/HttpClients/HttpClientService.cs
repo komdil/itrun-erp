@@ -1,20 +1,25 @@
-﻿using System.Net.Http.Json;
+﻿using Blazored.LocalStorage;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using Warehouse.Client.Services.Auth;
 
 namespace Warehouse.Client.Services.HttpClients
 {
     public class HttpClientService : IHttpClientService
     {
-        private readonly HttpClient _httpClient;
-        public HttpClientService(HttpClient httpClient)
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ILocalStorageService _localStorageService;
+        public HttpClientService(IHttpClientFactory httpClientFactory, ILocalStorageService localStorageService)
         {
-            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
+            _localStorageService = localStorageService;
         }
-
 
         public async Task<ApiResponse<T>> GetAsJsonAsync<T>(string url, object content)
         {
             try
             {
+                using var _httpClient = await CreateHttpClient();
                 var responseContent = await _httpClient.GetFromJsonAsync<T>(url, content);
                 return ApiResponse<T>.BuildSuccess(responseContent);
             }
@@ -28,6 +33,7 @@ namespace Warehouse.Client.Services.HttpClients
         {
             try
             {
+                using var _httpClient = await CreateHttpClient();
                 var response = await _httpClient.DeleteAsync(url);
                 if (response.IsSuccessStatusCode)
                     return ApiResponse.BuildSuccess();
@@ -43,6 +49,7 @@ namespace Warehouse.Client.Services.HttpClients
         {
             try
             {
+                using var _httpClient = await CreateHttpClient();
                 var response = await _httpClient.PostAsJsonAsync(url, content);
                 return await GetApiResponseAsync<T>(response);
             }
@@ -75,6 +82,7 @@ namespace Warehouse.Client.Services.HttpClients
         {
             try
             {
+                using var _httpClient = await CreateHttpClient();
                 var response = await _httpClient.PutAsJsonAsync(url, content);
                 return await GetApiResponseAsync<T>(response);
             }
@@ -82,6 +90,15 @@ namespace Warehouse.Client.Services.HttpClients
             {
                 return ApiResponse<T>.BuildFailed($"Server is not responding. {ex.Message}", ex.StatusCode);
             }
+        }
+
+        private async Task<HttpClient> CreateHttpClient()
+        {
+            var _httpClient = _httpClientFactory.CreateClient();
+            string token = await _localStorageService.GetItemAsync<string>(IAuthService.TokenLocalStorageKey);
+            if (!string.IsNullOrEmpty(token))
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            return _httpClient;
         }
     }
 }

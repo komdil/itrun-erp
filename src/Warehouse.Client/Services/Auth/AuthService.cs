@@ -1,5 +1,4 @@
-﻿using Account.Contracts.Requests.Auth;
-using Account.Contracts.Response.Auth;
+﻿using Account.Contracts.Auth;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Warehouse.Client.Services.HttpClients;
@@ -25,7 +24,7 @@ namespace Warehouse.Client.Services.Auth
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync<AccountSignInResponse>($"{_configuration["AccountServiceUrl"]}/sign-in", accountSignInRequest);
+                var response = await _httpClient.PostAsJsonAsync<AccountSignInResponse>($"{_configuration["AccountServiceUrl"]}/Auth/sign-in", accountSignInRequest);
                 if (response.Success)
                 {
                     await _localStorageService.SetItemAsync(IAuthService.TokenLocalStorageKey, response.Result.Token);
@@ -54,7 +53,7 @@ namespace Warehouse.Client.Services.Auth
         {
             try
             {
-                var tokenResponse = await _httpClient.PostAsJsonAsync<AccountSignUpResponse>($"{_configuration["AccountServiceUrl"]}/sign-up", accountSignUpRequest);
+                var tokenResponse = await _httpClient.PostAsJsonAsync<AccountSignUpResponse>($"{_configuration["AccountServiceUrl"]}/Auth/sign-up", accountSignUpRequest);
                 if (tokenResponse.Success)
                 {
                     await _localStorageService.SetItemAsync(IAuthService.TokenLocalStorageKey, tokenResponse.Result.Token);

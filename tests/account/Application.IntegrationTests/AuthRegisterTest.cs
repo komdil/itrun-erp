@@ -1,7 +1,5 @@
 ﻿using System.Net.Http.Json;
 using System.Text;
-using Account.Contracts.Requests.Auth;
-using Account.Contracts.Response.Auth;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
 using Domain;
@@ -9,28 +7,12 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using FluentAssertions;
 using System.IdentityModel.Tokens.Jwt;
+using Account.Contracts.Auth;
 
 namespace Application.IntegrationTests
 {
-    public class AuthRegisterTest
+    public class AuthRegisterTest : TestBase
     {
-        private const string _userName = "TestUserForReg";
-        private const string _password = "ABc12345678@J$@!1";
-        private const string _organization = "TestOrganization";
-        private static readonly Guid _userId = Guid.NewGuid();
-        private HttpClient _httpClient;
-        private const string _userRole = "Admin";
-        private IServiceScopeFactory _scopeFactory;
-
-        [OneTimeSetUp]
-        public async Task OneTimeSetUp()
-        {
-            var factory = new CustomWebApplicationFactory();
-            _scopeFactory = factory.Services.GetRequiredService<IServiceScopeFactory>();
-            _httpClient = factory.CreateClient();
-            await AddUserToDb(_userName, _password);
-        }
-
         [TestCase("TestUserForRegister", "ABc12345678@J$@!1", "TestOrganization1")]
         [TestCase("TestUserForRegisterAndLogin", "ABc12345678@J$@!1", "TestOrganizationLogin")]
         [TestCase("TestUserForRegisterLoginToken", "ABc12345678@J$@!1", "TestOrganizationToken")]
@@ -93,28 +75,6 @@ namespace Application.IntegrationTests
             var loginResponse = await loginResult.Content.ReadFromJsonAsync<AccountSignInResponse>();
             var tokenHandler = new JwtSecurityTokenHandler();
             Assert.DoesNotThrow(() => { tokenHandler.ReadJwtToken(loginResponse.Token); });
-        }
-
-        async Task AddUserToDb(string userName, string password)
-        {
-            using var scope = _scopeFactory.CreateScope();
-
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-
-            var addNewRoleResult = await roleManager.CreateAsync(new IdentityRole<Guid>
-            {
-                Name = _userRole
-            });
-
-            var user = new ApplicationUser
-            {
-                Id = _userId,
-                UserName = userName,
-            };
-
-            IdentityResult result = await userManager.CreateAsync(user, password);
-            result.Succeeded.Should().BeTrue();
         }
     }
 }

@@ -1,0 +1,125 @@
+﻿@page "/userroles"
+@using Account.Contracts.User.Response;
+@using Account.Contracts.UserRoles.Responses;
+@using Application.Contract.ApplicationRoles.Commands;
+@using Application.Contract.ApplicationRoles.Queries;
+@using Application.Contract.ApplicationRoles.Responses;
+@using Account.Contracts.UserRoles.Queries;
+@using Account.Contracts.User.Queries;
+@using Warehouse.Client.Constants;
+@using Warehouse.Client.Services.Admin;
+@using Warehouse.Client.Services.Product;
+
+@attribute [Authorize(AccountConstants.SuperAdminPolicy)]
+@inject IAdminService _adminService
+<br />
+
+@if (isError)
+{
+    <Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
+     <div class="text-secondary">@errorMessage</div>
+ </Alert>
+}
+
+@if (isLoading)
+{
+    <br />
+    <Progress Color="TablerColor.Blue" Indeterminate />
+}
+
+<h3>User roles</h3>
+
+<Table Item="UserRolesResponse" Items="roles" PageSize="20" Hover Responsive EditMode=tableEditMode>
+     <HeaderTemplate>
+         <strong>User roles</strong>
+     </HeaderTemplate>
+
+     <ChildContent>
+         <Column Item="UserRolesResponse" Property="r=>r.UserName" Title="User" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.UserName" />
+            </EditorTemplate>
+        </Column>
+        <Column Item="UserRolesResponse" Property="r=>r.RoleName" Title="Role" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.RoleName" />
+            </EditorTemplate>
+        </Column>
+    </ChildContent>
+
+</Table>
+
+
+
+@code {
+    [Inject] TabBlazor.Services.TablerService TablerService { get; set; }
+    [Inject] TabBlazor.Services.IModalService ModalService { get; set; }
+    private List<UserRolesResponse> roles = new();
+    private List<UserResponse> users = new();
+
+    private TableEditMode tableEditMode = TableEditMode.Inline;
+    private GetUserRolesQuery getRolesQuery = new();
+    private GetUsersQuery getUsersQuery = new();
+
+    #region Error
+    private string errorMessage;
+    private bool isError;
+    private void ShowError(string error)
+    {
+        errorMessage = error;
+        isError = true;
+    }
+
+    #endregion
+
+    #region
+    private bool isLoading;
+    #endregion
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        await Task.WhenAll(LoadUserRolesAsync(), LoadUsersAsync());
+        isLoading = false;
+    }
+
+    private async Task LoadUserRolesAsync()
+    {
+        var response = await _adminService.GetUserRolesAsync(getRolesQuery);
+        if (response.Success)
+        {
+            roles = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+    }
+
+
+    private async Task LoadUsersAsync()
+    {
+        var response = await _adminService.GetUsers(getUsersQuery);
+        if (response.Success)
+        {
+            users = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+    }
+
+    private async Task ShowDialog(string title, IIconType icon = null, TablerColor color = TablerColor.Primary)
+    {
+        if (icon == null)
+            icon = Icons.Info_circle;
+        await ModalService.ShowDialogAsync(new TabBlazor.Components.Modals.DialogOptions
+            {
+                CancelText = "",
+                StatusColor = color,
+                IconType = Icons.Info_circle,
+                MainText = title
+            });
+    }
+}

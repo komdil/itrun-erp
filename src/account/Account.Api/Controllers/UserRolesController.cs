@@ -1,55 +1,40 @@
-﻿using Contracts.UserRoles.Commands;
-using Contracts.UserRoles.Queries;
-using MediatR;
+﻿using Application.Common;
+using Account.Contracts.UserRoles.Commands;
+using Account.Contracts.UserRoles.Queries;
+using Account.Contracts.UserRoles.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Account.Api.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UserRolesController : ControllerBase
+    [Authorize(Constants.SuperAdminPolicy)]
+    public class UserRolesController : ApiControllerBase
     {
-
         [HttpGet]
-        public async Task<IActionResult> Get(string role = null, string userName = null)
+        public async Task<List<UserRolesResponse>> Get([FromQuery] GetUserRolesQuery getUserRolesQuery)
         {
-            var result = await Sender.
-                .Send(new GetUserRolesQuery
-                {
-                    Role = role,
-                    UserName = userName
-                });
-            if (!result.IsSuccess)
-                return BadRequest();       
-            return Ok(result.Response);
+            return await Sender.Send(getUserRolesQuery);
         }
 
         [HttpGet("{slug}")]
-        public async Task<IActionResult> Get(string slug)
+        public async Task<UserRolesResponse> Get(string slug)
         {
-            var query = new GetUserRolesBySlugQuery { Slug = slug };
-            var result = await _mediator.Send(query);
-            if (!result.IsSuccess)
-                return BadRequest();             
-            return Ok(result.Response);
+            var query = new GetUserRoleQuery { Slug = slug };
+            return await Sender.Send(query);
         }
+
         [HttpPost]
-        public async Task<IActionResult> Create(CreateUserRolesCommand command)
+        public async Task<UserRolesResponse> Create(CreateUserRolesCommand command)
         {
-            var result = await _mediator.Send(command);
-            if (!result.IsSuccess)
-                throw new ValidationFailedException(result.ErrorMessage);
-            return Ok(result.Response);
-     
+            return await Sender.Send(command);
         }
+
         [HttpDelete("{slug}")]
         public async Task<IActionResult> Delete(string slug)
         {
             var command = new DeleteUserRoleCommand { Slug = slug };
-            var result = await _mediator.Send(command);
-            if (!result.IsSuccess)
-                return BadRequest(result.ErrorMessage);
-            return Ok(result);
+            await Sender.Send(command);
+            return NoContent();
         }
     }
 }

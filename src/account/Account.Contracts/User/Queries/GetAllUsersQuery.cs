@@ -1,14 +1,9 @@
-﻿using Contracts.User.Responses;
+﻿using Account.Contracts.User.Response;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Contracts.User.Queries
+namespace Account.Contracts.User.Queries
 {
-    public class GetAllUsersQuery : IRequest<List<UserResponse>>
+    public class GetUsersQuery : IRequest<List<UserResponse>>
     {
     }
 }

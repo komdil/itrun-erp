@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Data;
 using Application.Abstractions.Services;
+using Application.Common;
 using Domain;
 using Infrastructure.Data;
 using Infrastructure.Services;
@@ -14,7 +15,7 @@ namespace Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<IApplicationDbContext, ApplicationDbContext>(options =>
             {
                 var connectionString = configuration.GetConnectionString("DefaultConnection");
                 if (configuration["UseInMemoryDatabase"] == "true")
@@ -25,9 +26,10 @@ namespace Infrastructure
             services.AddScoped<IApplicationDbInitializer, ApplicationDbInitializer>();
             services
                 .AddIdentityCore<ApplicationUser>()
-                .AddRoles<IdentityRole<Guid>>()
+                .AddRoles<ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAccountService, AccountService>();
 
             return services;

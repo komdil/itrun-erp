@@ -10,8 +10,8 @@
 @if (isError)
 {
     <Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
-        <div class="text-secondary">@errorMessage</div>
-    </Alert>
+     <div class="text-secondary">@errorMessage</div>
+ </Alert>
 }
 
 @if (isLoading)
@@ -23,13 +23,13 @@
 <Table Item="SingleProductUomResponse" Items="productUoms" PageSize="20" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
        OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete"
        Hover Responsive EditMode=tableEditMode>
-    <HeaderTemplate>
-        <strong>ProductUom</strong>
-    </HeaderTemplate>
+     <HeaderTemplate>
+         <strong>ProductUom</strong>
+     </HeaderTemplate>
 
-    <ChildContent>
+     <ChildContent>
 
-        <Column Item="SingleProductUomResponse" Property="e=>e.Name" Title="Name" Sortable Searchable Groupable>
+         <Column Item="SingleProductUomResponse" Property="e=>e.Name" Title="Name" Sortable Searchable Groupable>
             <EditorTemplate>
                 <input type="text" class="form-control" @bind-value="@context.Name" />
             </EditorTemplate>
@@ -55,7 +55,7 @@
 
     private List<SingleProductUomResponse> productUoms = new();
 
-    private TableEditMode tableEditMode;
+    private TableEditMode tableEditMode = TableEditMode.Inline;
     private GetProductsUomQuery getProductUomQuery = new();
 
     #region Error

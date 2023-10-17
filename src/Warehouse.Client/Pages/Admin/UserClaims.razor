@@ -1,0 +1,133 @@
+﻿@page "/claims"
+@using Application.Contract.ApplicationRoles.Commands;
+@using Application.Contract.ApplicationRoles.Queries;
+@using Application.Contract.ApplicationRoles.Responses;
+@using Warehouse.Client.Constants;
+@using Warehouse.Client.Services.Admin;
+@using Warehouse.Client.Services.Product;
+@using Warehouse.Contracts.Product;
+@attribute [Authorize(AccountConstants.SuperAdminPolicy)]
+@inject IAdminService _roleService
+<br />
+
+@if (isError)
+{
+    <Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
+     <div class="text-secondary">@errorMessage</div>
+ </Alert>
+}
+
+@if (isLoading)
+{
+    <br />
+    <Progress Color="TablerColor.Blue" Indeterminate />
+}
+
+<h3>Roles</h3>
+
+<Table Item="RoleNameResponse" Items="roles" PageSize="20" AddItemFactory="AddItem"
+       OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete"
+       Hover Responsive EditMode=tableEditMode>
+     <HeaderTemplate>
+         <strong>Roles</strong>
+     </HeaderTemplate>
+
+     <ChildContent>
+
+         <Column Item="RoleNameResponse" Property="r=>r.Name" Title="Name" Sortable Searchable Groupable>
+            <EditorTemplate>
+                <input type="text" class="form-control" @bind-value="@context.Name" />
+            </EditorTemplate>
+        </Column>
+    </ChildContent>
+
+</Table>
+
+
+
+@code {
+    [Inject] TabBlazor.Services.TablerService TablerService { get; set; }
+    [Inject] TabBlazor.Services.IModalService ModalService { get; set; }
+    private List<RoleNameResponse> roles = new();
+
+    private TableEditMode tableEditMode = TableEditMode.Inline;
+    private GetRolesQuery getRolesQuery = new();
+
+    #region Error
+    private string errorMessage;
+    private bool isError;
+    private void ShowError(string error)
+    {
+        errorMessage = error;
+        isError = true;
+    }
+
+    #endregion
+
+    #region
+    private bool isLoading;
+    #endregion
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        var response = await _roleService.GetRoles(getRolesQuery);
+        if (response.Success)
+        {
+            roles = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+        isLoading = false;
+    }
+
+    private async Task OnItemAdd(RoleNameResponse singleRole)
+    {
+        var response = await _roleService.CreateRoleAsync(new CreateRoleCommand { Name = singleRole.Name });
+        if (response.Success)
+        {
+            await ShowDialog($"Added role {singleRole.Name}");
+        }
+        else
+        {
+            if (roles.Contains(singleRole))
+                roles.Remove(singleRole);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private async Task OnItemDelete(RoleNameResponse singleRole)
+    {
+        var response = await _roleService.DeleteRoleAsync(singleRole.Name);
+        if (response.Success)
+        {
+            await ShowDialog($"Role deleted {singleRole.Name}");
+        }
+        else
+        {
+            if (!roles.Contains(singleRole))
+                roles.Add(singleRole);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private Task<RoleNameResponse> AddItem()
+    {
+        return Task.FromResult(new RoleNameResponse { Name = "New role" });
+    }
+
+    private async Task ShowDialog(string title, IIconType icon = null, TablerColor color = TablerColor.Primary)
+    {
+        if (icon == null)
+            icon = Icons.Info_circle;
+        await ModalService.ShowDialogAsync(new TabBlazor.Components.Modals.DialogOptions
+            {
+                CancelText = "",
+                StatusColor = color,
+                IconType = Icons.Info_circle,
+                MainText = title
+            });
+    }
+}

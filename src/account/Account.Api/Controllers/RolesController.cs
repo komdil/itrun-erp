@@ -1,60 +1,47 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
-using MediatR;
-using Contracts.UserRoles.Commands;
+﻿using Microsoft.AspNetCore.Mvc;
 using Application.Contract.ApplicationRoles.Queries;
 using Application.Contract.ApplicationRoles.Commands;
-using Application.Common.Exeptions;
+using Application.Contract.ApplicationRoles.Responses;
+using Microsoft.AspNetCore.Authorization;
+using Application.Common;
 
 namespace Account.Api.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    [Authorize(Constants.SuperAdminPolicy)]
     public class RolesController : ApiControllerBase
     {
-
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] GetRolesQuery query)
+        public async Task<List<RoleNameResponse>> Get([FromQuery] GetRolesQuery query)
         {
-            var result = await Sender.Send(query);
-            return Ok(result);
+            return await Sender.Send(query);
         }
+
         [HttpGet("{slug}")]
-        public async Task<IActionResult> Get(string slug)
+        public async Task<RoleNameResponse> Get(string slug)
         {
-            var query = new GetRoleBySlugQuery { Slug = slug };
-            var result = await Sender.Send(query);
-            return Ok(result);
+            var query = new GetSingleRoleQuery { Name = slug };
+            return await Sender.Send(query);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateUserRolesCommand command)
+        public async Task<RoleNameResponse> Create(CreateRoleCommand command)
         {
-            var result = await Sender.Send(command);
-            if (!result.IsSuccess)
-                throw new ValidationFailedException(result.ErrorMessage);
-            return Ok(result);
+            return await Sender.Send(command);
         }
-            
+
         [HttpPut("{slug}")]
-        public async Task<IActionResult> Update(UpdateRoleCommand command, string slug)
+        public async Task<RoleNameResponse> Update(UpdateRoleCommand command, string slug)
         {
-            command.Slug = slug;
-            var result = await Sender.Send(command);
-            if (!result.IsSuccess)
-                throw new NotFoundException();
-            return Ok(result);
+            command.Name = slug;
+            return await Sender.Send(command);
         }
 
         [HttpDelete("{slug}")]
         public async Task<IActionResult> Delete(string slug)
         {
-            var command = new DeleteRoleCommand { Slug = slug };
-            var result = await Sender.Send(command);
-            if (!result.IsSuccess)
-                throw new NotFoundException();
-
-            return Ok(result);
+            var command = new DeleteRoleCommand { Name = slug };
+            await Sender.Send(command);
+            return NoContent();
         }
     }
 }

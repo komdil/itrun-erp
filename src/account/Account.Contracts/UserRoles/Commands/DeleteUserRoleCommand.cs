@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Contracts.UserRoles.Commands
+namespace Account.Contracts.UserRoles.Commands
 {
-    public class DeleteUserRoleCommand : IRequest<ApplicationResponse<bool>>
+    public class DeleteUserRoleCommand : IRequest
     {
         public string Slug { get; set; }
     }

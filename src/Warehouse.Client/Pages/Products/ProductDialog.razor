@@ -1,0 +1,101 @@
+﻿@using Warehouse.Contracts.Categories;
+@using Warehouse.Contracts.Product;
+@using Warehouse.Contracts.ProductUOM;
+
+<div class="form-selectgroup-boxes row mb-3">
+    <div class="col-lg-6">
+        ﻿<div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" name="example-text-input" @bind-value="@Product.Name" placeholder="Product name">
+        </div>
+        ﻿<div class="mb-3">
+            <label class="form-label">Unit of measure</label>
+            <select class="form-control" @bind="Product.ProductUom">
+                <option value="0">Select Uom</option>
+                @foreach (var uom in Uoms)
+                {
+                    if (uom.Abbreviation == Product.ProductUom)
+                    {
+                        <option selected="selected" value="@uom.Abbreviation">@uom.Abbreviation</option>
+                    }
+                    else
+                    {
+                        <option value="@uom.Abbreviation">@uom.Abbreviation</option>
+                    }
+                }
+            </select>
+        </div>
+        ﻿<div class="mb-3">
+            <label class="form-label">Category</label>
+            <select class="form-control" @bind="Product.Category">
+                <option value="0">Select category</option>
+                @foreach (var category in Categories)
+                {
+                    if (category.Name == Product.Category)
+                    {
+                        <option selected="selected" value="@category.Name">@category.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@category.Name">@category.Name</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        ﻿<div class="mb-3">
+            <label class="form-label">Manufacturer</label>
+            <input type="text" class="form-control" name="example-text-input" @bind-value="@Product.Manufacturer" placeholder="Product manufacturer">
+        </div>
+
+        ﻿<div class="mb-3">
+            <label class="form-label">Quantity</label>
+            <input type="text" class="form-control" name="example-text-input" @bind-value="@Product.Quantity" placeholder="Product quantity">
+        </div>
+
+        ﻿<div class="mb-3">
+            <label class="form-label">Price</label>
+            <input type="text" class="form-control" name="example-text-input" @bind-value="@Product.Price" placeholder="Product price">
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div>
+            <label class="form-label">Description</label>
+            <textarea class="form-control" @bind="@Product.Description" rows="3" />
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal-footer">
+    <a @onclick="Cancel" class="btn btn-link link-secondary" data-dismiss="modal">
+        Cancel
+    </a>
+    <a @onclick="CreateReport" class="btn btn-primary ms-auto" data-dismiss="modal">
+        Confirm
+    </a>
+</div>
+
+@code {
+    @inject IModalService ModalService
+
+    [Parameter] public SingleProductResponse Product { get; set; }
+    [Parameter] public List<SingleCategoryResponse> Categories { get; set; }
+    [Parameter] public List<SingleProductUomResponse> Uoms { get; set; }
+    private SingleProductUomResponse uom;
+    private void CreateReport()
+    {
+        ModalService.Close(ModalResult.Ok());
+    }
+
+    private void Cancel()
+    {
+        ModalService.Close(ModalResult.Cancel());
+    }
+
+} 

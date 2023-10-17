@@ -1,7 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Text.Json;
 using Warehouse.Client.Services.Auth;
 
@@ -9,7 +8,7 @@ namespace Warehouse.Client.Pages.Auth
 {
     public class WarehouseAuthStateProvider : AuthenticationStateProvider
     {
-        private ILocalStorageService _localStorageService;
+        private readonly ILocalStorageService _localStorageService;
         public WarehouseAuthStateProvider(ILocalStorageService localStorageService)
         {
             _localStorageService = localStorageService;

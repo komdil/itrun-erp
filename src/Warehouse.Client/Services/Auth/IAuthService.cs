@@ -1,5 +1,4 @@
-﻿using Account.Contracts.Requests.Auth;
-using Account.Contracts.Response.Auth;
+﻿using Account.Contracts.Auth;
 
 namespace Warehouse.Client.Services.Auth
 {

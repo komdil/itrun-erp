@@ -1,8 +1,13 @@
 ﻿@page "/products"
 @using Warehouse.Client.Services.Product;
+@using Warehouse.Client.Services.ProductUom;
+@using Warehouse.Contracts.Categories;
 @using Warehouse.Contracts.Product;
+@using Warehouse.Contracts.ProductUOM;
 @attribute [Authorize]
 @inject IProductService _productService
+@inject IProductUomServise _productUomService
+@inject ICategoryService _categoryService
 <br />
 
 @if (isError)
@@ -19,17 +24,15 @@
 }
 
 <h3>Products</h3>
+<Button BackgroundColor="TablerColor.Primary" Type="ButtonType.Button" Text="+ Add new" @onclick="AddNew" />
+<br />
+<Table Item="SingleProductResponse" Items="products" PageSize="20" OnItemDeleted="OnItemDelete" Add>
+    <HeaderTemplate>
+        <strong>Products</strong>
+    </HeaderTemplate>
+    <ChildContent>
 
-<Table Item="SingleProductResponse" Items="products" PageSize="20" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
-       OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete"
-       Hover Responsive EditMode=tableEditMode>
-     <HeaderTemplate>
-         <strong>Products</strong>
-     </HeaderTemplate>
-
-     <ChildContent>
-
-         <Column Item="SingleProductResponse" Property="product=>product.Name" Title="Name" Sortable Searchable Groupable>
+        <Column Item="SingleProductResponse" Property="product=>product.Name" Title="Name" Sortable Searchable Groupable>
             <EditorTemplate>
                 <input type="text" class="form-control" @bind-value="@context.Name" />
             </EditorTemplate>
@@ -69,16 +72,16 @@
 
 </Table>
 
-
-
 @code {
-    [Inject] TabBlazor.Services.TablerService TablerService { get; set; }
     [Inject] TabBlazor.Services.IModalService ModalService { get; set; }
     private List<SingleProductResponse> products = new();
+    private List<SingleCategoryResponse> categories = new();
+    private List<SingleProductUomResponse> uoms = new();
 
-    private TableEditMode tableEditMode = TableEditMode.Inline;
+    private TableEditMode tableEditMode = TableEditMode.Popup;
     private GetProductsQuery getProductQuery = new();
-
+    private GetProductsUomQuery getProductUomQuery = new();
+    private GetCategoryQuery getCategoryQuery = new();
     #region Error
     private string errorMessage;
     private bool isError;
@@ -97,6 +100,12 @@
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
+        await Task.WhenAll(LoadProductsAsync(), LoadProductUomsAsync(), LoadProductCategorysAsync());
+        isLoading = false;
+    }
+
+    private async Task LoadProductsAsync()
+    {
         var response = await _productService.GetAllAsync(getProductQuery);
         if (response.Success)
         {
@@ -106,7 +115,32 @@
         {
             ShowError(response.Error);
         }
-        isLoading = false;
+    }
+
+    private async Task LoadProductUomsAsync()
+    {
+        var response = await _productUomService.GetAllAsync(getProductUomQuery);
+        if (response.Success)
+        {
+            uoms = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+    }
+
+    private async Task LoadProductCategorysAsync()
+    {
+        var response = await _categoryService.GetAllAsync(getCategoryQuery);
+        if (response.Success)
+        {
+            categories = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
     }
 
     private async Task OnItemEdit(SingleProductResponse singleProduct)
@@ -135,28 +169,37 @@
         }
     }
 
-    private async Task OnItemAdd(SingleProductResponse singleProduct)
+    private async Task AddNew()
     {
-        var response = await _productService.CreateAsync(new CreateProductRequest
-            {
-                Name = singleProduct.Name,
-                ProductUom = singleProduct.ProductUom,
-                Category = singleProduct.Category,
-                Manufacturer = singleProduct.Manufacturer,
-                Price = singleProduct.Price,
-                Quantity = singleProduct.Quantity,
-                Description = singleProduct.Description
-            });
+        SingleProductResponse singleProduct = new();
+        var component = new RenderComponent<ProductDialog>()
+            .Set(e => e.Product, singleProduct)
+            .Set(e => e.Categories, categories)
+            .Set(e => e.Uoms, uoms.ToList());
+        var result = await ModalService.ShowAsync("Create new product", component, new ModalOptions { Size = ModalSize.Large });
+        if (!result.Cancelled)
+        {
+            var response = await _productService.CreateAsync(new CreateProductRequest
+                {
+                    Name = singleProduct.Name,
+                    ProductUom = singleProduct.ProductUom,
+                    Category = singleProduct.Category,
+                    Manufacturer = singleProduct.Manufacturer,
+                    Price = singleProduct.Price,
+                    Quantity = singleProduct.Quantity,
+                    Description = singleProduct.Description
+                });
 
-        if (response.Success)
-        {
-            await ShowDialog($"Added product {singleProduct.Name}");
-        }
-        else
-        {
-            if (products.Contains(singleProduct))
-                products.Remove(singleProduct);
-            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+            if (response.Success)
+            {
+                await ShowDialog($"Added product {singleProduct.Name}");
+            }
+            else
+            {
+                if (products.Contains(singleProduct))
+                    products.Remove(singleProduct);
+                await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+            }
         }
     }
 

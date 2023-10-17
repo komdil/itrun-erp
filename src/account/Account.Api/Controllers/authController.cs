@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions.Services;
-using Account.Contracts.Requests.Auth;
 using Microsoft.AspNetCore.Mvc;
+using Account.Contracts.Auth;
 
 namespace Account.Api.Controllers
 {

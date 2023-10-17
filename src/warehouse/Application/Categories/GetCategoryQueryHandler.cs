@@ -35,7 +35,7 @@ namespace Application.Categories
                 if (!string.IsNullOrWhiteSpace(request.Description))
                 categoryQuery = categoryQuery.Where(p => p.Description == request.Description);            
 
-                categoryQuery = categoryQuery.Skip(request.StartIndex).Take(request.EndIndex);
+                categoryQuery = categoryQuery.Skip(request.Skip).Take(request.PageSize);
 
                 return await categoryQuery.ProjectTo<SingleCategoryResponse>(_mapper.ConfigurationProvider).ToListAsync(cancellationToken);
             }

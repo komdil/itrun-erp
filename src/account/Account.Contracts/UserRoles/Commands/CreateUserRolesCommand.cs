@@ -1,16 +1,11 @@
-﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Account.Contracts.UserRoles.Responses;
+using MediatR;
 
-namespace Contracts.UserRoles.Commands
+namespace Account.Contracts.UserRoles.Commands
 {
-    public class CreateUserRolesCommand : IRequest<ApplicationResponse<string>>
+    public class CreateUserRolesCommand : IRequest<UserRolesResponse>
     {
-        public Guid RoleId { get; set; }
+        public string RoleName { get; set; }
         public Guid UserId { get; set; }
-
     }
 }
