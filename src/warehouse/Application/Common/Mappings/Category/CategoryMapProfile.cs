@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using Domain.Entities;
 using Warehouse.Contracts.Categories;
-using Warehouse.Contracts.Warehouse;
 
 namespace Application.Common.Mappings.Categories
 {
@@ -15,6 +9,7 @@ namespace Application.Common.Mappings.Categories
         public CategoryMapProfile()
         {
             CreateMap<Category, SingleCategoryResponse>();
+            CreateMap<CreateCategoryRequest, Category>();
         }
     }
 }

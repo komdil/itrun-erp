@@ -12,7 +12,7 @@ namespace Application.IntergrationTests.Categories
         public async Task PostingCategory_ShoudbeSavedToDb()
         {
             // Arrange
-            CreateCategoryRequest request = new() { Name = "MyWareHouse", Description = "Lenin 226", ParentCategoryId = Guid.Parse("") };
+            CreateCategoryRequest request = new() { Name = "MyWareHouse", Description = "Lenin 226" };
 
             // Act
             HttpResponseMessage result = await _httpClient.PostAsJsonAsync("Categories", request);

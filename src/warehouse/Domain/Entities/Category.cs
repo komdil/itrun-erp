@@ -12,7 +12,5 @@ namespace Domain.Entities
         public string Name { get; set; }
         public string Description { get; set; }
         public Guid ParentCategoryId { get; set; }
-        public virtual Category ParentCategory { get; set; }
-        public virtual ICollection<Category> SubCategories { get; set; }
     }
 }
