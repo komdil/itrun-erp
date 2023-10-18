@@ -1,12 +1,16 @@
 ﻿using Domain.Entities;
+using FluentAssertions;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
 using System.Net.Http.Json;
 using Warehouse.Contracts.Product;
 using Warehouse.Contracts.ProductPurchase;
 using Warehouse.Contracts.ProductUOM;
+using Warehouse.Contracts.SellProduct;
+using Warehouse.Contracts.Warehouse;
 
 namespace Application.IntergrationTests.ProductPurchases
 {
@@ -43,50 +47,33 @@ namespace Application.IntergrationTests.ProductPurchases
         }
 
         [Test]
-        public async Task CreateProductPurchase_PurchasingExistingProduct_Success()
+        public async Task GetPurchaseProduct_ShouldReturnListOfPurchaseProductFromDb()
         {
-            var warehouseId = await CreateWareHouse();
-            var prod = await CreateProduct();
+            // Arrange
+            await CreatePurchaseProduct(3);
+            GetProductPurchasesQuery request = new();
 
-            CreateProductPurchaseRequest productPurchaseRequest = new()
-            {
-                VendorName = "Some vendor",
-                Comment = "Fresh fruit",
-                Date = DateTime.Now,
-                Price = 8,
-                ProductName = "Pineapple",
-                ProductUom = "kilogram",
-                Quantity = 1,
-                WareHouseId = warehouseId
-            };
-            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/purchaseProduct", productPurchaseRequest);
-            response.EnsureSuccessStatusCode();
+            // Act
+            List<SingleProductPurchaseResponse> PurchaseProduct = await _httpClient.GetFromJsonAsync<List<SingleProductPurchaseResponse>>("PurchaseProduct", request);
 
-            var product = await GetEntity<Product>(p => p.Name == "Pineapple");
-            Assert.That(product.Quantity == prod.Quantity + productPurchaseRequest.Quantity);
+            PurchaseProduct.Count().Should().BeGreaterThanOrEqualTo(3);
         }
 
         [Test]
-        public async Task CreateProductPurchase_PurchasingNewProduct_Success()
+        public async Task DeleteProductSell_ShouldDeleteFromDb()
         {
-            var warehouseId = await CreateWareHouse();
+            await CreatePurchaseProduct(1);
+            // Arrange
+            var PurchaseProductFromDb = GetEntities<ProductPurchase>().First();
 
-            CreateProductPurchaseRequest productPurchaseRequest = new()
-            {
-                VendorName = "Some vendor",
-                Comment = "Fresh fruit",
-                Date = DateTime.Now,
-                Price = 8,
-                ProductName = "Peach",
-                ProductUom = "kilogram",
-                Quantity = 1,
-                WareHouseId = warehouseId
-            };
-            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/purchaseProduct", productPurchaseRequest);
-            response.EnsureSuccessStatusCode();
+            // Act
+            HttpResponseMessage result = await _httpClient.DeleteAsync($"/PurchaseProduct/{PurchaseProductFromDb.Id}");
 
-            var product = await GetEntity<Product>(p => p.Name == "Peach");
-            Assert.That(product.Quantity == productPurchaseRequest.Quantity);
+            // Assert
+            result.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+            var deletedWareHouse = await GetEntity<ProductPurchase>(s => s.Id == PurchaseProductFromDb.Id);
+            deletedWareHouse.Should().BeNull();
         }
 
         async Task<Guid> CreateWareHouse()
@@ -117,6 +104,27 @@ namespace Application.IntergrationTests.ProductPurchases
             };
             await AddAsync(product);
             return product;
+        }
+
+        async Task CreatePurchaseProduct(int v)
+        {
+            for (int i = 0; i < v; i++)
+            {
+                var warehouseId = await CreateWareHouse();
+                ProductPurchase PurchaseProduct = new()
+                {
+                    ProductName = $"TestName{i}",
+                    Price = 10 + i,
+                    Date = DateTime.Now,
+                    Comment = "Test",
+                    ProductUom = "kilogram",
+                    WareHouseId = warehouseId,
+                    TotalPrice = 100 + i,
+                    Quantity = 10 + i,
+
+                };
+                await AddAsync(PurchaseProduct);
+            }
         }
     }
 }

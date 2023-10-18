@@ -26,7 +26,7 @@ namespace Application.Sale.Queries
 				SaleProduct = SaleProduct.Where(p => p.ProductName == request.ProductName);
 
 			if (!string.IsNullOrWhiteSpace(request.ProductUom))
-				SaleProduct = SaleProduct.Where(p => p.ProductUom == request.ProductName);
+				SaleProduct = SaleProduct.Where(p => p.ProductUom == request.ProductUom);
 
 
 			SaleProduct = SaleProduct.Take(request.PageSize);

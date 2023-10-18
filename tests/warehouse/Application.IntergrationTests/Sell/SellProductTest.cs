@@ -26,21 +26,20 @@ namespace Application.IntergrationTests.SallProduct
         public async Task SellProduct_ShouldNotFound()
         {
             // Arrange
-            var warehouseId = await CreateWareHouse();
-            await CreateProduct();
-            CreateSellProductRequest createSellProductRequest = new()
-            {
-            };
-            HttpResponseMessage result = await _httpClient.PostAsJsonAsync("/SaleProduct", createSellProductRequest);
+            CreateSellProductRequest createSellProductRequest = new();
+
+            //Act
+            HttpResponseMessage result = await _httpClient.PostAsJsonAsync("/saleproduct", createSellProductRequest);
 
             // Assert
-            result.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
+
         [Test]
         public async Task CreateProductSell_SellProductQuantitymoreofProduct_BadRequest()
         {
             var warehouseId = await CreateWareHouse();
-            var prod = await CreateProduct();
+            await CreateProduct();
 
             CreateSellProductRequest createSellProductRequest = new()
             {
@@ -54,51 +53,41 @@ namespace Application.IntergrationTests.SallProduct
                 Quantity = 20,
 
             };
-            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/SaleProduct", createSellProductRequest);
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/saleproduct", createSellProductRequest);
             Assert.That(response.StatusCode == HttpStatusCode.BadRequest);
         }
+
         [Test]
         public async Task CreateProductSell_SellExistingProduct_Success()
         {
+            var category = await CreateCategory("fruit");
             var warehouseId = await CreateWareHouse();
-            var prod = await CreateProduct();
-
+            var prod = await CreateProduct(category.Id);
+            int quantityBefore = prod.Quantity;
             CreateSellProductRequest createSellProductRequest = new()
             {
                 ProductName = "TestName",
                 Price = 10,
                 Date = DateTime.Now,
                 Comment = "Test",
-                ProductUom = "kilogram",
+                ProductUom = "kg",
                 WareHouseId = warehouseId,
                 TotalPrice = 100,
                 Quantity = 10,
-
             };
-            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/SaleProduct", createSellProductRequest);
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("/saleproduct", createSellProductRequest);
             response.EnsureSuccessStatusCode();
 
             var product = await GetEntity<Product>(p => p.Name == "TestName");
-            Assert.That(product.Quantity == prod.Quantity - createSellProductRequest.Quantity);
+            product.Quantity.Should().Be(quantityBefore - createSellProductRequest.Quantity);
         }
+
         [Test]
         public async Task CreateProductSell_TriggeringConcurrencyException()
         {
             // Arrange
             var warehouseId = await CreateWareHouse();
             await CreateProduct();
-            CreateSellProductRequest createSellProductRequest = new()
-            {
-                ProductName = "TestName",
-                Price = 10,
-                Date = DateTime.Now,
-                Comment = "Test",
-                ProductUom = "kilogram",
-                WareHouseId = warehouseId,
-                TotalPrice = 100,
-                Quantity = 10,
-
-            };
 
             var ctx1 = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var prod1 = ctx1.Products.FirstOrDefault(p => p.Name == "TestName");
@@ -111,6 +100,7 @@ namespace Application.IntergrationTests.SallProduct
             ctx2.SaveChanges();
             Assert.Throws<DbUpdateConcurrencyException>(() => ctx1.SaveChanges());
         }
+
         [Test]
         public async Task GetSaleProduct_ShouldReturnListOfSaleProductFromDb()
         {
@@ -119,7 +109,7 @@ namespace Application.IntergrationTests.SallProduct
             GetSaleProductsQuery request = new();
 
             // Act
-            List<SingleProductSellResponse> saleProduct = await _httpClient.GetFromJsonAsync<List<SingleProductSellResponse>>("SaleProduct", request);
+            List<SingleProductSellResponse> saleProduct = await _httpClient.GetFromJsonAsync<List<SingleProductSellResponse>>("saleproduct", request);
 
             saleProduct.Count().Should().BeGreaterThanOrEqualTo(3);
         }
@@ -131,15 +121,15 @@ namespace Application.IntergrationTests.SallProduct
             await CreateSaleProduct(1);
             var SaleProductFromDb = GetEntities<SaleProduct>().First();
 
-            string url = $"SaleProduct/{SaleProductFromDb.Id}";
             // Act
-            var saleProduct = await _httpClient.GetFromJsonAsync<SingleProductSellResponse>(url);
+            var saleProduct = await _httpClient.GetFromJsonAsync<SingleProductSellResponse>($"saleproduct/{SaleProductFromDb.Id}");
 
             saleProduct.Should().NotBeNull();
             saleProduct.ProductName.Should().Be(SaleProductFromDb.ProductName);
             saleProduct.ProductUom.Should().Be(SaleProductFromDb.ProductUom);
             saleProduct.Comment.Should().Be(SaleProductFromDb.Comment);
         }
+
         [Test]
         public async Task DeleteProductSell_ShouldDeleteFromDb()
         {
@@ -148,7 +138,7 @@ namespace Application.IntergrationTests.SallProduct
             var SaleProductFromDb = GetEntities<SaleProduct>().First();
 
             // Act
-            HttpResponseMessage result = await _httpClient.DeleteAsync($"/SaleProduct/{SaleProductFromDb.Id}");
+            HttpResponseMessage result = await _httpClient.DeleteAsync($"/saleproduct/{SaleProductFromDb.Id}");
 
             // Assert
             result.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -156,17 +146,15 @@ namespace Application.IntergrationTests.SallProduct
             var deletedWareHouse = await GetEntity<SaleProduct>(s => s.Id == SaleProductFromDb.Id);
             deletedWareHouse.Should().BeNull();
         }
+
         [Test]
         public async Task DeleteProductSell_ShouldBadRequest()
         {
-            await CreateSaleProduct(1);
-            // Arrange
-            var SaleProductFromDb = GetEntities<SaleProduct>().First();
             // Act
-            HttpResponseMessage result = await _httpClient.DeleteAsync($"/SaleProduct/{10000}");
+            HttpResponseMessage result = await _httpClient.DeleteAsync($"/saleproduct/{10000}");
 
             // Assert
-            Assert.That(result.StatusCode == HttpStatusCode.BadRequest);
+            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         async Task<Guid> CreateWareHouse()
@@ -181,22 +169,31 @@ namespace Application.IntergrationTests.SallProduct
             await AddAsync(warehouse);
             return warehouse.Id;
         }
-        async Task<Product> CreateProduct()
+
+        async Task<Product> CreateProduct(Guid? categoryId = null)
         {
             Product product = new()
             {
-                Category = new Category { Name = "Fruit", },
                 Description = "Test",
                 Id = Guid.NewGuid(),
                 Manufacturer = "TTTT",
                 Name = "TestName",
                 Price = 12,
                 Quantity = 15,
-                Uom = new ProductUOM() { Name = "kilogram", Abbreviation = "KG", Details = "Test", Id = Guid.NewGuid() }
+                Uom = new ProductUOM() { Name = "kilogram", Abbreviation = "kg", Details = "Test", Id = Guid.NewGuid() }
             };
+            if (categoryId.HasValue)
+            {
+                product.CategoryId = categoryId.Value;
+            }
+            else
+            {
+                product.Category = new Category { Name = "Fruit", };
+            }
             await AddAsync(product);
             return product;
         }
+
         async Task CreateSaleProduct(int v)
         {
             for (int i = 0; i < v; i++)
@@ -216,6 +213,18 @@ namespace Application.IntergrationTests.SallProduct
                 };
                 await AddAsync(saleProduct);
             }
+        }
+
+        private async Task<Category> CreateCategory(string name)
+        {
+            var res = new Category
+            {
+                Id = Guid.NewGuid(),
+                Description = "Test",
+                Name = name
+            };
+            await AddAsync(res);
+            return res;
         }
     }
 }

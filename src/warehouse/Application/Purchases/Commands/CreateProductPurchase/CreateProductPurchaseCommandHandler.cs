@@ -15,30 +15,24 @@ namespace Application.ProductPurchases.Commands.CreateProductPurchase
         private readonly IApplicationDbContext _dbcontext;
         private readonly IMapper _mapper;
 
-        public CreateProductPurchaseCommandHandler(IApplicationDbContext dbcontext, IMapper mapper)
+        public CreateProductPurchaseCommandHandler(IApplicationDbContext dbContext, IMapper mapper)
         {
-            _dbcontext = dbcontext;
+            _dbcontext = dbContext;
             _mapper = mapper;
         }
         public async Task<SingleProductPurchaseResponse> Handle(CreateProductPurchaseRequest request, CancellationToken cancellationToken)
         {
-            var uom = await _dbcontext.ProductUOMs.FirstOrDefaultAsync(u => u.Name == request.ProductUom, cancellationToken);
+            var uom = await _dbcontext.ProductUOMs.FirstOrDefaultAsync(u => u.Abbreviation == request.ProductUom, cancellationToken);
 
             if (uom == null)
-                throw new NotFoundException();
+                throw new ValidationFailedException("Product UOM", request.ProductUom);
 
             var product = await _dbcontext.Products.FirstOrDefaultAsync(p => p.Name == request.ProductName, cancellationToken);
 
             if (product == null)
-            {
-                product = new Product { Name = request.ProductName, Uom = uom, Price = request.Price, Quantity = request.Quantity };
-                await _dbcontext.Products.AddAsync(product);
-            }
-            else
-            {
-                product.Quantity += request.Quantity;
-                product.Price = request.Price;
-            }
+                throw new ValidationFailedException("Product", request.ProductName);
+            product.Quantity += request.Quantity;
+            product.Price = request.Price;
             var prod = _mapper.Map<ProductPurchase>(request);
 
             await _dbcontext.ProductPurchases.AddAsync(prod);

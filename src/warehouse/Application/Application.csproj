@@ -21,8 +21,4 @@
     <ProjectReference Include="..\Warehouse.Contracts\Warehouse.Contracts.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ProductPurchases\Queries\" />
-  </ItemGroup>
-
 </Project>

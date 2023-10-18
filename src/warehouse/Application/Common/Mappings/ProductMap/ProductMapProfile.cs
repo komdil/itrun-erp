@@ -17,8 +17,6 @@ namespace Application.Common.Mappings.ProductMap
                     opt => opt.MapFrom(product => product.Category.Name))
                 .ForMember(getProduct => getProduct.Warehouse,
                     opt => opt.MapFrom(product => product.Warehouse.Name));
-
-            //CreateMap<UpdateProductRequest, Product>();
         }
     }
 }

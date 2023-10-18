@@ -8,31 +8,24 @@ using Warehouse.Contracts.SellProduct;
 
 namespace Application.Sale.Commands
 {
-    public class CreateProductPurchaseCommandHandler : IRequestHandler<CreateSellProductRequest, SingleProductSellResponse>
+    public class CreateProductSaleCommandHandler : IRequestHandler<CreateSellProductRequest, SingleProductSellResponse>
     {
         private readonly IApplicationDbContext _dbcontext;
         private readonly IMapper _mapper;
 
-        public CreateProductPurchaseCommandHandler(IApplicationDbContext dbcontext, IMapper mapper)
+        public CreateProductSaleCommandHandler(IApplicationDbContext dbContext, IMapper mapper)
         {
-            _dbcontext = dbcontext;
+            _dbcontext = dbContext;
             _mapper = mapper;
         }
 
         public async Task<SingleProductSellResponse> Handle(CreateSellProductRequest request, CancellationToken cancellationToken)
         {
-            var uom = await _dbcontext.ProductUOMs.FirstOrDefaultAsync(u => u.Abbreviation == request.ProductUom, cancellationToken);
-            if (uom == null)
-                throw new ValidationFailedException("Product UOM", request.ProductUom);
-
             var product = await _dbcontext.Products.FirstOrDefaultAsync(p => p.Name == request.ProductName, cancellationToken);
-
             if (product == null)
-            {
-                product = new Product { Name = request.ProductName, Uom = uom, Price = request.Price, Quantity = request.Quantity };
-                await _dbcontext.Products.AddAsync(product);
-            }
-            else if (product.Quantity < request.Quantity)
+                throw new ValidationFailedException("Product not found");
+
+            if (product.Quantity < request.Quantity)
             {
                 throw new ValidationFailedException("Product is not enough to sale");
             }
@@ -41,6 +34,9 @@ namespace Application.Sale.Commands
                 product.Quantity -= request.Quantity;
                 product.Price = request.Price;
             }
+            var uom = await _dbcontext.ProductUOMs.FirstOrDefaultAsync(u => u.Abbreviation == request.ProductUom, cancellationToken);
+            if (uom == null)
+                throw new ValidationFailedException("Product UOM", request.ProductUom);
 
             var prod = _mapper.Map<SaleProduct>(request);
             await _dbcontext.SaleProducts.AddAsync(prod);

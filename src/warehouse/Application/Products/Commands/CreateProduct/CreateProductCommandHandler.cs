@@ -42,6 +42,7 @@ namespace Application.Products.Commands.CreateProduct
                 UomId = productUom.Id,
                 WarehouseId = warehouse.Id,
                 CategoryId = category.Id,
+                Manufacturer = request.Manufacturer,
             };
 
             await _dbContext.Products.AddAsync(product, cancellationToken);
