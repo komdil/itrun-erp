@@ -1,0 +1,136 @@
+﻿@using Warehouse.Client.Services.Product;
+@using Warehouse.Client.Services.Sales;
+@using Warehouse.Contracts.Categories;
+@using Warehouse.Contracts.Product;
+@using Warehouse.Contracts.ProductPurchase;
+@using Warehouse.Contracts.ProductUOM;
+@using Warehouse.Contracts.SellProduct;
+@using Warehouse.Contracts.Warehouse;
+@inject IPurchaseService _purchaseService
+
+<div class="form-selectgroup-boxes row mb-3">
+    <div class="col-lg-6">
+        ﻿<div class="mb-3">
+            <label class="form-label">Product</label>
+            <select class="form-control" @bind="ProductName">
+                <option value="0">Select product</option>
+                @foreach (var product in Products)
+                {
+                    if (product.Name == ProductName)
+                    {
+                        <option selected="selected" value="@product.Name">@product.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@product.Name">@product.Name</option>
+                    }
+                }
+            </select>
+        </div>
+        ﻿<div class="mb-3">
+            <label class="form-label">Unit of measure</label>
+            <input readonly="true" class="form-control" @bind="@Uom" rows="3" />
+        </div>
+        ﻿<div class="mb-3">
+            <label class="form-label">Vendor</label>
+            <input type="text" class="form-control" name="example-text-input" @bind-value="@Purchase.VendorName" placeholder="VendorName">
+        </div>
+    </div>
+    <div class="col-lg-6">
+        ﻿<div class="mb-3">
+            <label class="form-label">Quantity</label>
+            <input type="text" class="form-control" name="example-text-input" @bind-value="@Purchase.Quantity" placeholder="Quantity">
+        </div>
+
+        ﻿<div class="mb-3">
+            <label class="form-label">Price</label>
+            <input type="text" class="form-control" name="example-text-input" @bind-value="@Purchase.Price" placeholder="Price">
+        </div>
+        ﻿<div class="mb-3">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" name="example-date-input" @bind-value="@Purchase.Date" placeholder="Date">
+        </div>
+    </div>
+    <div class="col-lg-12">
+        <div>
+            <label class="form-label">Comments</label>
+            <textarea class="form-control" @bind="@Purchase.Comment" rows="3" />
+        </div>
+    </div>
+</div>
+
+
+<div class="modal-footer">
+    <a @onclick="Cancel" class="btn btn-link link-secondary" data-dismiss="modal">
+        Cancel
+    </a>
+    <a @onclick="CreateReport" class="btn btn-primary ms-auto" data-dismiss="modal">
+        Confirm
+    </a>
+</div>
+
+@code {
+    @inject IModalService ModalService
+    [Parameter] public SingleProductPurchaseResponse Purchase { get; set; }
+    [Parameter] public List<SingleProductResponse> Products { get; set; }
+    [Parameter] public List<SingleProductUomResponse> Uoms { get; set; }
+    private string Uom { get; set; }
+
+    string productName;
+    private string ProductName
+    {
+        get
+        {
+            return productName;
+        }
+        set
+        {
+            productName = value;
+            Uom = Products.FirstOrDefault(s => s.Name == value)?.ProductUom;
+            Purchase.ProductName = value;
+            Purchase.ProductUom = Uom;
+        }
+    }
+    private async Task CreateReport()
+    {
+        var response = await _purchaseService.CreateAsync(new CreateProductPurchaseRequest
+            {
+                ProductName = Purchase.ProductName,
+                ProductUom = Purchase.ProductUom,
+                WareHouseId = Purchase.WareHouseId,
+                Price = Purchase.Price,
+                Quantity = Purchase.Quantity,
+                Date = Purchase.Date,
+                Comment = Purchase.Comment,
+                VendorName = Purchase.VendorName,
+            });
+
+        if (response.Success)
+        {
+            await ShowDialog($"Product purchase {Purchase.ProductName}");
+            ModalService.Close(ModalResult.Ok());
+        }
+        else
+        {
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private void Cancel()
+    {
+        ModalService.Close(ModalResult.Cancel());
+    }
+
+    private async Task ShowDialog(string title, IIconType icon = null, TablerColor color = TablerColor.Primary)
+    {
+        if (icon == null)
+            icon = Icons.Info_circle;
+        await ModalService.ShowDialogAsync(new TabBlazor.Components.Modals.DialogOptions
+            {
+                CancelText = "",
+                StatusColor = color,
+                IconType = Icons.Info_circle,
+                MainText = title
+            });
+    }
+} 

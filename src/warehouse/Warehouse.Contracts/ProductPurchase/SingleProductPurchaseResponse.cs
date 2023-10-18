@@ -2,15 +2,15 @@
 {
     public record SingleProductPurchaseResponse
     {
-        public Guid Id { get; init; }
-        public string ProductName { get; init; }
-        public string ProductUom { get; init; }
-        public decimal Price { get; init; }
-        public Guid WareHouseId { get; init; }
-        public int Quantity { get; init; }
-        public string VendorName { get; init; }
-        public decimal TotalPrice { get; init; }
-        public DateTime Date { get; init; }
-        public string Comment { get; init; }
+        public Guid Id { get; set; }
+        public string ProductName { get; set; }
+        public string ProductUom { get; set; }
+        public decimal Price { get; set; }
+        public Guid WareHouseId { get; set; }
+        public int Quantity { get; set; }
+        public string VendorName { get; set; }
+        public decimal TotalPrice { get; set; }
+        public DateTime Date { get; set; }
+        public string Comment { get; set; }
     }
 }

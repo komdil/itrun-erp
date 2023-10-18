@@ -69,7 +69,7 @@ namespace Warehouse.Client.Services
             };
         }
 
-        public static ApiResponse<T> BuildFailed(ErrorResponse error, HttpStatusCode? httpStatusCode = null)
+        public new static ApiResponse<T> BuildFailed(ErrorResponse error, HttpStatusCode? httpStatusCode = null)
         {
             return new ApiResponse<T>
             {

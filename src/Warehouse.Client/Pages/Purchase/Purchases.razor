@@ -1,8 +1,208 @@
 ﻿@page "/purchases"
+@using Warehouse.Client.Services.Product;
+@using Warehouse.Client.Services.ProductUom;
+@using Warehouse.Client.Services.Sales;
+@using Warehouse.Contracts.Product;
+@using Warehouse.Contracts.ProductPurchase;
+@using Warehouse.Contracts.ProductUOM;
+@using Warehouse.Contracts.SellProduct;
+@using Warehouse.Contracts.Warehouse;
+@inject IPurchaseService _purchaseService
+@inject IProductService _productService
+@inject IProductUomServise _productUomService
+<br />
 @attribute [Authorize]
 
+@if (isError)
+{
+    <Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
+     <div class="text-secondary">@errorMessage</div>
+ </Alert>
+}
+
+@if (isLoading)
+{
+    <br />
+    <Progress Color="TablerColor.Blue" Indeterminate />
+}
 <h3>Purchases</h3>
+<div style="display: flex; align-items: center;">
+    <Button BackgroundColor="TablerColor.Primary" Type="ButtonType.Button" Text="+ Purchase" @onclick="AddNew" />
+    <select class="form-control" @onchange="ProductSelected" style="margin-left:10px">
+        <option value="0">Select product</option>
+        @foreach (var product in products)
+        {
+            <option value="@product.Name">@product.Name</option>
+        }
+    </select>
+</div>
+<br />
+<Table Item="SingleProductPurchaseResponse" Items="purchases" PageSize="20" OnItemDeleted="OnItemDelete"
+       Hover Responsive>
+    <HeaderTemplate>
+        <strong>Purchases</strong>
+    </HeaderTemplate>
+
+    <ChildContent>
+        <Column Item="SingleProductPurchaseResponse" Property="product=>product.ProductName" Title="Name" Sortable Searchable Groupable>
+            <EditorTemplate>
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductPurchaseResponse" Property="product=>product.ProductUom" Title="Uom" Sortable Searchable Groupable>
+            <EditorTemplate>
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductPurchaseResponse" Property="product=>product.Quantity" Title="Quantity" Sortable Searchable Groupable>
+            <EditorTemplate>
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductPurchaseResponse" Property="product=>product.Price" Title="Price" Sortable Searchable Groupable>
+            <EditorTemplate>
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductPurchaseResponse" Property="product=>product.TotalPrice" Title="TotalPrice" Sortable Searchable Groupable>
+            <EditorTemplate>
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductPurchaseResponse" Property="product=>product.Date" Title="Date" Sortable Searchable Groupable>
+            <EditorTemplate>
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductPurchaseResponse" Property="product=>product.Comment" Title="Comment" Sortable Searchable Groupable>
+            <EditorTemplate>
+            </EditorTemplate>
+        </Column>
+    </ChildContent>
+
+</Table>
 
 @code {
+    [Inject] TabBlazor.Services.TablerService TablerService { get; set; }
+    [Inject] TabBlazor.Services.IModalService ModalService { get; set; }
+    private List<SingleProductPurchaseResponse> purchases = new();
+    private GetProductPurchasesQuery getPurchasesQuery = new();
 
+    private List<SingleProductResponse> products = new();
+    private List<SingleProductUomResponse> uoms = new();
+
+    private GetProductsQuery getProductQuery = new();
+    private GetProductsUomQuery getProductUomQuery = new();
+
+    #region Error
+    private string errorMessage;
+    private bool isError;
+    private void ShowError(string error)
+    {
+        errorMessage = error;
+        isError = true;
+    }
+
+    #endregion
+
+    #region
+    private bool isLoading;
+    #endregion
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        await Task.WhenAll(LoadSalesAsync(), LoadProductsAsync(), LoadProductUomsAsync());
+        isLoading = false;
+    }
+    private async Task OnItemDelete(SingleProductPurchaseResponse singleProductSell)
+    {
+        var response = await _purchaseService.DeleteAsync(singleProductSell.Id);
+
+        if (response.Success)
+        {
+            await ShowDialog($"Purchase deleted {singleProductSell.ProductName}");
+        }
+        else
+        {
+            if (!purchases.Contains(singleProductSell))
+                purchases.Add(singleProductSell);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+    private async Task ShowDialog(string title, IIconType icon = null, TablerColor color = TablerColor.Primary)
+    {
+        if (icon == null)
+            icon = Icons.Info_circle;
+        await ModalService.ShowDialogAsync(new TabBlazor.Components.Modals.DialogOptions
+            {
+                CancelText = "",
+                StatusColor = color,
+                IconType = icon,
+                MainText = title
+            });
+    }
+
+    private async Task LoadSalesAsync()
+    {
+        var response = await _purchaseService.GetAllAsync(getPurchasesQuery);
+        if (response.Success)
+        {
+            purchases = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+    }
+
+    private async Task LoadProductsAsync()
+    {
+        var response = await _productService.GetAllAsync(getProductQuery);
+        if (response.Success)
+        {
+            products = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+    }
+
+    private async Task LoadProductUomsAsync()
+    {
+        var response = await _productUomService.GetAllAsync(getProductUomQuery);
+        if (response.Success)
+        {
+            uoms = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+    }
+
+    private async Task ProductSelected(ChangeEventArgs e)
+    {
+        var selected = products.FirstOrDefault(s => s.Name == e.Value.ToString());
+        if (selected != null)
+        {
+            getPurchasesQuery.ProductName = selected.Name;
+        }
+        else
+        {
+            getPurchasesQuery.ProductName = null;
+        }
+        isLoading = true;
+        await LoadSalesAsync();
+        isLoading = false;
+    }
+
+    private async Task AddNew()
+    {
+        SingleProductPurchaseResponse singleProduct = new();
+        singleProduct.Date = DateTime.Now;
+        var component = new RenderComponent<PurchaseDialog>()
+            .Set(e => e.Purchase, singleProduct)
+            .Set(e => e.Products, products)
+            .Set(e => e.Uoms, uoms);
+        var result = await ModalService.ShowAsync("Purchase", component, new ModalOptions { Size = ModalSize.Large });
+        if (!result.Cancelled)
+        {
+            purchases.Add(singleProduct);
+        }
+    }
 }

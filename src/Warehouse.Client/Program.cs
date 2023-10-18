@@ -29,6 +29,7 @@ builder.Services.AddScoped<IProductUomServise, ProductUomServise>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ISaleProductService, SaleProductService>();
+builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 
 builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
