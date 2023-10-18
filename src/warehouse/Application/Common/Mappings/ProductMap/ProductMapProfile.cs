@@ -12,7 +12,7 @@ namespace Application.Common.Mappings.ProductMap
 
             CreateMap<Product, SingleProductResponse>()
                 .ForMember(getProduct => getProduct.ProductUom,
-                    opt => opt.MapFrom(product => product.Uom.Name))
+                    opt => opt.MapFrom(product => product.Uom.Abbreviation))
                 .ForMember(getProduct => getProduct.Category,
                     opt => opt.MapFrom(product => product.Category.Name))
                 .ForMember(getProduct => getProduct.Warehouse,

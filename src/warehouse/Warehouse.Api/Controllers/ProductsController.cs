@@ -20,7 +20,7 @@ namespace Warehouse.Api.Controllers
             };
             return await Sender.Send(query);
         }
-      
+
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateProductRequest request)
         {
@@ -28,9 +28,10 @@ namespace Warehouse.Api.Controllers
             return Created($"products/{response.Id}", response);
         }
 
-        [HttpPut]
-        public async Task<SingleProductResponse> Put([FromBody] UpdateProductRequest request)
+        [HttpPut("{id}")]
+        public async Task<SingleProductResponse> Put(Guid id, [FromBody] UpdateProductRequest request)
         {
+            request.Id = id;
             return await Sender.Send(request);
         }
 

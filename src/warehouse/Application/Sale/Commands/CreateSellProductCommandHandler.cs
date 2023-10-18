@@ -8,7 +8,7 @@ using Warehouse.Contracts.SellProduct;
 
 namespace Application.Sale.Commands
 {
-	public class CreateProductPurchaseCommandHandler : IRequestHandler<CreateSellProductRequest, SingleProductSellResponse>
+    public class CreateProductPurchaseCommandHandler : IRequestHandler<CreateSellProductRequest, SingleProductSellResponse>
     {
         private readonly IApplicationDbContext _dbcontext;
         private readonly IMapper _mapper;
@@ -21,9 +21,9 @@ namespace Application.Sale.Commands
 
         public async Task<SingleProductSellResponse> Handle(CreateSellProductRequest request, CancellationToken cancellationToken)
         {
-            var uom = await _dbcontext.ProductUOMs.FirstOrDefaultAsync(u => u.Name == request.ProductUom, cancellationToken);
+            var uom = await _dbcontext.ProductUOMs.FirstOrDefaultAsync(u => u.Abbreviation == request.ProductUom, cancellationToken);
             if (uom == null)
-                throw new NotFoundException();
+                throw new ValidationFailedException("Product UOM", request.ProductUom);
 
             var product = await _dbcontext.Products.FirstOrDefaultAsync(p => p.Name == request.ProductName, cancellationToken);
 
@@ -34,7 +34,7 @@ namespace Application.Sale.Commands
             }
             else if (product.Quantity < request.Quantity)
             {
-                throw new ValidationFailedException(request.ProductName);
+                throw new ValidationFailedException("Product is not enough to sale");
             }
             else
             {

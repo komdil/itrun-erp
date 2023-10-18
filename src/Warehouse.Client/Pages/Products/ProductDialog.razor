@@ -17,7 +17,7 @@
                 <option value="0">Select Uom</option>
                 @foreach (var uom in Uoms)
                 {
-                    if (uom.Abbreviation == Product.ProductUom)
+                    if (uom.Name == Product.ProductUom)
                     {
                         <option selected="selected" value="@uom.Abbreviation">@uom.Abbreviation</option>
                     }

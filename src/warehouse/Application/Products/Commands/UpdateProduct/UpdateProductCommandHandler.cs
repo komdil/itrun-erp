@@ -26,17 +26,17 @@ namespace Application.Products.Commands.UpdateProduct
             if (product == null)
                 throw new NotFoundException();
 
-            var productUom = await _dbContext.ProductUOMs.FirstOrDefaultAsync(pUom => pUom.Name == request.ProductUom, cancellationToken: cancellationToken);
+            var productUom = await _dbContext.ProductUOMs.FirstOrDefaultAsync(pUom => pUom.Abbreviation == request.ProductUom, cancellationToken: cancellationToken);
             if (productUom == null)
-                throw new ValidationFailedException(request.ProductUom);
+                throw new ValidationFailedException("Product UOM", request.ProductUom);
 
             var category = await _dbContext.Categories.FirstOrDefaultAsync(c => c.Name == request.Category, cancellationToken: cancellationToken);
             if (category == null)
-                throw new ValidationFailedException(request.Category);
+                throw new ValidationFailedException("Category", request.Category);
 
             var warehouse = await _dbContext.Warehouses.FirstOrDefaultAsync(w => w.Name == request.Warehouse, cancellationToken: cancellationToken);
             if (warehouse == null)
-                throw new ValidationFailedException(request.ProductUom);
+                throw new ValidationFailedException("Warehouse", request.Warehouse);
             product.Name = request.Name;
             product.Manufacturer = request.Manufacturer;
             product.Price = request.Price;

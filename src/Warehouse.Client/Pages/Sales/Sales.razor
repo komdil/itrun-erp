@@ -1,131 +1,210 @@
 ﻿@page "/sales"
+@using Warehouse.Client.Services.Product;
+@using Warehouse.Client.Services.ProductUom;
 @using Warehouse.Client.Services.Sales;
+@using Warehouse.Contracts.Product;
+@using Warehouse.Contracts.ProductUOM;
 @using Warehouse.Contracts.SellProduct;
 @using Warehouse.Contracts.Warehouse;
 @inject ISaleProductService _saleProductService
+@inject IProductService _productService
+@inject IProductUomServise _productUomService
 <br />
 @attribute [Authorize]
 
 @if (isError)
 {
-	<Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
-		<div class="text-secondary">@errorMessage</div>
-	</Alert>
+    <Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
+     <div class="text-secondary">@errorMessage</div>
+ </Alert>
 }
 
 @if (isLoading)
 {
-	<br />
-	<Progress Color="TablerColor.Blue" Indeterminate />
+    <br />
+    <Progress Color="TablerColor.Blue" Indeterminate />
 }
 <h3>Sales</h3>
+<div style="display: flex; align-items: center;">
+    <Button BackgroundColor="TablerColor.Primary" Type="ButtonType.Button" Text="+ Sale" @onclick="AddNew" />
+    <select class="form-control" @onchange="ProductSelected" style="margin-left:10px">
+        <option value="0">Select product</option>
+        @foreach (var product in products)
+        {
+            <option value="@product.Name">@product.Name</option>
+        }
+    </select>
+</div>
+<br />
 <Table Item="SingleProductSellResponse" Items="saleProduct" PageSize="20" OnItemDeleted="OnItemDelete"
-		   Hover Responsive EditMode=tableEditMode>
-		<HeaderTemplate>
-			<strong>Sales Products</strong>
-		</HeaderTemplate>
+       Hover Responsive>
+    <HeaderTemplate>
+        <strong>Sales</strong>
+    </HeaderTemplate>
 
-		<ChildContent>
-			<Column Item="SingleProductSellResponse" Property="product=>product.ProductName" Title="Name" Sortable Searchable Groupable>
-			<EditorTemplate>
-			</EditorTemplate>
-		</Column>
-		<Column Item="SingleProductSellResponse" Property="product=>product.ProductUom" Title="Uom" Sortable Searchable Groupable>
-			<EditorTemplate>
-			</EditorTemplate>
-		</Column>
-		<Column Item="SingleProductSellResponse" Property="product=>product.WareHouseId" Title="WareHouseId" Sortable Searchable Groupable>
-			<EditorTemplate>
-			</EditorTemplate>
-		</Column>
-		<Column Item="SingleProductSellResponse" Property="product=>product.Quantity" Title="Quantity" Sortable Searchable Groupable>
-			<EditorTemplate>
-			</EditorTemplate>
-		</Column>
-		<Column Item="SingleProductSellResponse" Property="product=>product.Price" Title="Price" Sortable Searchable Groupable>
-			<EditorTemplate>
-			</EditorTemplate>
-		</Column>
-		<Column Item="SingleProductSellResponse" Property="product=>product.TotalPrice" Title="TotalPrice" Sortable Searchable Groupable>
-			<EditorTemplate>
-			</EditorTemplate>
-		</Column>
-		<Column Item="SingleProductSellResponse" Property="product=>product.Date" Title="Manufacturer" Sortable Searchable Groupable>
-			<EditorTemplate>
-			</EditorTemplate>
-		</Column>
-		<Column Item="SingleProductSellResponse" Property="product=>product.Comment" Title="Manufacturer" Sortable Searchable Groupable>
-			<EditorTemplate>
-			</EditorTemplate>
-		</Column>
-
-	</ChildContent>
+    <ChildContent>
+        <Column Item="SingleProductSellResponse" Property="product=>product.ProductName" Title="Name" Sortable Searchable Groupable>
+            <EditorTemplate>
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductSellResponse" Property="product=>product.ProductUom" Title="Uom" Sortable Searchable Groupable>
+            <EditorTemplate>
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductSellResponse" Property="product=>product.Quantity" Title="Quantity" Sortable Searchable Groupable>
+            <EditorTemplate>
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductSellResponse" Property="product=>product.Price" Title="Price" Sortable Searchable Groupable>
+            <EditorTemplate>
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductSellResponse" Property="product=>product.TotalPrice" Title="TotalPrice" Sortable Searchable Groupable>
+            <EditorTemplate>
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductSellResponse" Property="product=>product.Date" Title="Date" Sortable Searchable Groupable>
+            <EditorTemplate>
+            </EditorTemplate>
+        </Column>
+        <Column Item="SingleProductSellResponse" Property="product=>product.Comment" Title="Comment" Sortable Searchable Groupable>
+            <EditorTemplate>
+            </EditorTemplate>
+        </Column>
+    </ChildContent>
 
 </Table>
 
 @code {
-	[Inject] TabBlazor.Services.TablerService TablerService { get; set; }
-	[Inject] TabBlazor.Services.IModalService ModalService { get; set; }
-	private List<SingleProductSellResponse> saleProduct = new();
+    [Inject] TabBlazor.Services.TablerService TablerService { get; set; }
+    [Inject] TabBlazor.Services.IModalService ModalService { get; set; }
+    private List<SingleProductSellResponse> saleProduct = new();
+    private GetSaleProductsQuery getProductSaleQuery = new();
 
-	private TableEditMode tableEditMode = TableEditMode.Inline;
-	private GetSaleProductsQuery getProductQuery = new();
-	#region Error
-	private string errorMessage;
-	private bool isError;
-	private void ShowError(string error)
-	{
-		errorMessage = error;
-		isError = true;
-	}
+    private List<SingleProductResponse> products = new();
+    private List<SingleProductUomResponse> uoms = new();
 
-	#endregion
+    private GetProductsQuery getProductQuery = new();
+    private GetProductsUomQuery getProductUomQuery = new();
 
-	#region
-	private bool isLoading;
-	#endregion
-	protected override async Task OnInitializedAsync()
-	{
-		isLoading = true;
-		var response = await _saleProductService.GetAllAsync(getProductQuery);
-		if (response.Success)
-		{
-			saleProduct = response.Result;
-		}
-		else
-		{
-			ShowError(response.Error);
-		}
-		isLoading = false;
-	}
-	private async Task OnItemDelete(SingleProductSellResponse singleProductSell)
-	{
-		var response = await _saleProductService.DeleteAsync(new DeleteSaleProductRequest
-			{
-				Id = singleProductSell.Id
-			});
+    #region Error
+    private string errorMessage;
+    private bool isError;
+    private void ShowError(string error)
+    {
+        errorMessage = error;
+        isError = true;
+    }
 
-		if (response.Success)
-		{
-			await ShowDialog($"SaleProduct deleted {singleProductSell.ProductName}");
-		}
-		else
-		{
-			if (!saleProduct.Contains(singleProductSell))
-				saleProduct.Add(singleProductSell);
-			await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
-		}
-	}
-	private async Task ShowDialog(string title, IIconType icon = null, TablerColor color = TablerColor.Primary)
-	{
-		if (icon == null)
-			icon = Icons.Info_circle;
-		await ModalService.ShowDialogAsync(new TabBlazor.Components.Modals.DialogOptions
-			{
-				CancelText = "",
-				StatusColor = color,
-				IconType = icon,
-				MainText = title
-			});
-	}
+    #endregion
+
+    #region
+    private bool isLoading;
+    #endregion
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        await Task.WhenAll(LoadSalesAsync(), LoadProductsAsync(), LoadProductUomsAsync());
+        isLoading = false;
+    }
+    private async Task OnItemDelete(SingleProductSellResponse singleProductSell)
+    {
+        var response = await _saleProductService.DeleteAsync(new DeleteSaleProductRequest
+            {
+                Id = singleProductSell.Id
+            });
+
+        if (response.Success)
+        {
+            await ShowDialog($"SaleProduct deleted {singleProductSell.ProductName}");
+        }
+        else
+        {
+            if (!saleProduct.Contains(singleProductSell))
+                saleProduct.Add(singleProductSell);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+    private async Task ShowDialog(string title, IIconType icon = null, TablerColor color = TablerColor.Primary)
+    {
+        if (icon == null)
+            icon = Icons.Info_circle;
+        await ModalService.ShowDialogAsync(new TabBlazor.Components.Modals.DialogOptions
+            {
+                CancelText = "",
+                StatusColor = color,
+                IconType = icon,
+                MainText = title
+            });
+    }
+
+    private async Task LoadSalesAsync()
+    {
+        var response = await _saleProductService.GetAllAsync(getProductSaleQuery);
+        if (response.Success)
+        {
+            saleProduct = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+    }
+
+    private async Task LoadProductsAsync()
+    {
+        var response = await _productService.GetAllAsync(getProductQuery);
+        if (response.Success)
+        {
+            products = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+    }
+
+    private async Task LoadProductUomsAsync()
+    {
+        var response = await _productUomService.GetAllAsync(getProductUomQuery);
+        if (response.Success)
+        {
+            uoms = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+    }
+
+    private async Task ProductSelected(ChangeEventArgs e)
+    {
+        var selected = products.FirstOrDefault(s => s.Name == e.Value.ToString());
+        if (selected != null)
+        {
+            getProductSaleQuery.ProductName = selected.Name;
+        }
+        else
+        {
+            getProductSaleQuery.ProductName = null;
+        }
+        isLoading = true;
+        await LoadSalesAsync();
+        isLoading = false;
+    }
+
+    private async Task AddNew()
+    {
+        SingleProductSellResponse singleProduct = new();
+        singleProduct.Date = DateTime.Now;
+        var component = new RenderComponent<SalesDialog>()
+            .Set(e => e.ProductSale, singleProduct)
+            .Set(e => e.Products, products)
+            .Set(e => e.Uoms, uoms);
+        var result = await ModalService.ShowAsync("Sale", component, new ModalOptions { Size = ModalSize.Large });
+        if (!result.Cancelled)
+        {
+            saleProduct.Add(singleProduct);
+        }
+    }
 }

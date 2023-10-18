@@ -45,7 +45,7 @@
     </select>
 </div>
 <br />
-<Table Item="SingleProductResponse" Items="products" PageSize="20" OnItemDeleted="OnItemDelete" Add>
+<Table Item="SingleProductResponse" Items="products" PageSize="20" OnItemDeleted="OnItemDelete">
     <HeaderTemplate>
         <strong>Products</strong>
     </HeaderTemplate>
@@ -86,7 +86,15 @@
                 <input type="text" class="form-control" @bind-value="@context.Description" />
             </EditorTemplate>
         </Column>
-
+        <Column Item="SingleProductResponse" Title="Edit">
+            <Template>
+                <Button  @onclick="(() => OnItemEdit(context))" >
+                    <Icon Size=15 IconType="Icons.Edit"/>
+                </Button>
+            </Template>
+            <EditorTemplate>
+            </EditorTemplate>
+        </Column>
     </ChildContent>
 
 </Table>

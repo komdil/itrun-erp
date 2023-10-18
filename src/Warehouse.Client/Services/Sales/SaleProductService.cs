@@ -1,11 +1,10 @@
-﻿using MediatR;
-using Warehouse.Client.Services.HttpClients;
+﻿using Warehouse.Client.Services.HttpClients;
 using Warehouse.Contracts.SellProduct;
 using Warehouse.Contracts.Warehouse;
 
 namespace Warehouse.Client.Services.Sales
 {
-	public class SaleProductService : ISaleProductService
+    public class SaleProductService : ISaleProductService
 	{
 		private readonly IHttpClientService _httpClient;
 		private readonly IConfiguration _configuration;
@@ -17,18 +16,18 @@ namespace Warehouse.Client.Services.Sales
 
 		public  async Task<ApiResponse<SingleProductSellResponse>> CreateAsync(CreateSellProductRequest request)
 		{
-			return await _httpClient.PostAsJsonAsync<SingleProductSellResponse>($"{_configuration["WarehouseServiceUrl"]}/saleProduct", request);
+			return await _httpClient.PostAsJsonAsync<SingleProductSellResponse>($"{_configuration["WarehouseServiceUrl"]}/saleproduct", request);
 		}
 
 		public async Task<ApiResponse> DeleteAsync(DeleteSaleProductRequest request)
 		{
-            return await _httpClient.DeleteAsync($"{_configuration["WarehouseServiceUrl"]}/saleProduct/{request.Id}");
+            return await _httpClient.DeleteAsync($"{_configuration["WarehouseServiceUrl"]}/saleproduct/{request.Id}");
 
 		}
 
 		public async Task<ApiResponse<List<SingleProductSellResponse>>> GetAllAsync(GetSaleProductsQuery request)
 		{
-			return await _httpClient.GetAsJsonAsync<List<SingleProductSellResponse>>($"{_configuration["WarehouseServiceUrl"]}/saleProduct", request);
+			return await _httpClient.GetAsJsonAsync<List<SingleProductSellResponse>>($"{_configuration["WarehouseServiceUrl"]}/saleproduct", request);
 		}
 	}
 }

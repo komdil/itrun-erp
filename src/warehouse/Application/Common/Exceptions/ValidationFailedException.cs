@@ -11,8 +11,8 @@ namespace Application.Common.Exceptions
             ErrorResponse = errorResponse;
         }
 
-        public ValidationFailedException(string notFoundEntityName)
-         : base($"Entity \"{notFoundEntityName}\" not found.")
+        public ValidationFailedException(string entityTitle, string notFoundEntityName)
+         : base($"{entityTitle} \"{notFoundEntityName}\" not found.")
         {
 
             ErrorResponse = new ErrorResponse
@@ -21,7 +21,23 @@ namespace Application.Common.Exceptions
                 {
                     new ErrorMessage
                     {
-                        Message=$"Entity \"{notFoundEntityName}\" not found."
+                        Message=$"{entityTitle} \"{notFoundEntityName}\" not found."
+                    }
+                }
+            };
+        }
+
+        public ValidationFailedException(string errorMessage)
+         : base(errorMessage)
+        {
+
+            ErrorResponse = new ErrorResponse
+            {
+                Errors = new List<ErrorMessage>
+                {
+                    new ErrorMessage
+                    {
+                        Message = errorMessage
                     }
                 }
             };
