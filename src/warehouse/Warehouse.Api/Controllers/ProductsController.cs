@@ -1,6 +1,7 @@
 ﻿using Warehouse.Contracts.Product;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Warehouse.Api.Utilities;
 
 namespace Warehouse.Api.Controllers
 {
@@ -23,6 +24,7 @@ namespace Warehouse.Api.Controllers
             return await Sender.Send(query);
         }
 
+        [Authorize(Roles = $"{Constants.SuperAdminRoleName},{Constants.BuyerRoleName}")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateProductRequest request)
         {
@@ -30,6 +32,7 @@ namespace Warehouse.Api.Controllers
             return Created($"products/{response.Id}", response);
         }
 
+        [Authorize(Roles = $"{Constants.SuperAdminRoleName},{Constants.BuyerRoleName}")]
         [HttpPut("{id}")]
         public async Task<SingleProductResponse> Put(Guid id, [FromBody] UpdateProductRequest request)
         {
@@ -37,6 +40,7 @@ namespace Warehouse.Api.Controllers
             return await Sender.Send(request);
         }
 
+        [Authorize(Roles = $"{Constants.SuperAdminRoleName},{Constants.BuyerRoleName}")]
         [HttpDelete("{slug}")]
         public async Task<IActionResult> Delete(string slug)
         {

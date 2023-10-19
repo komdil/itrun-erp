@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Warehouse.Api.Utilities;
 using Warehouse.Contracts.SellProduct;
 using Warehouse.Contracts.Warehouse;
 
@@ -23,6 +24,7 @@ namespace Warehouse.Api.Controllers
 			};
 			return await Sender.Send(query);
 		}
+
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(Guid id)
 		{
@@ -33,7 +35,9 @@ namespace Warehouse.Api.Controllers
 			await Sender.Send(deleteRequest);
 			return NoContent();
 		}
-		[HttpPost]
+
+        [Authorize(Roles = $"{Constants.SuperAdminRoleName},{Constants.SellerRoleName}")]
+        [HttpPost]
 		public async Task<IActionResult> Post([FromBody] CreateSellProductRequest request)
 		{
 			var response = await Sender.Send(request);

@@ -1,13 +1,14 @@
 ﻿using Warehouse.Contracts.ProductUOM;
 using Microsoft.AspNetCore.Mvc;
-using Warehouse.Contracts.Product;
 using Microsoft.AspNetCore.Authorization;
+using Warehouse.Api.Utilities;
 
 namespace Warehouse.Api.Controllers
 {
     [Authorize]
     public class ProductUOMsController : ApiControllerBase
     {
+        [Authorize(Roles = $"{Constants.SuperAdminRoleName},{Constants.BuyerRoleName}")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateProductUOMRequest request)
         {
@@ -15,9 +16,9 @@ namespace Warehouse.Api.Controllers
             return Created($"productuoms/{response.Slug}", response);
         }
         [HttpGet]
-        public async Task<List<SingleProductUomResponse>> Get([FromQuery] GetProductsUomQuery getproductuom)
+        public async Task<List<SingleProductUomResponse>> Get([FromQuery] GetProductsUomQuery query)
         {
-            return await Sender.Send(getproductuom);
+            return await Sender.Send(query);
         }
 
         [HttpGet("{id}")]
@@ -30,6 +31,7 @@ namespace Warehouse.Api.Controllers
             return await Sender.Send(query);
         }
 
+        [Authorize(Roles = $"{Constants.SuperAdminRoleName},{Constants.BuyerRoleName}")]
         [HttpDelete("{slug}")]
         public async Task<IActionResult> Delete(string slug)
         {
@@ -38,11 +40,12 @@ namespace Warehouse.Api.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = $"{Constants.SuperAdminRoleName},{Constants.BuyerRoleName}")]
         [HttpPut("{id}")]
-        public async Task<SingleProductUomResponse> Put(Guid id, [FromBody] UpdateProductUomRequest putproduct)
+        public async Task<SingleProductUomResponse> Put(Guid id, [FromBody] UpdateProductUomRequest request)
         {
-            putproduct.Id = id;
-            return await Sender.Send(putproduct);
+            request.Id = id;
+            return await Sender.Send(request);
         }
     }
 }

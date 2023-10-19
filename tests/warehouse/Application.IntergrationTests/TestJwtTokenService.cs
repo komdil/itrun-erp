@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Warehouse.Api.Utilities;
 
 namespace Application.IntergrationTests
 {
@@ -28,6 +29,7 @@ namespace Application.IntergrationTests
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.Name, userName),
+                    new Claim(ClaimTypes.Role, Constants.SuperAdminRoleName),
                 }),
                 Expires = DateTime.UtcNow.AddHours(1), // Adjust the expiration as needed
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
