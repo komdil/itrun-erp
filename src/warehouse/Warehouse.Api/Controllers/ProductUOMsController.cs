@@ -1,9 +1,11 @@
 ﻿using Warehouse.Contracts.ProductUOM;
 using Microsoft.AspNetCore.Mvc;
 using Warehouse.Contracts.Product;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Warehouse.Api.Controllers
 {
+    [Authorize]
     public class ProductUOMsController : ApiControllerBase
     {
         [HttpPost]

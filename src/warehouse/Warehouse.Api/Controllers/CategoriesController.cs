@@ -1,9 +1,11 @@
 ﻿using Warehouse.Contracts.Warehouse;
 using Microsoft.AspNetCore.Mvc;
 using Warehouse.Contracts.Categories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Warehouse.Api.Controllers
 {
+    [Authorize]
     public class CategoriesController : ApiControllerBase
     {
         [HttpPost]

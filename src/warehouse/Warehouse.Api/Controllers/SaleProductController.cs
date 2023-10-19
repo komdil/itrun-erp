@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Warehouse.Contracts.SellProduct;
 using Warehouse.Contracts.Warehouse;
 
 namespace Warehouse.Api.Controllers
 {
-	public class SaleProductController : ApiControllerBase
+    [Authorize]
+    public class SaleProductController : ApiControllerBase
 	{
 		[HttpGet]
 		public async Task<List<SingleProductSellResponse>> Get([FromQuery] GetSaleProductsQuery query)

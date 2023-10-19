@@ -1,8 +1,10 @@
 ﻿using Warehouse.Contracts.Product;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Warehouse.Api.Controllers
 {
+    [Authorize]
     public class ProductsController : ApiControllerBase
     {
         [HttpGet]

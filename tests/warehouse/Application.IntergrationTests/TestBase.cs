@@ -3,8 +3,10 @@ using Application.IntegrationTests;
 using Domain.Entities;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq.Expressions;
+using System.Net.Http.Headers;
 
 namespace Application.IntergrationTests
 {
@@ -12,12 +14,24 @@ namespace Application.IntergrationTests
     {
         protected HttpClient _httpClient;
         protected IServiceScopeFactory _scopeFactory;
+        internal CustomWebApplicationFactory _factory;
+        protected TestJwtTokenService _tokenService;
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            var factory = new CustomWebApplicationFactory();
-            _scopeFactory = factory.Services.GetRequiredService<IServiceScopeFactory>();
-            _httpClient = factory.CreateClient();
+            _factory = new CustomWebApplicationFactory();
+            _scopeFactory = _factory.Services.GetRequiredService<IServiceScopeFactory>();
+
+            using var scope = _scopeFactory.CreateScope();
+            var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+            _tokenService = new TestJwtTokenService(configuration);
+        }
+
+        [SetUp]
+        public void Setup()
+        {
+            _httpClient = _factory.CreateClient();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _tokenService.GenerateToken("SuperAdmin"));
         }
 
         protected async Task<T> GetEntity<T>(Expression<Func<T, bool>> query) where T : class

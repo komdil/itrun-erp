@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Warehouse.Contracts.ProductPurchase;
 using Warehouse.Contracts.SellProduct;
@@ -6,6 +7,7 @@ using Warehouse.Contracts.Warehouse;
 
 namespace Warehouse.Api.Controllers
 {
+    [Authorize]
     public class PurchaseProductController : ApiControllerBase
     {
         [HttpPost]
