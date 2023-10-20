@@ -1,6 +1,339 @@
 ﻿@page "/"
+@using Warehouse.Client.Services.Reports;
+@using Warehouse.Contracts.Product;
+@using Warehouse.Contracts.Reports;
 @attribute [Authorize]
+@inject IReportService _reportService;
+<br>
+<h2 align="center">SMART WAREHOUSE</h2>
+<br>
+@if (isError)
+{
+    <Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
+     <div class="text-secondary">@errorMessage</div>
+ </Alert>
+}
 
-@code {
-   
+@if (isLoading)
+{
+    <br />
+    <Progress Color="TablerColor.Blue" Indeterminate />
+}
+
+<Row class="row-deck row-cards">
+    <RowCol Sm="6" Lg="3">
+        <Card Size="CardSize.Small">
+            <CardBody>
+                <div class="row align-items-center">
+                    <RowCol Auto>
+                        <span class="bg-primary text-white avatar">
+                            <Icon IconType="Icons.Currency_dollar" />
+                        </span>
+                    </RowCol>
+
+                    <div class="col">
+                        <h3 class="mb-0">
+                            Sum of sold products
+                        </h3>
+                        <div class="text-secondary">
+                            @productAggregatesResponse.SalesSum
+                        </div>
+                    </div>
+                </div>
+            </CardBody>
+        </Card>
+    </RowCol>
+
+    <RowCol Sm="6" Lg="3">
+        <Card Size="CardSize.Small">
+            <CardBody>
+                <div class="row align-items-center">
+                    <RowCol Auto>
+                        <span class="bg-success text-white avatar">
+                            <Icon IconType="Icons.Shopping_cart" />
+                        </span>
+                    </RowCol>
+
+                    <div class="col">
+                        <h3 class="mb-0">
+                            Sum of purchased products
+                        </h3>
+                        <div class="text-secondary">
+                            @productAggregatesResponse.PurchasesSumm
+                        </div>
+                    </div>
+                </div>
+            </CardBody>
+        </Card>
+    </RowCol>
+
+    <RowCol Sm="6" Lg="3">
+        <Card Size="CardSize.Small">
+            <CardBody>
+                <div class="row align-items-center">
+                    <RowCol Auto>
+                        <span class="bg-azure text-white avatar">
+                            <Icon IconType="Icons.Brand_producthunt" />
+                        </span>
+                    </RowCol>
+
+                    <div class="col">
+                        <h3 class="mb-0">
+                            Sum of products
+                        </h3>
+                        <div class="text-secondary">
+                            @productAggregatesResponse.ProductsCount
+                        </div>
+                    </div>
+                </div>
+            </CardBody>
+        </Card>
+    </RowCol>
+
+    <RowCol Sm="6" Lg="3">
+        <Card Size="CardSize.Small">
+            <CardBody>
+                <div class="row align-items-center">
+                    <RowCol Auto>
+                        <span class="bg-yellow text-white avatar">
+                            <Icon IconType="Icons.Users" />
+                        </span>
+                    </RowCol>
+                    <div class="col">
+                        <h3 class="mb-0">
+                            Customers count
+                        </h3>
+                        <div class="text-secondary">
+                            @productAggregatesResponse.CustomersCount
+                        </div>
+                    </div>
+                </div>
+            </CardBody>
+        </Card>
+    </RowCol>
+
+
+    <RowCol Sm="12" Lg="4">
+        <Card Size="CardSize.Small">
+            <CardBody>
+                <div class="row align-items-top">
+
+                    <RowCol Lg="7" Xs="12">
+                        <div class="d-flex align-items-center">
+                            <div class="subheader">Expenses</div>
+                            <div class="ms-auto lh-1">
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-baseline">
+                            <div class="h1 mb-3 me-2"> @productAggregatesResponse.Expenses</div>
+
+                        </div>
+                    </RowCol>
+
+                    <RowCol Lg="5" Xs="12">
+                        <span class="bg-yellow text-white avatar">
+                            <Icon IconType="Icons.Report_money" />
+                        </span>
+                    </RowCol>
+
+
+                </div>
+            </CardBody>
+        </Card>
+    </RowCol>
+
+    <RowCol Sm="12" Lg="4">
+        <Card Size="CardSize.Small">
+            <CardBody class="d-flex flex-column">
+                <div class="d-flex align-items-center">
+                    <div class="subheader">Discount</div>
+                    <div class="ms-auto lh-1">
+                    </div>
+                </div>
+                <div class="d-flex flex-grow-1 align-items-stretch">
+                    @{
+                        var discount = 122.5;
+                        <div class="h1 mb-3 me-2">
+                            <span>@((decimal)discount)%</span>
+                        </div>
+
+                        <div class="me-auto">
+                            <span class="text-green d-inline-flex align-items-center lh-1">
+                                8%
+                                <Icon class="icon ms-1" IconType="Icons.Trending_up" />
+                            </span>
+                        </div>
+                    }
+                </div>
+
+
+                <div class="justify-content-end">
+                    @*  <ApexChart TItem="Order"
+                    Options="orderDiscountChartOptions"
+                    @ref=orderDiscountChart
+                    Height="60"
+                    XAxisType="@XAxisType.Datetime">
+
+                    <ApexPointSeries TItem="Order"
+                    Items="context.FilteredItems"
+                    Name="Discount"
+                    SeriesType="SeriesType.Bar"
+                    XValue="@(e => e.OrderDate.FirstDayOfMonth())"
+                    YAggregate="@(e => CalculateDiscount(e.Sum(f => f.GrossValue), e.Sum(f => f.NetValue)))"
+                    OrderByDescending="e=>e.X" />
+                    </ApexChart> *@
+                    CHART WILL BE HERE
+                </div>
+            </CardBody>
+        </Card>
+    </RowCol>
+
+
+    <RowCol Sm="12" Lg="4">
+        <Card Size="CardSize.Small">
+            <CardBody>
+
+                @{
+
+                    <div class="row align-items-top">
+
+                        <RowCol Lg="7" Xs="12">
+                            <div class="d-flex align-items-center">
+                                <div class="subheader">Top 5 Customers</div>
+                                <div class="ms-auto lh-1">
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-baseline">
+                                <div class="h1 mb-3 me-2">
+                                    <span>%</span>
+                                </div>
+                            </div>
+                        </RowCol>
+
+                        <RowCol Lg="5" Xs="12">
+                            <div>
+
+                                @*<ApexChart TItem="TopCustomer"
+                            Options="topCustomerChartOptions"
+                            @ref=topCustomerChart>
+
+                            <ApexPointSeries TItem="TopCustomer"
+                            Items="@topCustomers"
+                            Name="Customer"
+                            SeriesType="SeriesType.Bar"
+                            XValue="@(e => e.Customer.CustomerName)"
+                            YValue="@(e => e.NetValue)"
+                            OrderByDescending="e=>e.Y" />
+                            </ApexChart>*@
+                                CHART WILL BE HERE
+
+                            </div>
+                        </RowCol>
+
+
+                    </div>
+                }
+            </CardBody>
+        </Card>
+    </RowCol>
+
+    <RowCol>
+        <Card>
+            <CardBody>
+                <h3 class="card-title">Orders Value</h3>
+                @*  <ApexChart @ref=chart TItem="Order"
+                XAxisType="XAxisType.Datetime" Height="200" Options="chartOptions">
+
+                <ApexPointSeries TItem="Order"
+                Items="context.FilteredItems"
+                Name="Gross Value"
+                SeriesType="SeriesType.Bar"
+                XValue="@(e => e.OrderDate.FirstDayOfMonth())"
+                YAggregate="@(e => e.Sum(e => e.GrossValue))"
+                OrderBy="e=>e.X" />
+
+                <ApexPointSeries TItem="Order"
+                Items="context.FilteredItems"
+                Name="Net Value"
+                SeriesType="SeriesType.Bar"
+                XValue="@(e => e.OrderDate.FirstDayOfMonth())"
+                YAggregate="@(e => e.Sum(e => e.NetValue))"
+                OrderBy="e=>e.X" />
+
+                </ApexChart> *@
+                CHART
+            </CardBody>
+        </Card>
+    </RowCol>
+    <RowCol>
+        <Card>
+            <CardBody>
+                <h3 class="card-title">Orders Value</h3>
+                @*  <ApexChart @ref=chart TItem="Order"
+                XAxisType="XAxisType.Datetime" Height="200" Options="chartOptions">
+
+                <ApexPointSeries TItem="Order"
+                Items="context.FilteredItems"
+                Name="Gross Value"
+                SeriesType="SeriesType.Bar"
+                XValue="@(e => e.OrderDate.FirstDayOfMonth())"
+                YAggregate="@(e => e.Sum(e => e.GrossValue))"
+                OrderBy="e=>e.X" />
+
+                <ApexPointSeries TItem="Order"
+                Items="context.FilteredItems"
+                Name="Net Value"
+                SeriesType="SeriesType.Bar"
+                XValue="@(e => e.OrderDate.FirstDayOfMonth())"
+                YAggregate="@(e => e.Sum(e => e.NetValue))"
+                OrderBy="e=>e.X" />
+
+                </ApexChart> *@
+                CHART
+            </CardBody>
+        </Card>
+    </RowCol>
+
+    <RowCol>
+
+        <Table PageSize=5 Item="SingleProductResponse">
+            <Column Item="SingleProductResponse" Property="e=>e.Name" Searchable Sortable />
+             <Column Item="SingleProductResponse" Property="e=>e.ProductUom" Searchable Sortable />
+             <Column Item="SingleProductResponse" Property="e=>e.Quantity" Searchable Sortable />
+             <Column Item="SingleProductResponse" Property="e=>e.Manufacturer" Searchable Sortable />
+         </Table>
+
+     </RowCol>
+ </Row>
+
+ @code {
+    private GetProductAggregatesQuery query = new();
+    ProductAggregatesResponse productAggregatesResponse = new();
+
+    private bool isLoading;
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        var response = await _reportService.GetProductReports(query);
+        if (response.Success)
+        {
+            productAggregatesResponse = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+        isLoading = false;
+    }
+
+    #region Error
+    private string errorMessage;
+    private bool isError;
+    private void ShowError(string error)
+    {
+        errorMessage = error;
+        isError = true;
+    }
+
+    #endregion
 }

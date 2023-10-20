@@ -11,6 +11,7 @@ using Warehouse.Client.Services.Auth;
 using Warehouse.Client.Services.HttpClients;
 using Warehouse.Client.Services.Product;
 using Warehouse.Client.Services.ProductUom;
+using Warehouse.Client.Services.Reports;
 using Warehouse.Client.Services.Sales;
 using Warehouse.Client.Services.Warehouse;
 
@@ -30,6 +31,7 @@ builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ISaleProductService, SaleProductService>();
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
