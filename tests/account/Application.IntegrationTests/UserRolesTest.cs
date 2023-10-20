@@ -12,8 +12,9 @@ namespace Application.IntegrationTests
         public async Task CreateUserRoleTest()
         {
             // Arrange
-            await CreateEntityAsync(new ApplicationRole { Name = "someName" });
-            CreateUserRolesCommand request = new() { RoleName = "someName", UserId = _userId };
+            var newRole = new ApplicationRole { Name = "someName" };
+            await CreateEntityAsync(newRole);
+            CreateUserRolesCommand request = new() { RoleId = newRole.Id, UserId = _userId };
 
             // Act
             HttpResponseMessage result = await _httpClient.PostAsJsonAsync("userroles", request);
@@ -21,8 +22,8 @@ namespace Application.IntegrationTests
             // Assert
             result.EnsureSuccessStatusCode();
             var loginResponse = await result.Content.ReadFromJsonAsync<UserRolesResponse>();
-            loginResponse.UserName.Should().Be(_userName);
-            loginResponse.RoleName.Should().Be("someName");
+            loginResponse.UserId.Should().Be(_userId);
+            loginResponse.RoleId.Should().Be(newRole.Id);
             loginResponse.Slug.Should().Be($"{_userName}-someName");
 
             var roleInDb = await GetSingleEntityAsync<ApplicationUserRole>(s => s.Slug == $"{_userName}-someName");

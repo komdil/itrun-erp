@@ -32,7 +32,7 @@ public class CreateUserRoleCommandHandler : IRequestHandler<CreateUserRolesComma
         if (user == null)
             throw new ValidationFailedException("User not found");
 
-        var role = await _roleManager.Roles.FirstOrDefaultAsync(r => r.Name == request.RoleName,
+        var role = await _roleManager.Roles.FirstOrDefaultAsync(r => r.Id == request.RoleId,
             cancellationToken: cancellationToken);
         if (role == null)
             throw new ValidationFailedException("Role not found");
@@ -44,8 +44,6 @@ public class CreateUserRoleCommandHandler : IRequestHandler<CreateUserRolesComma
         await _applicationDbContext.SaveChangesAsync(cancellationToken);
 
         var mapped = _mapper.Map<UserRolesResponse>(newUserRole);
-        mapped.UserName = user.UserName;
-        mapped.RoleName = role.Name;
         return mapped;
     }
 }

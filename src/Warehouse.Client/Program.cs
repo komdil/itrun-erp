@@ -34,10 +34,4 @@ builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddHttpClient();
-builder.Services.AddAuthorizationCore(options =>
-{
-    options.AddPolicy(AccountConstants.SuperAdminPolicy, policy =>
-          policy.RequireRole(AccountConstants.SuperAdminRoleName));
-});
-
 await builder.Build().RunAsync();

@@ -25,7 +25,8 @@ namespace Application.Common.Mapping
             CreateMap<ApplicationUserClaim, SingleClaimResponse>();
             #endregion
             #region Users
-            CreateMap<ApplicationUser, UserResponse>();
+            CreateMap<ApplicationUser, UserResponse>()
+                .ForMember(s => s.Name, x => x.MapFrom(f => f.UserName));
             #endregion
         }
     }

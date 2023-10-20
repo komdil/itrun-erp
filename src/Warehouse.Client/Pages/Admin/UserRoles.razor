@@ -1,5 +1,6 @@
 ﻿@page "/userroles"
 @using Account.Contracts.User.Response;
+@using Account.Contracts.UserRoles.Commands;
 @using Account.Contracts.UserRoles.Responses;
 @using Application.Contract.ApplicationRoles.Commands;
 @using Application.Contract.ApplicationRoles.Queries;
@@ -10,7 +11,7 @@
 @using Warehouse.Client.Services.Admin;
 @using Warehouse.Client.Services.Product;
 
-@attribute [Authorize(AccountConstants.SuperAdminPolicy)]
+@attribute [Authorize(Roles = AccountConstants.SuperAdminRoleName)]
 @inject IAdminService _adminService
 <br />
 
@@ -29,36 +30,63 @@
 
 <h3>User roles</h3>
 
-<Table Item="UserRolesResponse" Items="roles" PageSize="20" Hover Responsive EditMode=tableEditMode>
+<Table Item="UserRolesResponse" Items="userRoles" PageSize="20" Hover Responsive AddItemFactory="AddItem"
+        OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete">
      <HeaderTemplate>
          <strong>User roles</strong>
      </HeaderTemplate>
 
      <ChildContent>
-         <Column Item="UserRolesResponse" Property="r=>r.UserName" Title="User" Sortable Searchable Groupable>
+         <Column Item="UserRolesResponse" Property="e=>users.FirstOrDefault(s=>s.Id==e.UserId).Name" Title="User" Sortable Searchable Groupable>
             <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.UserName" />
+                <select class="form-control" @bind="context.UserId">
+                    <option value="@Guid.Empty">Select user</option>
+                    @foreach (var user in users)
+                    {
+                        if (user.Id == context.UserId)
+                        {
+                            <option selected="selected" value="@user.Id">@user.UserName</option>
+                        }
+                        else
+                        {
+                            <option value="@user.Id">@user.UserName</option>
+                        }
+                    }
+                </select>
             </EditorTemplate>
         </Column>
-        <Column Item="UserRolesResponse" Property="r=>r.RoleName" Title="Role" Sortable Searchable Groupable>
+        <Column Item="UserRolesResponse" Property="e=>roles.FirstOrDefault(s=>s.Id==e.RoleId).Name" Title="Role" Sortable Searchable Groupable>
             <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.RoleName" />
+                <select class="form-control" @bind="context.RoleId">
+                    <option value="@Guid.Empty">Select role</option>
+                    @foreach (var role in roles)
+                    {
+                        if (role.Id == context.RoleId)
+                        {
+                            <option selected="selected" value="@role.Id">@role.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@role.Id">@role.Name</option>
+                        }
+                    }
+                </select>
             </EditorTemplate>
         </Column>
     </ChildContent>
 
 </Table>
 
-
-
 @code {
     [Inject] TabBlazor.Services.TablerService TablerService { get; set; }
     [Inject] TabBlazor.Services.IModalService ModalService { get; set; }
-    private List<UserRolesResponse> roles = new();
+    private List<UserRolesResponse> userRoles = new();
     private List<UserResponse> users = new();
+    private List<RoleNameResponse> roles = new();
 
-    private TableEditMode tableEditMode = TableEditMode.Inline;
-    private GetUserRolesQuery getRolesQuery = new();
+
+    private GetRolesQuery getRolesQuery = new();
+    private GetUserRolesQuery getUserRolesQuery = new();
     private GetUsersQuery getUsersQuery = new();
 
     #region Error
@@ -79,13 +107,26 @@
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
-        await Task.WhenAll(LoadUserRolesAsync(), LoadUsersAsync());
+        await Task.WhenAll(LoadUserRolesAsync(), LoadUsersAsync(), LoadRolesAsync());
         isLoading = false;
     }
 
     private async Task LoadUserRolesAsync()
     {
-        var response = await _adminService.GetUserRolesAsync(getRolesQuery);
+        var response = await _adminService.GetUserRolesAsync(getUserRolesQuery);
+        if (response.Success)
+        {
+            userRoles = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+    }
+
+    private async Task LoadRolesAsync()
+    {
+        var response = await _adminService.GetRoles(getRolesQuery);
         if (response.Success)
         {
             roles = response.Result;
@@ -95,7 +136,6 @@
             ShowError(response.Error);
         }
     }
-
 
     private async Task LoadUsersAsync()
     {
@@ -121,5 +161,46 @@
                 IconType = Icons.Info_circle,
                 MainText = title
             });
+    }
+
+    private async Task OnItemAdd(UserRolesResponse singleProductUom)
+    {
+        var response = await _adminService.AssignRoleAsync(new CreateUserRolesCommand
+            {
+                RoleId = singleProductUom.RoleId,
+                UserId = singleProductUom.UserId
+            });
+
+        if (response.Success)
+        {
+            await ShowDialog($"Role assigned to user");
+        }
+        else
+        {
+            if (userRoles.Contains(singleProductUom))
+                userRoles.Remove(singleProductUom);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private async Task OnItemDelete(UserRolesResponse singleProductUom)
+    {
+        var response = await _adminService.DeleteRoleFromUserAsync(singleProductUom.Slug);
+
+        if (response.Success)
+        {
+            await ShowDialog($"Role deleted from user");
+        }
+        else
+        {
+            if (!userRoles.Contains(singleProductUom))
+                userRoles.Add(singleProductUom);
+            await ShowDialog(response.Error, Icons.Face_id_error, TablerColor.Red);
+        }
+    }
+
+    private Task<UserRolesResponse> AddItem()
+    {
+        return Task.FromResult(new UserRolesResponse());
     }
 }

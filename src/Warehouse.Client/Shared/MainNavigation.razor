@@ -1,5 +1,6 @@
 ﻿@using Account.Contracts.Auth;
 @using TabBlazor.Services;
+@using Warehouse.Client.Constants;
 @using Warehouse.Client.Services.Auth;
 @inject IAuthService authService;
 @inject ILocalStorageService localStorage;
@@ -52,11 +53,26 @@
                         <Icon class="icon" Elements="@Icons.Settings" />
                     </MenuItemIcon>
                 </NavbarMenuItem>
+                <AuthorizeView Roles="@AccountConstants.SuperAdminRoleName" Context="userConttext">
+                    <Authorized>
+                        <NavbarMenuItem Href="/roles" Text="Roles">
+                            <MenuItemIcon>
+                                <Icon class="icon" Elements="@Icons.Users_group" />
+                            </MenuItemIcon>
+                        </NavbarMenuItem>
+                        <NavbarMenuItem Href="/userroles" Text="Users">
+                            <MenuItemIcon>
+                                <Icon class="icon" Elements="@Icons.User" />
+                            </MenuItemIcon>
+                        </NavbarMenuItem>
+                    </Authorized>
+                </AuthorizeView>
                 <NavbarMenuItem Text="Log out" @onclick="Logout">
                     <MenuItemIcon>
                         <Icon class="icon" Elements="@Icons.Login" />
                     </MenuItemIcon>
                 </NavbarMenuItem>
+
             </Authorized>
             <NotAuthorized>
                 <NavbarMenuItem Href="/login" Text="Log in">

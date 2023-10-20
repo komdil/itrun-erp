@@ -4,7 +4,7 @@
 @using Application.Contract.ApplicationRoles.Responses;
 @using Warehouse.Client.Constants;
 @using Warehouse.Client.Services.Admin;
-@attribute [Authorize(AccountConstants.SuperAdminPolicy)]
+@attribute [Authorize(Roles = AccountConstants.SuperAdminRoleName)]
 @inject IAdminService _adminService
 <br />
 
