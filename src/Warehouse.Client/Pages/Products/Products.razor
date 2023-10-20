@@ -1,4 +1,5 @@
 ﻿@page "/products"
+@using Warehouse.Client.Constants;
 @using Warehouse.Client.Services.Product;
 @using Warehouse.Client.Services.ProductUom;
 @using Warehouse.Client.Services.Warehouse;
@@ -28,7 +29,11 @@
 
 <h3>Products</h3>
 <div style="display: flex; align-items: center;">
-    <Button BackgroundColor="TablerColor.Primary" Type="ButtonType.Button" Text="+ Add new" @onclick="AddNew" />
+    <AuthorizeView Roles="@AccountConstants.BuyerRoles" Context="userContext">
+        <Authorized>
+            <Button BackgroundColor="TablerColor.Primary" Type="ButtonType.Button" Text="+ Add new" @onclick="AddNew" />
+        </Authorized>
+    </AuthorizeView>
     <select class="form-control" @onchange="CategorySelected" style="margin-left:10px">
         <option value="0">Select category</option>
         @foreach (var category in categories)
@@ -45,59 +50,110 @@
     </select>
 </div>
 <br />
-<Table Item="SingleProductResponse" Items="products" PageSize="20" OnItemDeleted="OnItemDelete">
-    <HeaderTemplate>
-        <strong>Products</strong>
-    </HeaderTemplate>
-    <ChildContent>
 
-        <Column Item="SingleProductResponse" Property="product=>product.Name" Title="Name" Sortable Searchable Groupable>
-            <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.Name" />
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleProductResponse" Property="product=>product.ProductUom" Title="Uom" Sortable Searchable Groupable>
-            <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.ProductUom" />
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleProductResponse" Property="product=>product.Category" Title="Category" Sortable Searchable Groupable>
-            <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.Category" />
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleProductResponse" Property="product=>product.Manufacturer" Title="Manufacturer" Sortable Searchable Groupable>
-            <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.Manufacturer" />
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleProductResponse" Property="product=>product.Quantity" Title="Quantity" Sortable Searchable Groupable>
-            <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.Quantity" />
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleProductResponse" Property="product=>product.Price" Title="Price" Sortable Searchable Groupable>
-            <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.Price" />
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleProductResponse" Property="product=>product.Description" Title="Description" Sortable Searchable Groupable>
-            <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.Description" />
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleProductResponse" Title="Edit">
-            <Template>
-                <Button  @onclick="(() => OnItemEdit(context))" >
-                    <Icon Size=15 IconType="Icons.Edit"/>
-                </Button>
-            </Template>
-            <EditorTemplate>
-            </EditorTemplate>
-        </Column>
-    </ChildContent>
+<AuthorizeView Roles="@AccountConstants.BuyerRoles" Context="userContext">
+    <Authorized>
+        <Table Item="SingleProductResponse" Items="products" PageSize="20" OnItemDeleted="OnItemDelete">
+            <HeaderTemplate>
+                <strong>Products</strong>
+            </HeaderTemplate>
+            <ChildContent>
 
-</Table>
+                <Column Item="SingleProductResponse" Property="product=>product.Name" Title="Name" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Name" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductResponse" Property="product=>product.ProductUom" Title="Uom" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.ProductUom" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductResponse" Property="product=>product.Category" Title="Category" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Category" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductResponse" Property="product=>product.Manufacturer" Title="Manufacturer" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Manufacturer" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductResponse" Property="product=>product.Quantity" Title="Quantity" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Quantity" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductResponse" Property="product=>product.Price" Title="Price" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Price" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductResponse" Property="product=>product.Description" Title="Description" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Description" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductResponse" Title="Edit">
+                    <Template>
+                        <Button @onclick="(() => OnItemEdit(context))">
+                            <Icon Size=15 IconType="Icons.Edit" />
+                        </Button>
+                    </Template>
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+            </ChildContent>
+
+        </Table>
+    </Authorized>
+    <NotAuthorized>
+        <Table Item="SingleProductResponse" Items="products" PageSize="20" >
+            <HeaderTemplate>
+                <strong>Products</strong>
+            </HeaderTemplate>
+            <ChildContent>
+
+                <Column Item="SingleProductResponse" Property="product=>product.Name" Title="Name" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Name" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductResponse" Property="product=>product.ProductUom" Title="Uom" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.ProductUom" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductResponse" Property="product=>product.Category" Title="Category" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Category" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductResponse" Property="product=>product.Manufacturer" Title="Manufacturer" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Manufacturer" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductResponse" Property="product=>product.Quantity" Title="Quantity" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Quantity" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductResponse" Property="product=>product.Price" Title="Price" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Price" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductResponse" Property="product=>product.Description" Title="Description" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Description" />
+                    </EditorTemplate>
+                </Column>
+            </ChildContent>
+        </Table>
+    </NotAuthorized>
+</AuthorizeView>
+
 
 @code {
     [Inject] TabBlazor.Services.IModalService ModalService { get; set; }

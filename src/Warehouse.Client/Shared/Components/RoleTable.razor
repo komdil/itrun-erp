@@ -1,0 +1,69 @@
+﻿@typeparam TItem
+
+@inherits Table<TItem>
+
+<Table Item="TItem" OnItemDeleted="OnItemDelete" OnItemAdded="OnItemAdd" OnItemEdited="OnItemEdit">
+    <HeaderTemplate>
+        @HeaderTemplate
+    </HeaderTemplate>
+
+    <ChildContent>
+        @ChildContent
+    </ChildContent>
+
+    <DetailsTemplate>
+        @DetailsTemplate
+    </DetailsTemplate>
+
+    <RowActionTemplate>
+        @RowActionTemplate
+    </RowActionTemplate>
+
+    <RowActionEndTemplate>
+        @RowActionEndTemplate
+    </RowActionEndTemplate>
+</Table>
+@code {
+    [Parameter]
+    public EventCallback<TItem> OnItemDelete { get; set; }
+
+    EventCallback<TItem> onItemAdd;
+    [Parameter]
+    public EventCallback<TItem> OnItemAdd
+    {
+        get
+        {
+            if (!CanAdd)
+            {
+                return EventCallback<TItem>.Empty;
+            }
+            return onItemAdd;
+        }
+        set
+        {
+            onItemAdd = value;  
+        }
+    }
+
+    [Parameter]
+    public EventCallback<TItem> OnItemEdit { get; set; }
+
+
+    bool canAdd;
+    [Parameter]
+    public bool CanAdd
+    {
+        get
+        {
+            return canAdd;
+        }
+        set
+        {
+            canAdd = value;
+            if (!canAdd)
+            {
+                OnItemDelete = EventCallback<TItem>.Empty;
+            }
+        }
+    }
+}

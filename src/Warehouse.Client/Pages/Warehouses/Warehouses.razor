@@ -1,6 +1,7 @@
 ﻿@page "/warehouses"
 @using Warehouse.Client.Services.Warehouse;
 @using Warehouse.Contracts.Warehouse;
+@using Constants;
 @attribute [Authorize]
 @inject IWarehouseService _warehouseService
 <br />
@@ -16,34 +17,62 @@
     <br />
     <Progress Color="TablerColor.Blue" Indeterminate />
 }
+<AuthorizeView Roles="@AccountConstants.BuyerRoles" Context="userContext">
+    <Authorized>
+        <Table Item="SingleWarehouseResponse" Items="warehouses" PageSize="getWarehousesQuery.PageSize" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
+               OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete"
+               Hover Responsive EditMode=tableEditMode>
+             <HeaderTemplate>
+                 <strong>Warehouses</strong>
+             </HeaderTemplate>
+             <ChildContent>
+                 <Column Item="SingleWarehouseResponse" Property="e=>e.Name" Title="Name" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Name" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleWarehouseResponse" Property="e=>e.Details" Title="Info" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Details" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleWarehouseResponse" Property="e=>e.Location" Title="Location" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Location" />
+                    </EditorTemplate>
+                </Column>
+            </ChildContent>
+        </Table>
+    </Authorized>
+    <NotAuthorized>
+        <Table Item="SingleWarehouseResponse" Items="warehouses" PageSize="getWarehousesQuery.PageSize" 
+               Hover Responsive EditMode=tableEditMode>
+             <HeaderTemplate>
+                 <strong>Warehouses</strong>
+             </HeaderTemplate>
 
-<Table Item="SingleWarehouseResponse" Items="warehouses" PageSize="getWarehousesQuery.PageSize" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
-       OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete"
-       Hover Responsive EditMode=tableEditMode>
-     <HeaderTemplate>
-         <strong>Warehouses</strong>
-     </HeaderTemplate>
+             <ChildContent>
 
-     <ChildContent>
+                 <Column Item="SingleWarehouseResponse" Property="e=>e.Name" Title="Name" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Name" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleWarehouseResponse" Property="e=>e.Details" Title="Info" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Details" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleWarehouseResponse" Property="e=>e.Location" Title="Location" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Location" />
+                    </EditorTemplate>
+                </Column>
+            </ChildContent>
+        </Table>
+    </NotAuthorized>
+</AuthorizeView>
 
-         <Column Item="SingleWarehouseResponse" Property="e=>e.Name" Title="Name" Sortable Searchable Groupable>
-            <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.Name" />
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleWarehouseResponse" Property="e=>e.Details" Title="Info" Sortable Searchable Groupable>
-            <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.Details" />
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleWarehouseResponse" Property="e=>e.Location" Title="Location" Sortable Searchable Groupable>
-            <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.Location" />
-            </EditorTemplate>
-        </Column>
-    </ChildContent>
-
-</Table>
 
 
 @code {

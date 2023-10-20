@@ -1,5 +1,6 @@
 ﻿@page "/uoms"
 @attribute [Authorize]
+@using Warehouse.Client.Constants;
 @using Warehouse.Client.Services.ProductUom;
 @using Warehouse.Contracts.ProductUOM;
 @inject IProductUomServise _productUomService
@@ -19,34 +20,66 @@
     <br />
     <Progress Color="TablerColor.Blue" Indeterminate />
 }
+<AuthorizeView Roles="@AccountConstants.BuyerRoles" Context="userContext">
+    <Authorized>
+        <Table Item="SingleProductUomResponse" Items="productUoms" PageSize="20" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
+               OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete"
+               Hover Responsive EditMode=tableEditMode>
+             <HeaderTemplate>
+                 <strong>ProductUom</strong>
+             </HeaderTemplate>
 
-<Table Item="SingleProductUomResponse" Items="productUoms" PageSize="20" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
-       OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete"
-       Hover Responsive EditMode=tableEditMode>
-     <HeaderTemplate>
-         <strong>ProductUom</strong>
-     </HeaderTemplate>
+             <ChildContent>
 
-     <ChildContent>
+                 <Column Item="SingleProductUomResponse" Property="e=>e.Name" Title="Name" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Name" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductUomResponse" Property="e=>e.Details" Title="Info" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Details" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductUomResponse" Property="e=>e.Abbreviation" Title="Abbreviation" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Abbreviation" />
+                    </EditorTemplate>
+                </Column>
+            </ChildContent>
 
-         <Column Item="SingleProductUomResponse" Property="e=>e.Name" Title="Name" Sortable Searchable Groupable>
-            <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.Name" />
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleProductUomResponse" Property="e=>e.Details" Title="Info" Sortable Searchable Groupable>
-            <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.Details" />
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleProductUomResponse" Property="e=>e.Abbreviation" Title="Abbreviation" Sortable Searchable Groupable>
-            <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.Abbreviation" />
-            </EditorTemplate>
-        </Column>
-    </ChildContent>
+        </Table>
+    </Authorized>
+    <NotAuthorized>
+        <Table Item="SingleProductUomResponse" Items="productUoms" PageSize="20"
+               Hover Responsive EditMode=tableEditMode>
+             <HeaderTemplate>
+                 <strong>ProductUom</strong>
+             </HeaderTemplate>
 
-</Table>
+             <ChildContent>
+
+                 <Column Item="SingleProductUomResponse" Property="e=>e.Name" Title="Name" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Name" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductUomResponse" Property="e=>e.Details" Title="Info" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Details" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductUomResponse" Property="e=>e.Abbreviation" Title="Abbreviation" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Abbreviation" />
+                    </EditorTemplate>
+                </Column>
+            </ChildContent>
+
+        </Table>
+    </NotAuthorized>
+</AuthorizeView>
+
 
 
 @code {

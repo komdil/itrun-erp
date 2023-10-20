@@ -1,4 +1,5 @@
 ﻿@page "/purchases"
+@using Warehouse.Client.Constants;
 @using Warehouse.Client.Services.Product;
 @using Warehouse.Client.Services.ProductUom;
 @using Warehouse.Client.Services.Sales;
@@ -27,7 +28,12 @@
 }
 <h3>Purchases</h3>
 <div style="display: flex; align-items: center;">
-    <Button BackgroundColor="TablerColor.Primary" Type="ButtonType.Button" Text="+ Purchase" @onclick="AddNew" />
+    <AuthorizeView Roles="@AccountConstants.BuyerRoles" Context="userContext">
+        <Authorized>
+            <Button BackgroundColor="TablerColor.Primary" Type="ButtonType.Button" Text="+ Purchase" @onclick="AddNew" />
+        </Authorized>
+    </AuthorizeView>
+
     <select class="form-control" @onchange="ProductSelected" style="margin-left:10px">
         <option value="0">Select product</option>
         @foreach (var product in products)
@@ -37,44 +43,88 @@
     </select>
 </div>
 <br />
-<Table Item="SingleProductPurchaseResponse" Items="purchases" PageSize="20" OnItemDeleted="OnItemDelete"
-       Hover Responsive>
-    <HeaderTemplate>
-        <strong>Purchases</strong>
-    </HeaderTemplate>
+<AuthorizeView Roles="@AccountConstants.BuyerRoles" Context="userContext">
+    <Authorized>
+        <Table Item="SingleProductPurchaseResponse" Items="purchases" PageSize="20" OnItemDeleted="OnItemDelete"
+               Hover Responsive>
+            <HeaderTemplate>
+                <strong>Purchases</strong>
+            </HeaderTemplate>
 
-    <ChildContent>
-        <Column Item="SingleProductPurchaseResponse" Property="product=>product.ProductName" Title="Name" Sortable Searchable Groupable>
-            <EditorTemplate>
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleProductPurchaseResponse" Property="product=>product.ProductUom" Title="Uom" Sortable Searchable Groupable>
-            <EditorTemplate>
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleProductPurchaseResponse" Property="product=>product.Quantity" Title="Quantity" Sortable Searchable Groupable>
-            <EditorTemplate>
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleProductPurchaseResponse" Property="product=>product.Price" Title="Price" Sortable Searchable Groupable>
-            <EditorTemplate>
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleProductPurchaseResponse" Property="product=>product.TotalPrice" Title="TotalPrice" Sortable Searchable Groupable>
-            <EditorTemplate>
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleProductPurchaseResponse" Property="product=>product.Date" Title="Date" Sortable Searchable Groupable>
-            <EditorTemplate>
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleProductPurchaseResponse" Property="product=>product.Comment" Title="Comment" Sortable Searchable Groupable>
-            <EditorTemplate>
-            </EditorTemplate>
-        </Column>
-    </ChildContent>
+            <ChildContent>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.ProductName" Title="Name" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.ProductUom" Title="Uom" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.Quantity" Title="Quantity" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.Price" Title="Price" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.TotalPrice" Title="TotalPrice" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.Date" Title="Date" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.Comment" Title="Comment" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+            </ChildContent>
 
-</Table>
+        </Table>
+    </Authorized>
+    <NotAuthorized>
+        <Table Item="SingleProductPurchaseResponse" Items="purchases" PageSize="20"
+               Hover Responsive>
+            <HeaderTemplate>
+                <strong>Purchases</strong>
+            </HeaderTemplate>
+
+            <ChildContent>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.ProductName" Title="Name" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.ProductUom" Title="Uom" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.Quantity" Title="Quantity" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.Price" Title="Price" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.TotalPrice" Title="TotalPrice" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.Date" Title="Date" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.Comment" Title="Comment" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+            </ChildContent>
+        </Table>
+    </NotAuthorized>
+</AuthorizeView>
+
 
 @code {
     [Inject] TabBlazor.Services.TablerService TablerService { get; set; }

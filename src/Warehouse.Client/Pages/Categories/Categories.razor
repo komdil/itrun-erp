@@ -1,5 +1,6 @@
 ﻿@page "/categories"
 @attribute [Authorize]
+@using Warehouse.Client.Constants;
 @using Warehouse.Client.Services.ProductUom;
 @using Warehouse.Contracts.Categories;
 @using Warehouse.Contracts.ProductUOM;
@@ -20,47 +21,92 @@
     <br />
     <Progress Color="TablerColor.Blue" Indeterminate />
 }
+<AuthorizeView Roles="@AccountConstants.BuyerRoles" Context="userContext">
+    <Authorized>
+        <Table Item="SingleCategoryResponse" Items="categories" PageSize="20" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
+               OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete"
+               Hover Responsive EditMode=tableEditMode>
+             <HeaderTemplate>
+                 <strong>Category</strong>
+             </HeaderTemplate>
 
-<Table Item="SingleCategoryResponse" Items="categories" PageSize="20" AddItemFactory="AddItem" OnItemEdited="OnItemEdit"
-       OnItemAdded="OnItemAdd" OnItemDeleted="OnItemDelete"
-       Hover Responsive EditMode=tableEditMode>
-     <HeaderTemplate>
-         <strong>Category</strong>
-     </HeaderTemplate>
+             <ChildContent>
 
-     <ChildContent>
+                 <Column Item="SingleCategoryResponse" Property="e=>e.Name" Title="Name" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Name" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleCategoryResponse" Property="e=>e.ParentCategory" Title="Parent category" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <select class="form-control" @bind="context.ParentCategory">
+                            <option value="0">Select parent</option>
+                            @foreach (var category in categories.Where(s => s.Name != context.Name))
+                            {
+                                if (category.Name == context.ParentCategory)
+                                {
+                                    <option selected="selected" value="@category.Name">@category.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@category.Name">@category.Name</option>
+                                }
+                            }
+                        </select>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleCategoryResponse" Property="e=>e.Description" Title="Description" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Description" />
+                    </EditorTemplate>
+                </Column>
+            </ChildContent>
 
-         <Column Item="SingleCategoryResponse" Property="e=>e.Name" Title="Name" Sortable Searchable Groupable>
-            <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.Name" />
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleCategoryResponse" Property="e=>e.ParentCategory" Title="Parent category" Sortable Searchable Groupable>
-            <EditorTemplate>
-                <select class="form-control" @bind="context.ParentCategory">
-                    <option value="0">Select parent</option>
-                    @foreach (var category in categories.Where(s => s.Name != context.Name))
-                    {
-                        if (category.Name == context.ParentCategory)
-                        {
-                            <option selected="selected" value="@category.Name">@category.Name</option>
-                        }
-                        else
-                        {
-                            <option value="@category.Name">@category.Name</option>
-                        }
-                    }
-                </select>
-            </EditorTemplate>
-        </Column>
-        <Column Item="SingleCategoryResponse" Property="e=>e.Description" Title="Description" Sortable Searchable Groupable>
-            <EditorTemplate>
-                <input type="text" class="form-control" @bind-value="@context.Description" />
-            </EditorTemplate>
-        </Column>
-    </ChildContent>
+        </Table>
+    </Authorized>
+    <NotAuthorized>
+        <Table Item="SingleCategoryResponse" Items="categories" PageSize="20" 
+               Hover Responsive EditMode=tableEditMode>
+             <HeaderTemplate>
+                 <strong>Category</strong>
+             </HeaderTemplate>
 
-</Table>
+             <ChildContent>
+
+                 <Column Item="SingleCategoryResponse" Property="e=>e.Name" Title="Name" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Name" />
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleCategoryResponse" Property="e=>e.ParentCategory" Title="Parent category" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <select class="form-control" @bind="context.ParentCategory">
+                            <option value="0">Select parent</option>
+                            @foreach (var category in categories.Where(s => s.Name != context.Name))
+                            {
+                                if (category.Name == context.ParentCategory)
+                                {
+                                    <option selected="selected" value="@category.Name">@category.Name</option>
+                                }
+                                else
+                                {
+                                    <option value="@category.Name">@category.Name</option>
+                                }
+                            }
+                        </select>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleCategoryResponse" Property="e=>e.Description" Title="Description" Sortable Searchable Groupable>
+                    <EditorTemplate>
+                        <input type="text" class="form-control" @bind-value="@context.Description" />
+                    </EditorTemplate>
+                </Column>
+            </ChildContent>
+
+        </Table>
+    </NotAuthorized>
+</AuthorizeView>
+
 
 
 @code {
