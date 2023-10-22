@@ -1,4 +1,7 @@
-﻿namespace Warehouse.Contracts.Reports
+﻿using Warehouse.Contracts.ProductPurchase;
+using Warehouse.Contracts.SellProduct;
+
+namespace Warehouse.Contracts.Reports
 {
     public record ProductAggregatesResponse
     {
@@ -13,6 +16,8 @@
 
         public decimal Expenses { get; set; }
 
+        public List<SingleProductPurchaseResponse> MostPurchases { get; set; }
 
+        public List<SingleProductSellResponse> MostSellers { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Warehouse.Contracts.ProductPurchase;
 using Warehouse.Contracts.Reports;
 
 namespace Application.Reports
@@ -22,6 +23,17 @@ namespace Application.Reports
             var totalExpenses = await _context.ProductPurchases.SumAsync(s => s.Price, cancellationToken);
             var totalRevanue = await _context.SaleProducts.SumAsync(s => s.Price, cancellationToken);
             var profit = totalRevanue - totalExpenses;
+
+            var mostSellers = await _context.ProductPurchases
+                .GroupBy(s => s.ProductName)
+                .OrderByDescending(a => a.Sum(s => s.Quantity))
+                .Select(s => new
+                {
+                    ProductSale = s.Key,
+                    Quantity = s.Sum(s => s.Quantity)
+                })
+                .ToListAsync(cancellationToken);
+
             return new ProductAggregatesResponse
             {
                 CustomersCount = customerCount,
