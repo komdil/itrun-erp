@@ -1,17 +1,21 @@
 ﻿using Application.Common.Interfaces;
+using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Warehouse.Contracts.ProductPurchase;
 using Warehouse.Contracts.Reports;
+using Warehouse.Contracts.SellProduct;
 
 namespace Application.Reports
 {
     public class GetProductAggregatesQueryHandler : IRequestHandler<GetProductAggregatesQuery, ProductAggregatesResponse>
     {
         IApplicationDbContext _context;
-        public GetProductAggregatesQueryHandler(IApplicationDbContext applicationDbContext)
+        IMapper _mapper;
+        public GetProductAggregatesQueryHandler(IApplicationDbContext applicationDbContext, IMapper mapper)
         {
             _context = applicationDbContext;
+            _mapper = mapper;
         }
 
         public async Task<ProductAggregatesResponse> Handle(GetProductAggregatesQuery request, CancellationToken cancellationToken)
@@ -24,15 +28,35 @@ namespace Application.Reports
             var totalRevanue = await _context.SaleProducts.SumAsync(s => s.Price, cancellationToken);
             var profit = totalRevanue - totalExpenses;
 
-            var mostSellers = await _context.ProductPurchases
+            var mostPurchases = await _context.ProductPurchases
                 .GroupBy(s => s.ProductName)
                 .OrderByDescending(a => a.Sum(s => s.Quantity))
                 .Select(s => new
                 {
-                    ProductSale = s.Key,
+                    Purchase = s.First(),
                     Quantity = s.Sum(s => s.Quantity)
                 })
+                .Take(10)
                 .ToListAsync(cancellationToken);
+            mostPurchases.ForEach(s =>
+            {
+                s.Purchase.Quantity = s.Quantity;
+            });
+
+            var mostSellers = await _context.SaleProducts
+            .GroupBy(s => s.ProductName)
+            .OrderByDescending(a => a.Sum(s => s.Quantity))
+            .Select(s => new
+            {
+                ProductSale = s.First(),
+                Quantity = s.Sum(s => s.Quantity)
+            })
+            .Take(10)
+            .ToListAsync(cancellationToken);
+            mostSellers.ForEach(s =>
+            {
+                s.ProductSale.Quantity = s.Quantity;
+            });
 
             return new ProductAggregatesResponse
             {
@@ -42,7 +66,9 @@ namespace Application.Reports
                 SalesSum = sumOfProducts,
                 Expenses = totalExpenses,
                 Revenue = totalRevanue,
-                Profit = profit
+                Profit = profit,
+                MostPurchases = _mapper.Map<List<SingleProductPurchaseResponse>>(mostPurchases.Select(s => s.Purchase).ToList()),
+                MostSellers = _mapper.Map<List<SingleProductSellResponse>>(mostSellers.Select(s => s.ProductSale).ToList())
             };
         }
     }

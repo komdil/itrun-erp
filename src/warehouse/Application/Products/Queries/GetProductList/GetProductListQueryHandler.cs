@@ -25,6 +25,9 @@ namespace Application.Products.Queries.GetProductList
                 .Include(s => s.Category)
                 .Include(s => s.Warehouse);
 
+            if (request.OrderByQuantity)
+                productQuery = productQuery.OrderByDescending(s => s.Quantity);
+
             if (!string.IsNullOrWhiteSpace(request.Manufacturer))
                 productQuery = productQuery.Where(p => p.Manufacturer == request.Manufacturer);
 

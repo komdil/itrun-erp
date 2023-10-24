@@ -8,5 +8,7 @@ namespace Warehouse.Contracts.Product
         public string Category { get; set; }
         public string Warehouse { get; set; }
         public string Manufacturer { get; set; }
+
+        public bool OrderByQuantity { get; set; }
     }
 }

@@ -1,17 +1,21 @@
 ﻿@page "/"
+@using Warehouse.Client.Services.Product;
 @using Warehouse.Client.Services.Reports;
 @using Warehouse.Contracts.Product;
+@using Warehouse.Contracts.ProductPurchase;
 @using Warehouse.Contracts.Reports;
+@using Warehouse.Contracts.SellProduct;
 @attribute [Authorize]
 @inject IReportService _reportService;
+@inject IProductService _productService
 <br>
 <h2 align="center">SMART WAREHOUSE</h2>
 <br>
 @if (isError)
 {
     <Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
-        <div class="text-secondary">@errorMessage</div>
-    </Alert>
+     <div class="text-secondary">@errorMessage</div>
+ </Alert>
 }
 
 @if (isLoading)
@@ -33,10 +37,10 @@
 
                     <div class="col">
                         <h3 class="mb-0">
-                            Sum of sold products
+                            Revenue
                         </h3>
                         <div class="text-secondary">
-                            @productAggregatesResponse.SalesSum
+                            @productAggregatesResponse.Revenue.ToString("N2")
                         </div>
                     </div>
                 </div>
@@ -56,10 +60,10 @@
 
                     <div class="col">
                         <h3 class="mb-0">
-                            Sum of purchased products
+                            Expenses
                         </h3>
                         <div class="text-secondary">
-                            @productAggregatesResponse.PurchasesSumm
+                            @productAggregatesResponse.Expenses.ToString("N2")
                         </div>
                     </div>
                 </div>
@@ -79,7 +83,7 @@
 
                     <div class="col">
                         <h3 class="mb-0">
-                            Sum of products
+                            Available products
                         </h3>
                         <div class="text-secondary">
                             @productAggregatesResponse.ProductsCount
@@ -96,15 +100,15 @@
                 <div class="row align-items-center">
                     <RowCol Auto>
                         <span class="bg-yellow text-white avatar">
-                            <Icon IconType="Icons.Users" />
+                            <Icon IconType="Icons.Report_money" />
                         </span>
                     </RowCol>
                     <div class="col">
                         <h3 class="mb-0">
-                            Customers count
+                            Profit
                         </h3>
                         <div class="text-secondary">
-                            @productAggregatesResponse.CustomersCount
+                            @productAggregatesResponse.Profit.ToString("N2")
                         </div>
                     </div>
                 </div>
@@ -114,29 +118,69 @@
 
 
     <RowCol Sm="12" Lg="6">
-        <Table PageSize=5 Item="SingleProductResponse">
+        <Table Item="SingleProductSellResponse" Items="productAggregatesResponse.MostSellers" PageSize="10">
             <HeaderTemplate>
                 <strong>Most sellers</strong>
             </HeaderTemplate>
             <ChildContent>
-                <Column Item="SingleProductResponse" Property="e=>e.Name" Searchable Sortable />
-                <Column Item="SingleProductResponse" Property="e=>e.ProductUom" Searchable Sortable />
-                <Column Item="SingleProductResponse" Property="e=>e.Quantity" Searchable Sortable />
-                <Column Item="SingleProductResponse" Property="e=>e.Manufacturer" Searchable Sortable />
+                <Column Item="SingleProductSellResponse" Property="product=>product.ProductName" Title="Name">
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductSellResponse" Property="product=>product.Quantity" Title="Quantity">
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductSellResponse" Property="product=>product.Price" Title="Price">
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductSellResponse" Property="product=>product.TotalPrice" Title="TotalPrice">
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductSellResponse" Property="product=>product.Date" Title="Date">
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductSellResponse" Property="product=>product.Comment" Title="Comment">
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
             </ChildContent>
         </Table>
     </RowCol>
 
     <RowCol Sm="12" Lg="6">
-        <Table PageSize=5 Item="SingleProductResponse">
+        <Table PageSize=10 Item="SingleProductPurchaseResponse" Items="productAggregatesResponse.MostPurchases">
             <HeaderTemplate>
                 <strong>Most purchases</strong>
             </HeaderTemplate>
             <ChildContent>
-                <Column Item="SingleProductResponse" Property="e=>e.Name" Searchable Sortable />
-                <Column Item="SingleProductResponse" Property="e=>e.ProductUom" Searchable Sortable />
-                <Column Item="SingleProductResponse" Property="e=>e.Quantity" Searchable Sortable />
-                <Column Item="SingleProductResponse" Property="e=>e.Manufacturer" Searchable Sortable />
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.ProductName" Title="Name">
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.Quantity" Title="Quantity">
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.Price" Title="Price">
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.TotalPrice" Title="TotalPrice">
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.Date" Title="Date">
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
+                <Column Item="SingleProductPurchaseResponse" Property="product=>product.Comment" Title="Comment">
+                    <EditorTemplate>
+                    </EditorTemplate>
+                </Column>
             </ChildContent>
         </Table>
     </RowCol>
@@ -144,25 +188,50 @@
 
 
     <RowCol>
+        <Table Item="SingleProductResponse" Items="products" PageSize="20">
+            <HeaderTemplate>
+                <strong>Top products</strong>
+            </HeaderTemplate>
+            <ChildContent>
+                <Column Item="SingleProductResponse" Property="e=>e.Name" Searchable Sortable />
+                 <Column Item="SingleProductResponse" Property="e=>e.ProductUom" Searchable Sortable />
+                 <Column Item="SingleProductResponse" Property="e=>e.Quantity" Searchable Sortable />
+                 <Column Item="SingleProductResponse" Property="e=>e.Manufacturer" Searchable Sortable />
+             </ChildContent>
+         </Table>
 
-        <Table PageSize=5 Item="SingleProductResponse">
-            <Column Item="SingleProductResponse" Property="e=>e.Name" Searchable Sortable />
-            <Column Item="SingleProductResponse" Property="e=>e.ProductUom" Searchable Sortable />
-            <Column Item="SingleProductResponse" Property="e=>e.Quantity" Searchable Sortable />
-            <Column Item="SingleProductResponse" Property="e=>e.Manufacturer" Searchable Sortable />
-        </Table>
+     </RowCol>
+ </Row>
 
-    </RowCol>
-</Row>
-
-@code {
+ @code {
     private GetProductAggregatesQuery query = new();
+    private List<SingleProductResponse> products = new();
+    private GetProductsQuery getProductQuery = new() { OrderByQuantity = true };
     ProductAggregatesResponse productAggregatesResponse = new();
 
     private bool isLoading;
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
+        await Task.WhenAll(LoadProductsAsync(), LoadReportsAsync());
+        isLoading = false;
+    }
+
+    private async Task LoadProductsAsync()
+    {
+        var response = await _productService.GetAllAsync(getProductQuery);
+        if (response.Success)
+        {
+            products = response.Result;
+        }
+        else
+        {
+            ShowError(response.Error);
+        }
+    }
+
+    private async Task LoadReportsAsync()
+    {
         var response = await _reportService.GetProductReports(query);
         if (response.Success)
         {
@@ -172,7 +241,6 @@
         {
             ShowError(response.Error);
         }
-        isLoading = false;
     }
 
     #region Error

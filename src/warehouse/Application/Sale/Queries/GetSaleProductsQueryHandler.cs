@@ -22,6 +22,7 @@ namespace Application.Sale.Queries
 		public async Task<List<SingleProductSellResponse>> Handle(GetSaleProductsQuery request, CancellationToken cancellationToken)
 		{
 			IQueryable<SaleProduct> SaleProduct = _dbContext.SaleProducts;
+
 			if (!string.IsNullOrWhiteSpace(request.ProductName))
 				SaleProduct = SaleProduct.Where(p => p.ProductName == request.ProductName);
 
