@@ -16,8 +16,8 @@
 @if (isError)
 {
     <Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
-     <div class="text-secondary">@errorMessage</div>
- </Alert>
+        <div class="text-secondary">@errorMessage</div>
+    </Alert>
 }
 
 @if (isLoading)
@@ -68,8 +68,9 @@
                     </EditorTemplate>
                 </Column>
                 <Column Item="SingleProductSellResponse" Property="product=>product.Date" Title="Date" Sortable Searchable Groupable>
-                    <EditorTemplate>
-                    </EditorTemplate>
+                    <Template>
+                        @context.Date.ToShortDateString()
+                    </Template>
                 </Column>
                 <Column Item="SingleProductSellResponse" Property="product=>product.Comment" Title="Comment" Sortable Searchable Groupable>
                     <EditorTemplate>
@@ -80,7 +81,7 @@
         </Table>
     </Authorized>
     <NotAuthorized>
-        <Table Item="SingleProductSellResponse" Items="saleProduct" PageSize="20" 
+        <Table Item="SingleProductSellResponse" Items="saleProduct" PageSize="20"
                Hover Responsive>
             <HeaderTemplate>
                 <strong>Sales</strong>
@@ -104,8 +105,9 @@
                     </EditorTemplate>
                 </Column>
                 <Column Item="SingleProductSellResponse" Property="product=>product.Date" Title="Date" Sortable Searchable Groupable>
-                    <EditorTemplate>
-                    </EditorTemplate>
+                    <Template>
+                        @context.Date.ToShortDateString()
+                    </Template>
                 </Column>
                 <Column Item="SingleProductSellResponse" Property="product=>product.Comment" Title="Comment" Sortable Searchable Groupable>
                     <EditorTemplate>

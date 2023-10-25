@@ -69,8 +69,9 @@
                     </EditorTemplate>
                 </Column>
                 <Column Item="SingleProductPurchaseResponse" Property="product=>product.Date" Title="Date" Sortable Searchable Groupable>
-                    <EditorTemplate>
-                    </EditorTemplate>
+                    <Template>
+                        @context.Date.ToShortDateString()
+                    </Template>
                 </Column>
                 <Column Item="SingleProductPurchaseResponse" Property="product=>product.Comment" Title="Comment" Sortable Searchable Groupable>
                     <EditorTemplate>
@@ -105,8 +106,9 @@
                     </EditorTemplate>
                 </Column>
                 <Column Item="SingleProductPurchaseResponse" Property="product=>product.Date" Title="Date" Sortable Searchable Groupable>
-                    <EditorTemplate>
-                    </EditorTemplate>
+                    <Template>
+                        @context.Date.ToShortDateString()
+                    </Template>
                 </Column>
                 <Column Item="SingleProductPurchaseResponse" Property="product=>product.Comment" Title="Comment" Sortable Searchable Groupable>
                     <EditorTemplate>

@@ -14,8 +14,8 @@
 @if (isError)
 {
     <Alert BackgroundColor="TablerColor.Danger" Title="Error" Dismissible>
-     <div class="text-secondary">@errorMessage</div>
- </Alert>
+        <div class="text-secondary">@errorMessage</div>
+    </Alert>
 }
 
 @if (isLoading)
@@ -140,12 +140,9 @@
                     </EditorTemplate>
                 </Column>
                 <Column Item="SingleProductSellResponse" Property="product=>product.Date" Title="Date">
-                    <EditorTemplate>
-                    </EditorTemplate>
-                </Column>
-                <Column Item="SingleProductSellResponse" Property="product=>product.Comment" Title="Comment">
-                    <EditorTemplate>
-                    </EditorTemplate>
+                    <Template>
+                        @context.Date.ToShortDateString()
+                    </Template>
                 </Column>
             </ChildContent>
         </Table>
@@ -174,12 +171,9 @@
                     </EditorTemplate>
                 </Column>
                 <Column Item="SingleProductPurchaseResponse" Property="product=>product.Date" Title="Date">
-                    <EditorTemplate>
-                    </EditorTemplate>
-                </Column>
-                <Column Item="SingleProductPurchaseResponse" Property="product=>product.Comment" Title="Comment">
-                    <EditorTemplate>
-                    </EditorTemplate>
+                    <Template>
+                        @context.Date.ToShortDateString()
+                    </Template>
                 </Column>
             </ChildContent>
         </Table>
@@ -194,16 +188,16 @@
             </HeaderTemplate>
             <ChildContent>
                 <Column Item="SingleProductResponse" Property="e=>e.Name" Searchable Sortable />
-                 <Column Item="SingleProductResponse" Property="e=>e.ProductUom" Searchable Sortable />
-                 <Column Item="SingleProductResponse" Property="e=>e.Quantity" Searchable Sortable />
-                 <Column Item="SingleProductResponse" Property="e=>e.Manufacturer" Searchable Sortable />
-             </ChildContent>
-         </Table>
+                <Column Item="SingleProductResponse" Property="e=>e.ProductUom" Searchable Sortable />
+                <Column Item="SingleProductResponse" Property="e=>e.Quantity" Searchable Sortable />
+                <Column Item="SingleProductResponse" Property="e=>e.Manufacturer" Searchable Sortable />
+            </ChildContent>
+        </Table>
 
-     </RowCol>
- </Row>
+    </RowCol>
+</Row>
 
- @code {
+@code {
     private GetProductAggregatesQuery query = new();
     private List<SingleProductResponse> products = new();
     private GetProductsQuery getProductQuery = new() { OrderByQuantity = true };
