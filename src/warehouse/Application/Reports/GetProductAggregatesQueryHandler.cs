@@ -30,32 +30,36 @@ namespace Application.Reports
 
             var mostPurchases = await _context.ProductPurchases
                 .GroupBy(s => s.ProductName)
-                .OrderByDescending(a => a.Sum(s => s.Quantity))
+                .OrderByDescending(a => a.Sum(s => s.TotalPrice))
                 .Select(s => new
                 {
                     Purchase = s.First(),
-                    Quantity = s.Sum(s => s.Quantity)
+                    Quantity = s.Sum(s => s.Quantity),
+                    TotalPrice = s.Sum(s => s.TotalPrice)
                 })
                 .Take(10)
                 .ToListAsync(cancellationToken);
             mostPurchases.ForEach(s =>
             {
                 s.Purchase.Quantity = s.Quantity;
+                s.Purchase.TotalPrice = s.TotalPrice;
             });
 
             var mostSellers = await _context.SaleProducts
             .GroupBy(s => s.ProductName)
-            .OrderByDescending(a => a.Sum(s => s.Quantity))
+            .OrderByDescending(a => a.Sum(s => s.TotalPrice))
             .Select(s => new
             {
                 ProductSale = s.First(),
-                Quantity = s.Sum(s => s.Quantity)
+                Quantity = s.Sum(s => s.Quantity),
+                TotalPrice = s.Sum(s => s.TotalPrice)
             })
             .Take(10)
             .ToListAsync(cancellationToken);
             mostSellers.ForEach(s =>
             {
                 s.ProductSale.Quantity = s.Quantity;
+                s.ProductSale.TotalPrice = s.TotalPrice;
             });
 
             return new ProductAggregatesResponse
