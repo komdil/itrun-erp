@@ -1,20 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Blazor-ApexCharts" Version="1.2.1" />
 		<PackageReference Include="Blazored.LocalStorage" Version="4.4.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.22" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.1" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.13" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.10" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
 		<PackageReference Include="TabBlazor" Version="0.6.6-alpha" />
-		<PackageReference Include="TabBlazor.FluentValidation" Version="0.3.5" />
-		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.7.1" />
 	</ItemGroup>
 
 	<ItemGroup>
