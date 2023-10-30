@@ -1,3 +1,5 @@
+<img src="img/photo_2023-10-23_08-39-59.jpg"/>
+
 # IT-RUN
 This repository contains the following projects:
 
@@ -31,6 +33,13 @@ The Rental Service encompasses a range of functionalities for rental management,
 - Dashboard
 - Payment processing
 - Transaction tracking
+
+
+### Services structure
+<img src="img/photo_2023-10-24_01-40-43.jpg"/>
+
+### CI/CD
+<img src="img/CICD.png"/>
 
 ## Usage
 
