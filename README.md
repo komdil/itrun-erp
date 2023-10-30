@@ -1,4 +1,4 @@
-![Alt text](photo_2023-10-23_08-39-59.jpg)
+<img src="img/photo_2023-10-23_08-39-59.jpg"/>
 
 # IT-RUN
 This repository contains the following projects:
@@ -36,10 +36,10 @@ The Rental Service encompasses a range of functionalities for rental management,
 
 
 ### Services structure
-![Alt text](photo_2023-10-24_01-40-43.jpg)
+<img src="img/photo_2023-10-24_01-40-43.jpg"/>
 
 ### CI/CD
-![Alt text](CICD.png)
+<img src="img/CICD.png"/>
 
 ## Usage
 
